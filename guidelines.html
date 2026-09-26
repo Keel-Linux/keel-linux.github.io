@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guidelines, Keel Linux</title>
+  <meta name="description" content="How the Keel Linux repositories are organised and what every change must meet.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F4F7FA">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B1F3A">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  <link rel="apple-touch-icon" href="assets/keel-icon-256.png">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try {
+      var savedTheme = localStorage.getItem("keel-theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">
+        <img src="assets/keel-icon-256.png" alt="" width="32" height="32">
+        <span>Keel Linux</span>
+      </a>
+      <nav class="site-nav" aria-label="Sections">
+        <ul>
+          <li><a href="index.html#what-changes">What changes</a></li>
+          <li><a href="index.html#how-it-is-built">How it is built</a></li>
+          <li><a href="index.html#standards">Standards</a></li>
+          <li><a href="index.html#status">Status</a></li>
+          <li><a href="guidelines.html" aria-current="page">Guidelines</a></li>
+          <li><a href="https://github.com/keel-linux">GitHub</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page" aria-labelledby="page-title">
+      <div class="wrap">
+        <span class="eyebrow">Guidelines</span>
+        <h1 id="page-title">How the project is organised</h1>
+        <p class="lead">Short by design. The rules below apply to every repository under the organization.</p>
+
+        <div class="guide">
+          <h2>One organization for everything</h2>
+          <ul>
+            <li>Infrastructure repositories keep their upstream names: <code>common</code>, <code>fab</code>, <code>buildtasks</code>, <code>inithooks</code>, <code>confconsole</code>, <code>tkldev</code>, <code>webmin</code>, <code>tklbam</code>, <code>keel</code>.</li>
+            <li>Appliance repositories carry the <code>keel-</code> prefix: <code>keel-core</code>, <code>keel-wordpress</code>, <code>keel-odoo</code>, <code>keel-moodle</code>, <code>keel-lamp</code>, <code>keel-lapp</code>, <code>keel-nginx-php-fastcgi</code>, <code>keel-redis</code>, <code>keel-ejabberd</code>.</li>
+          </ul>
+
+          <h2>Issues</h2>
+          <ul>
+            <li>Issues live in the repository they concern. There is no global tracker.</li>
+          </ul>
+
+          <h2>Tests and coverage</h2>
+          <ul>
+            <li>Every repository has tests.</li>
+            <li>Coverage is measured on every pull request in GitHub, and the check is required.</li>
+            <li>At least 90 percent for any repository; 95 percent for code the project writes.</li>
+            <li>A pull request that fails tests or the threshold cannot be merged.</li>
+          </ul>
+
+          <h2>Conventions</h2>
+          <ul>
+            <li>IPv6 in every example and default, for instance <code>[2001:db8:4b1::10]:443</code>.</li>
+            <li>English in commits, code and documentation.</li>
+            <li>History is never rewritten.</li>
+            <li>System containers only.</li>
+          </ul>
+
+          <h2>Upstream</h2>
+          <ul>
+            <li>Forks keep TurnKey Linux as an upstream remote.</li>
+            <li>Changes are offered back upstream where they apply.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
+      <p><a href="index.html">Home</a> · <a href="guidelines.html">Guidelines</a> · <a href="https://github.com/keel-linux">github.com/keel-linux</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var button = document.getElementById("theme-toggle");
+      if (!button || !window.matchMedia) { return; }
+      var query = window.matchMedia("(prefers-color-scheme: dark)");
+
+      function currentTheme() {
+        var set = root.getAttribute("data-theme");
+        if (set === "light" || set === "dark") { return set; }
+        return query.matches ? "dark" : "light";
+      }
+
+      function describe() {
+        var next = currentTheme() === "dark" ? "light" : "dark";
+        button.setAttribute("aria-label", "Switch to " + next + " theme");
+        button.title = "Switch to " + next + " theme";
+      }
+
+      button.addEventListener("click", function () {
+        var next = currentTheme() === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("keel-theme", next); } catch (e) {}
+        describe();
+      });
+
+      if (query.addEventListener) { query.addEventListener("change", describe); }
+      describe();
+      button.hidden = false;
+    })();
+  </script>
+</body>
+</html>

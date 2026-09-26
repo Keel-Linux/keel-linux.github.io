@@ -598,3 +598,38 @@ h2 {
 .site-footer p {
   max-width: var(--measure);
 }
+
+/* Secondary pages */
+
+.page {
+  border-top: 0;
+  padding-block: 3.5rem 4.5rem;
+}
+
+.page h1 {
+  font-size: clamp(1.9rem, 1.3rem + 2.4vw, 2.75rem);
+  letter-spacing: -0.02em;
+}
+
+.guide {
+  max-width: var(--measure);
+  margin-top: 2.5rem;
+  display: grid;
+  gap: 1.75rem;
+}
+
+.guide h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+
+.guide ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.guide li::marker {
+  color: var(--accent);
+}
