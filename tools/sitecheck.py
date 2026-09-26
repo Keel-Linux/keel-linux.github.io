@@ -44,6 +44,13 @@ META_REFERENCE_KEYS = (
     "og:url",
     "twitter:image",
 )
+# Directories that are in the repository but are not the site: this checker,
+# its tests, and whatever a tool leaves behind. Packaging metadata is the
+# reason this list exists rather than a suffix rule alone: an editable install
+# writes *.egg-info/*.txt into the tree, and a .txt is something a site can
+# serve, so the tree has to say which directories are the site at all.
+EXCLUDE_DIRS = ("tools", "tests", "node_modules", "build", "dist")
+EXCLUDE_DIR_SUFFIXES = (".egg-info", ".dist-info")
 # What the site serves. A file of any other kind in the tree is repository
 # furniture (this checker, its tests, the packaging) and is not an asset.
 ASSET_SUFFIXES = (
@@ -229,7 +236,7 @@ def read_site(root: str) -> tuple[dict[str, str], set[str]]:
     pages: dict[str, str] = {}
     assets: set[str] = set()
     for base, dirs, names in os.walk(root):
-        dirs[:] = [name for name in dirs if not name.startswith(".")]
+        dirs[:] = [name for name in dirs if not _is_excluded_dir(name)]
         for name in names:
             if name.startswith("."):
                 continue
@@ -241,6 +248,15 @@ def read_site(root: str) -> tuple[dict[str, str], set[str]]:
             elif name.lower().endswith(ASSET_SUFFIXES):
                 assets.add(path)
     return pages, assets
+
+
+def _is_excluded_dir(name: str) -> bool:
+    """Whether a directory is repository furniture rather than the site"""
+    return (
+        name.startswith(".")
+        or name in EXCLUDE_DIRS
+        or name.endswith(EXCLUDE_DIR_SUFFIXES)
+    )
 
 
 def main(argv: list[str]) -> int:

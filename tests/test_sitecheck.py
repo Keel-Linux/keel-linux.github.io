@@ -213,6 +213,21 @@ class TestReadSite(unittest.TestCase):
         self.assertNotIn("tools/sitecheck.py", assets)
         self.assertFalse([path for path in assets if path.startswith(".git")])
 
+    def test_packaging_metadata_is_not_part_of_the_site(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            for directory in ("site.egg-info", "tools", "tests", "build"):
+                os.makedirs(join(tmp, directory))
+                with open(join(tmp, directory, "leftover.txt"), "w") as fob:
+                    fob.write("x")
+            with open(join(tmp, "index.html"), "w") as fob:
+                fob.write(page())
+            pages, assets = sitecheck.read_site(tmp)
+
+        self.assertEqual(sorted(pages), ["index.html"])
+        self.assertEqual(assets, set())
+
     def test_a_dotted_directory_is_skipped(self):
         pages, assets = sitecheck.read_site(ROOT)
         self.assertFalse([path for path in pages if "/." in path])
