@@ -1,0 +1,20 @@
+# The gate of the site (docs/ci-cd.md):
+#   python / coverage   tools/sitecheck.py under coverage.py, 95 percent, the
+#                       bar for project-authored code. The suite ends by
+#                       running the checker over this repository, so a broken
+#                       link, a missing asset, a plain HTTP link or an asset
+#                       no page references fails the check before the page is
+#                       served.
+# Required on main. Thresholds are only ever raised.
+name: tests
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  python:
+    uses: keel-linux/.github/.github/workflows/test-python.yml@main
+    with:
+      threshold: 95
+      package: tools
+      tests: tests
