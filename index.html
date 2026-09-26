@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keel Linux</title>
+  <meta name="description" content="Keel Linux: declarative, layered, IPv6-first system-container appliances, compatible with TurnKey Linux appliances.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F4F7FA">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B1F3A">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  <link rel="apple-touch-icon" href="assets/keel-icon-256.png">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try {
+      var savedTheme = localStorage.getItem("keel-theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="#top">
+        <img src="assets/keel-icon-256.png" alt="" width="32" height="32">
+        <span>Keel Linux</span>
+      </a>
+      <nav class="site-nav" aria-label="Sections">
+        <ul>
+          <li><a href="#what-changes">What changes</a></li>
+          <li><a href="#how-it-is-built">How it is built</a></li>
+          <li><a href="#standards">Standards</a></li>
+          <li><a href="#status">Status</a></li>
+          <li><a href="https://github.com/keel-linux">GitHub</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="wrap">
+        <div class="plate">
+          <img src="assets/keel-icon-256.png"
+               srcset="assets/keel-icon-256.png 256w, assets/keel-icon.png 1024w"
+               sizes="(min-width: 48rem) 11rem, 8.5rem"
+               width="256" height="256"
+               alt="Keel Linux icon: the cross-section of a hull with three layers stacked on a keel">
+        </div>
+        <div>
+          <h1 id="hero-title">Keel Linux</h1>
+          <p class="tagline">Declarative, layered, IPv6-first system-container appliances, compatible with TurnKey Linux appliances.</p>
+          <p class="sub">A fork of TurnKey Linux 19 (Debian 13) that makes the LXC appliance behave like a cloud instance: described in one file, built from signed layers, reachable on its own address, and upgradable in place.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="https://github.com/keel-linux">GitHub organization</a>
+            <a class="btn btn-secondary" href="https://github.com/keel-linux/.github/blob/main/profile/README.md">Read the design</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="what-changes" aria-labelledby="what-changes-title">
+      <div class="wrap">
+        <span class="eyebrow">What changes</span>
+        <h2 id="what-changes-title">Four things an appliance should already do</h2>
+        <p class="lead">TurnKey appliances are excellent on day zero and hard to keep on day two. Keel keeps the appliances and corrects the model around them.</p>
+        <ul class="grid-4">
+          <li class="card">
+            <span class="index">01</span>
+            <h3>Declared in one file</h3>
+            <p>An instance spec describes hostname, IPv6 networking, domain and certificate policy, services, users and secrets by reference. Applying it converges the appliance and is safe to re-run. The interactive console writes the same file.</p>
+          </li>
+          <li class="card">
+            <span class="index">02</span>
+            <h3>Built from signed, content-addressed layers</h3>
+            <p>Core, stack and app are separate read-only layers, each with a sha256, listed in a plain-text manifest signed by the project key and tied to a git commit. Same commit and same manifest give the same bytes.</p>
+          </li>
+          <li class="card">
+            <span class="index">03</span>
+            <h3>Reachable end to end over IPv6</h3>
+            <p>Every appliance gets a routable address of its own, such as <code>2001:db8:4b1::10</code>, with an ACME certificate and host identity keys. No NAT traversal, no port mapping. IPv4 is optional and never assumed.</p>
+          </li>
+          <li class="card">
+            <span class="index">04</span>
+            <h3>Maintainable across major versions</h3>
+            <p>Platform upgrades and application schema upgrades are kept apart. The second runs with a return point, the upstream tool, validation and rollback, so an appliance follows Debian releases instead of being reinstalled.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="how-it-is-built" aria-labelledby="how-title">
+      <div class="wrap">
+        <span class="eyebrow">How it is built</span>
+        <h2 id="how-title">Three layers on one spine</h2>
+        <p class="lead">An appliance is a core layer, a stack layer and an app layer, assembled from a manifest. The layers are built by the same tools TurnKey uses today, one deterministic tarball each.</p>
+        <div class="build">
+          <figure class="diagram">
+            <svg viewBox="0 0 520 300" role="img" aria-labelledby="diagram-title diagram-desc">
+              <title id="diagram-title">Layer diagram</title>
+              <desc id="diagram-desc">Three horizontal layers named app, stack and core are stacked on a vertical keel. A manifest to the right lists each layer with its sha256, the git commit and the signature, with a dashed line from each manifest entry to its layer.</desc>
+
+              <!-- keel spine and fin -->
+              <rect x="118" y="30" width="12" height="206" rx="6" fill="currentColor"/>
+              <line x1="20" y1="232" x2="250" y2="232" stroke="currentColor" stroke-width="2" stroke-opacity="0.45"/>
+              <rect x="118" y="238" width="12" height="52" rx="6" fill="var(--accent)"/>
+
+              <!-- connectors -->
+              <g stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.6">
+                <line x1="194" y1="78" x2="290" y2="78"/>
+                <line x1="204" y1="138" x2="290" y2="138"/>
+                <line x1="214" y1="198" x2="290" y2="198"/>
+              </g>
+
+              <!-- layers -->
+              <g stroke="currentColor" stroke-width="2" fill="var(--surface)">
+                <rect x="54" y="58" width="140" height="40" rx="5"/>
+                <rect x="44" y="118" width="160" height="40" rx="5"/>
+                <rect x="34" y="178" width="180" height="40" rx="5"/>
+              </g>
+              <g fill="currentColor">
+                <text class="label" x="68" y="83">app</text>
+                <text class="note" x="182" y="83" text-anchor="end">133 MB</text>
+                <text class="label" x="58" y="143">stack</text>
+                <text class="note" x="192" y="143" text-anchor="end">80 MB</text>
+                <text class="label" x="48" y="203">core</text>
+                <text class="note" x="202" y="203" text-anchor="end">326 MB</text>
+              </g>
+
+              <!-- manifest -->
+              <rect x="290" y="30" width="210" height="260" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
+              <g fill="currentColor">
+                <text class="label" x="306" y="54">manifest</text>
+                <text class="mono" x="306" y="83">app    sha256:9c1e...</text>
+                <text class="mono" x="306" y="143">stack  sha256:4d7b...</text>
+                <text class="mono" x="306" y="203">core   sha256:e3a0...</text>
+                <text class="mono" x="306" y="243">commit 1a2b3c4d</text>
+                <text class="mono" x="306" y="268" fill="var(--accent-text)">signed by project key</text>
+              </g>
+            </svg>
+            <figcaption>Each layer is a deterministic tarball with a sha256 and a plain-text manifest. An update downloads only what changed: a new WordPress release means the app layer, not the base.</figcaption>
+          </figure>
+          <div class="measured">
+            <h3>Measured on the build host</h3>
+            <p class="hint">Unmodified TurnKey 19.0 recipes, built as layers.</p>
+            <dl>
+              <div class="row">
+                <dt>Core layer</dt>
+                <dd>326 MB</dd>
+              </div>
+              <div class="row">
+                <dt>LAMP stack delta</dt>
+                <dd>80 MB</dd>
+              </div>
+              <div class="row">
+                <dt>WordPress app delta</dt>
+                <dd>133 MB</dd>
+              </div>
+              <div class="row">
+                <dt>WordPress rebuild on cached layers</dt>
+                <dd>69 s <small>instead of 451 s</small></dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="standards" aria-labelledby="standards-title">
+      <div class="wrap">
+        <span class="eyebrow">Standards</span>
+        <h2 id="standards-title">Rules every change follows</h2>
+        <ul class="standards">
+          <li>
+            <strong>90 percent test coverage minimum, 95 percent for project code</strong>
+            <p>Every change ships with tests. The forked repositories keep at least 90 percent coverage; code the project writes keeps 95 percent.</p>
+          </li>
+          <li>
+            <strong>IPv6 in every example</strong>
+            <p>Commands, defaults and configuration examples use IPv6 addresses, such as <code>[2001:db8:4b1::10]:22</code>. IPv4 is optional and never assumed.</p>
+          </li>
+          <li>
+            <strong>English</strong>
+            <p>Commits, code comments, documentation and pull requests are written in English.</p>
+          </li>
+          <li>
+            <strong>History is never rewritten</strong>
+            <p>Forks keep the upstream history and the upstream remote. No squashing, no force pushes, cherry-picks with attribution.</p>
+          </li>
+          <li>
+            <strong>System containers only</strong>
+            <p>Full init, journal, cron, SSH and filesystem-level backup. Tests run on LXC with native systemd against real databases. No other container model is involved.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="status" id="status" aria-labelledby="status-title">
+      <div class="wrap">
+        <span class="eyebrow">Status</span>
+        <h2 id="status-title">Early</h2>
+        <div class="text">
+          <p>The build host reproduces unmodified TurnKey 19.0 from the forked repositories. That is the baseline every later change is measured against, and it passed before anything else started.</p>
+          <p>The first bug fixes are on branches, and the first pieces of the library (the instance spec and layer verification) exist with full test coverage. Nothing is published for end users yet: no images, no packages, no layer repository.</p>
+        </div>
+        <h3>What is next</h3>
+        <ol class="next">
+          <li><strong>Declarative spec.</strong> <code>inspect</code>, <code>apply</code> and <code>diff</code> for a running appliance, with the console writing the same file.</li>
+          <li><strong>Layered builds.</strong> Hashed core, stack and app layers with signed manifests, and a pull that fetches only the layers that are missing.</li>
+          <li><strong>Transition from TurnKey 19.0.</strong> A keyring package and a transition package that switch an existing appliance to the project repositories and write its spec from what is installed.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
+      <p><a href="https://github.com/keel-linux">github.com/keel-linux</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var button = document.getElementById("theme-toggle");
+      if (!button || !window.matchMedia) { return; }
+      var query = window.matchMedia("(prefers-color-scheme: dark)");
+
+      function currentTheme() {
+        var set = root.getAttribute("data-theme");
+        if (set === "light" || set === "dark") { return set; }
+        return query.matches ? "dark" : "light";
+      }
+
+      function describe() {
+        var next = currentTheme() === "dark" ? "light" : "dark";
+        button.setAttribute("aria-label", "Switch to " + next + " theme");
+        button.title = "Switch to " + next + " theme";
+      }
+
+      button.addEventListener("click", function () {
+        var next = currentTheme() === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("keel-theme", next); } catch (e) {}
+        describe();
+      });
+
+      if (query.addEventListener) { query.addEventListener("change", describe); }
+      describe();
+      button.hidden = false;
+    })();
+  </script>
+</body>
+</html>

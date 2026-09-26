@@ -1,0 +1,600 @@
+/* Keel Linux project site. Plain CSS, system fonts, no build step. */
+
+:root {
+  color-scheme: light dark;
+
+  --navy: #0B1F3A;
+  --teal: #16A6A0;
+  --offwhite: #F4F7FA;
+
+  --bg: var(--offwhite);
+  --fg: var(--navy);
+  --muted: #3F5470;
+  --accent: var(--teal);
+  --accent-text: #0C6F6B;
+  --surface: #FFFFFF;
+  --line: #D3DCE6;
+  --plate: var(--offwhite);
+  --btn-bg: var(--navy);
+  --btn-fg: var(--offwhite);
+  --code-bg: #E7EDF4;
+  --focus: #0C6F6B;
+
+  --gutter: 16px;
+  --measure: 62ch;
+  --radius: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: var(--navy);
+    --fg: var(--offwhite);
+    --muted: #B5C2D2;
+    --accent: var(--teal);
+    --accent-text: #2FBDB7;
+    --surface: #112A4C;
+    --line: #28466B;
+    --plate: var(--offwhite);
+    --btn-bg: var(--teal);
+    --btn-fg: var(--navy);
+    --code-bg: #163559;
+    --focus: var(--teal);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: var(--navy);
+  --fg: var(--offwhite);
+  --muted: #B5C2D2;
+  --accent: var(--teal);
+  --accent-text: #2FBDB7;
+  --surface: #112A4C;
+  --line: #28466B;
+  --plate: var(--offwhite);
+  --btn-bg: var(--teal);
+  --btn-fg: var(--navy);
+  --code-bg: #163559;
+  --focus: var(--teal);
+}
+
+/* Base */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--accent-text);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas,
+    "Liberation Mono", "DejaVu Sans Mono", monospace;
+  font-size: 0.92em;
+  background: var(--code-bg);
+  padding: 0.1em 0.4em;
+  border-radius: 0.3em;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+p + p {
+  margin-top: 1em;
+}
+
+.wrap {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@media (min-width: 48rem) {
+  .wrap {
+    padding-inline: 2rem;
+  }
+}
+
+.skip {
+  position: absolute;
+  left: var(--gutter);
+  top: -100%;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  z-index: 10;
+}
+
+.skip:focus {
+  top: 0.75rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Header */
+
+.site-header {
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  min-height: 4rem;
+  padding-block: 0.75rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--fg);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-right: auto;
+}
+
+.brand img {
+  width: 2rem;
+  height: 2rem;
+  background: var(--plate);
+  border-radius: 0.4rem;
+}
+
+.site-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+
+.site-nav a {
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+.theme-toggle {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fg);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+}
+
+.theme-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* Buttons */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid var(--btn-bg);
+  font-weight: 600;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.btn-primary {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+/* Sections */
+
+section {
+  padding-block: 4rem;
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 48rem) {
+  section {
+    padding-block: 5.5rem;
+  }
+}
+
+.eyebrow {
+  display: block;
+  color: var(--accent-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+h2 {
+  font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.25rem);
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: var(--measure);
+  margin-top: 1rem;
+}
+
+/* Hero */
+
+.hero {
+  border-top: 0;
+  padding-block: 4rem 4.5rem;
+}
+
+@media (min-width: 48rem) {
+  .hero {
+    padding-block: 6rem 7rem;
+  }
+}
+
+.hero .wrap {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (min-width: 40rem) {
+  .hero .wrap {
+    grid-template-columns: auto 1fr;
+    gap: 3rem;
+  }
+}
+
+.plate {
+  width: 8.5rem;
+  aspect-ratio: 1;
+  border-radius: 1.5rem;
+  background: var(--plate);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+}
+
+@media (min-width: 48rem) {
+  .plate {
+    width: 11rem;
+  }
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 1.6rem + 4vw, 4rem);
+  letter-spacing: -0.02em;
+}
+
+.hero .tagline {
+  font-size: clamp(1.15rem, 1rem + 0.8vw, 1.45rem);
+  margin-top: 1rem;
+  max-width: 34ch;
+  text-wrap: balance;
+}
+
+.hero .sub {
+  color: var(--muted);
+  margin-top: 0.75rem;
+  max-width: var(--measure);
+}
+
+/* What changes */
+
+.grid-4 {
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.card .index {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 0.8rem;
+  color: var(--accent-text);
+  letter-spacing: 0.08em;
+}
+
+.card h3 {
+  font-size: 1.15rem;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 0.97rem;
+}
+
+/* How it is built */
+
+.build {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+  align-items: start;
+}
+
+@media (min-width: 56rem) {
+  .build {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 3.5rem;
+  }
+}
+
+.diagram {
+  margin: 0;
+}
+
+.diagram svg {
+  width: 100%;
+  max-width: 36rem;
+  height: auto;
+  font-size: 15px;
+}
+
+.diagram .mono {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 12.5px;
+}
+
+.diagram .label {
+  font-weight: 700;
+}
+
+.diagram .note {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.diagram figcaption {
+  color: var(--muted);
+  font-size: 0.95rem;
+  max-width: var(--measure);
+  margin-top: 1.25rem;
+}
+
+.measured h3 {
+  font-size: 1.1rem;
+}
+
+.measured .hint {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-top: 0.35rem;
+}
+
+.measured dl {
+  margin: 1.25rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.measured .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.measured dt {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.measured dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.measured dd small {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+/* Standards */
+
+.standards {
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem 2.5rem;
+}
+
+@media (min-width: 48rem) {
+  .standards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.standards li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.standards li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.standards strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.standards p {
+  color: var(--muted);
+  font-size: 0.97rem;
+  margin-top: 0.25rem;
+}
+
+/* Status */
+
+.status .text {
+  max-width: var(--measure);
+  margin-top: 1.5rem;
+}
+
+.status h3 {
+  font-size: 1.1rem;
+  margin-top: 2.5rem;
+}
+
+.next {
+  margin: 1rem 0 0;
+  padding-left: 1.4rem;
+  max-width: var(--measure);
+  display: grid;
+  gap: 0.6rem;
+}
+
+.next li::marker {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* Footer */
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding-block: 2.5rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.site-footer .wrap {
+  display: grid;
+  gap: 1rem;
+}
+
+.site-footer p {
+  max-width: var(--measure);
+}
