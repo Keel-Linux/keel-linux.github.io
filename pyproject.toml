@@ -1,0 +1,12 @@
+# The site has no build step: the files in the repository are the files the
+# browser gets. tools/sitecheck.py is the check that a build step would have
+# done, and this file is only here to measure it.
+
+[tool.coverage.run]
+branch = true
+source = ["tools"]
+
+[tool.coverage.report]
+show_missing = true
+# The bar for project-authored code (decision 0003). Only ever raised.
+fail_under = 95
