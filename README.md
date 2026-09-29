@@ -1,12 +1,13 @@
 # keellinux.org
 
-The project site, served by GitHub Pages from `main`: two static pages, one
+The project site, served by GitHub Pages from `main`: three static pages, one
 stylesheet and the brand assets. Nothing builds it, so what is in the
 repository is what the browser gets.
 
 | Path | What it is |
 |------|------------|
 | `index.html` | the home page, also served at `www` |
+| `architecture.html` | the architecture the project aims for, in three scenarios, served at `/architecture` |
 | `guidelines.html` | how the organization works, and the mark |
 | `style.css` | the whole stylesheet, light and dark |
 | `assets/` | the mark in its variants and the social card |

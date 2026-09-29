@@ -633,3 +633,306 @@ h2 {
 .guide li::marker {
   color: var(--accent);
 }
+
+/* Architecture */
+
+.scenarios {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+  counter-reset: scenario;
+}
+
+.scenarios li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  counter-increment: scenario;
+}
+
+.scenarios li::before {
+  content: counter(scenario);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--accent-text);
+  min-width: 1.2em;
+}
+
+.scenarios a {
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  white-space: nowrap;
+  border: 2px solid transparent;
+}
+
+.badge-goal {
+  background: var(--accent);
+  color: var(--navy);
+}
+
+.badge-planned {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.badge-future {
+  border: 2px dashed var(--muted);
+  color: var(--muted);
+}
+
+.badge-soon {
+  border: 1px dashed var(--accent);
+  color: var(--accent-text);
+  font-size: 0.7rem;
+  padding: 0.05rem 0.55rem;
+  margin-right: 0.25rem;
+  white-space: normal;
+}
+
+.arch-note {
+  max-width: var(--measure);
+  margin-top: 1rem;
+  padding-left: 0.9rem;
+  border-left: 3px solid var(--accent);
+  font-weight: 600;
+}
+
+.arch-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+
+.diagram-arch {
+  margin: 2.5rem 0 0;
+}
+
+.diagram-arch svg {
+  width: 100%;
+  height: auto;
+  color: var(--fg);
+  font-size: 15px;
+}
+
+.diagram-arch svg.wide {
+  display: none;
+  max-width: 55rem;
+}
+
+.diagram-arch svg.narrow {
+  max-width: 30rem;
+}
+
+@media (min-width: 56rem) {
+  .diagram-arch svg.wide {
+    display: block;
+  }
+
+  .diagram-arch svg.narrow {
+    display: none;
+  }
+}
+
+.diagram-arch text {
+  fill: currentColor;
+}
+
+.diagram-arch text.t-b {
+  font-weight: 700;
+}
+
+.diagram-arch text.t-s {
+  font-size: 13px;
+}
+
+.diagram-arch text.t-xs {
+  font-size: 13px;
+}
+
+.diagram-arch text.t-m {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas,
+    "Liberation Mono", "DejaVu Sans Mono", monospace;
+  font-size: 13px;
+}
+
+.diagram-arch text.t-cap {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.diagram-arch text.f-muted {
+  fill: var(--muted);
+}
+
+.diagram-arch text.f-accent {
+  fill: var(--accent-text);
+}
+
+.diagram-arch text.badge-goal-text {
+  fill: var(--navy);
+}
+
+.diagram-arch .badge-goal-shape {
+  fill: var(--accent);
+}
+
+.diagram-arch .badge-planned-shape {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.diagram-arch .badge-future-shape {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+
+.diagram-arch .box {
+  fill: var(--surface);
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.diagram-arch .box-key {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.diagram-arch .box-inner {
+  fill: var(--bg);
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.diagram-arch .dashed {
+  stroke-dasharray: 7 5;
+}
+
+.diagram-arch .tag {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+.diagram-arch .overlay {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 10 6;
+}
+
+.diagram-arch .tier {
+  fill: var(--code-bg);
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.diagram-arch .flow {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+}
+
+.diagram-arch .dashed-line {
+  stroke-dasharray: 5 4;
+}
+
+.diagram-arch .rail {
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.diagram-arch .dot {
+  fill: var(--accent);
+}
+
+.diagram-arch .dot-open {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.diagram-arch figcaption {
+  color: var(--muted);
+  font-size: 0.95rem;
+  max-width: var(--measure);
+  margin-top: 1.25rem;
+}
+
+.facts {
+  margin: 2rem 0 0;
+  padding-left: 1.25rem;
+  max-width: var(--measure);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.facts li::marker {
+  color: var(--accent);
+}
+
+.arch-sub {
+  font-size: 1.1rem;
+  margin-top: 2.5rem;
+}
+
+.arch .hint {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-top: 0.5rem;
+  max-width: var(--measure);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.choices {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 55rem;
+  font-size: 0.95rem;
+}
+
+.choices th,
+.choices td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.7rem 0.75rem 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.choices thead th {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.choices tbody th {
+  font-weight: 600;
+}
+
+.choices td {
+  color: var(--muted);
+}

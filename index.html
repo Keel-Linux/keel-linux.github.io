@@ -43,6 +43,7 @@
           <li><a href="#how-it-is-built">How it is built</a></li>
           <li><a href="#standards">Standards</a></li>
           <li><a href="#status">Status</a></li>
+          <li><a href="architecture.html">Architecture</a></li>
           <li><a href="guidelines.html">Guidelines</a></li>
           <li><a href="https://github.com/keel-linux">GitHub</a></li>
         </ul>
@@ -218,12 +219,12 @@
         <h2 id="status-title">Early</h2>
         <div class="text">
           <p>The build host reproduces unmodified TurnKey 19.0 from the forked repositories. That is the baseline every later change is measured against, and it passed before anything else started.</p>
-          <p>The first bug fixes are on branches, and the first pieces of the library (the instance spec and layer verification) exist with full test coverage. Nothing is published for end users yet: no images, no packages, no layer repository.</p>
+          <p>Layers, Proxmox templates and packages are served from mirror.keellinux.org and archive.keellinux.org for testing. There is no release for end users yet, and the test images are not meant for production.</p>
         </div>
         <h3>What is next</h3>
         <ol class="next">
-          <li><strong>Declarative spec.</strong> <code>inspect</code>, <code>apply</code> and <code>diff</code> for a running appliance, with the console writing the same file.</li>
-          <li><strong>Layered builds.</strong> Hashed core, stack and app layers with signed manifests, and a pull that fetches only the layers that are missing.</li>
+          <li><strong>Declarative spec.</strong> <code>keel inspect</code>, <code>keel diff</code> and <code>keel spec apply</code> exist and run on the test images. Next: converging the network on a running machine, and the console writing the same file.</li>
+          <li><strong>Layered builds.</strong> Hashed core, stack and app layers with signed manifests are built and served for testing. Next: making them something end users can rely on.</li>
           <li><strong>Transition from TurnKey 19.0.</strong> A keyring package and a transition package that switch an existing appliance to the project repositories and write its spec from what is installed.</li>
         </ol>
       </div>
@@ -233,7 +234,7 @@
   <footer class="site-footer">
     <div class="wrap">
       <p>Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
-      <p><a href="guidelines.html">Guidelines</a> · <a href="https://github.com/keel-linux">github.com/keel-linux</a></p>
+      <p><a href="architecture.html">Architecture</a> · <a href="guidelines.html">Guidelines</a> · <a href="https://github.com/keel-linux">github.com/keel-linux</a></p>
     </div>
   </footer>
 
