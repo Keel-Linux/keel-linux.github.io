@@ -679,7 +679,7 @@ h2 {
   border: 2px solid transparent;
 }
 
-.badge-now {
+.badge-goal {
   background: var(--accent);
   color: var(--navy);
 }
@@ -700,6 +700,15 @@ h2 {
   font-size: 0.7rem;
   padding: 0.05rem 0.55rem;
   margin-right: 0.25rem;
+  white-space: normal;
+}
+
+.arch-note {
+  max-width: var(--measure);
+  margin-top: 1rem;
+  padding-left: 0.9rem;
+  border-left: 3px solid var(--accent);
+  font-weight: 600;
 }
 
 .arch-head {
@@ -752,7 +761,7 @@ h2 {
 }
 
 .diagram-arch text.t-xs {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .diagram-arch text.t-m {
@@ -762,7 +771,7 @@ h2 {
 }
 
 .diagram-arch text.t-cap {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -775,11 +784,11 @@ h2 {
   fill: var(--accent-text);
 }
 
-.diagram-arch text.badge-now-text {
+.diagram-arch text.badge-goal-text {
   fill: var(--navy);
 }
 
-.diagram-arch .badge-now-shape {
+.diagram-arch .badge-goal-shape {
   fill: var(--accent);
 }
 
