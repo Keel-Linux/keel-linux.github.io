@@ -212,9 +212,13 @@ def from_site_origin(reference: str) -> str:
 
 
 def split_fragment(reference: str) -> tuple[str, str]:
-    """A reference as (path, fragment); either part may be empty"""
+    """A reference as (path, fragment); either part may be empty
+
+    A query, such as the version that busts a browser's cache of
+    style.css?v=2026093001, names the same file and is dropped.
+    """
     path, _, fragment = reference.partition("#")
-    return path, fragment
+    return path.partition("?")[0], fragment
 
 
 def check(

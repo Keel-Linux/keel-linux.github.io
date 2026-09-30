@@ -138,6 +138,18 @@ class TestFragments(unittest.TestCase):
             ],
         )
 
+    def test_a_version_query_names_the_same_asset(self):
+        text = page('<a href="assets/a.svg?v=2026093001">x</a>')
+        self.assertEqual(
+            sitecheck.check({"index.html": text}, {"assets/a.svg"}), []
+        )
+
+    def test_a_version_query_on_a_missing_asset_is_reported(self):
+        text = page('<a href="assets/b.svg?v=1">x</a>')
+        self.assertEqual(
+            len(sitecheck.check({"index.html": text}, {"assets/a.svg"})), 2
+        )
+
     def test_an_empty_id_attribute_is_not_a_target(self):
         text = page('<a href="#x">x</a><section id=""></section>')
         self.assertEqual(len(sitecheck.check({"index.html": text})), 1)
