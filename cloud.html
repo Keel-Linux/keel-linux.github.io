@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cloud and replication, Keel Linux</title>
+  <meta name="description" content="How Keel Linux appliances form a private cloud: three installation modes, a WireGuard mesh that is IPv6-first, an etcd registry, a primary and hot standby, directory replication, backup and monitoring.">
+  <link rel="canonical" href="https://keellinux.org/cloud.html">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07182B">
+  <link rel="icon" type="image/svg+xml" href="assets/keel-mark.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" href="assets/keel-mark-512.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Keel Linux">
+  <meta property="og:url" content="https://keellinux.org/cloud.html">
+  <meta property="og:title" content="Keel Linux: cloud and replication">
+  <meta property="og:description" content="From one box to a private cloud on the same image: the mesh, the registry, failover, replication and backup.">
+  <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
+  <meta property="og:image:alt" content="The Keel Linux mark">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Keel Linux: cloud and replication">
+  <meta name="twitter:description" content="From one box to a private cloud on the same image: the mesh, the registry, failover, replication and backup.">
+  <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.className += " js";
+      try {
+        var saved = localStorage.getItem("keel-theme");
+        if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+      } catch (e) {}
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        root.className += " js-motion";
+        setTimeout(function () { if (!window.keelReady) { root.className = root.className.replace(" js-motion", ""); } }, 2500);
+      }
+    })();
+  </script>
+  <script defer src="assets/js/site.js"></script>
+  <script defer data-domain="keellinux.org" src="https://analytics.pop.coop/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+  <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="Keel Linux, home">
+        <img src="assets/keel-mark.svg" alt="" width="32" height="32">
+        <span>Keel Linux</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="cloud.html" aria-current="page">Cloud &amp; replication</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="guidelines.html">Guidelines</a></li>
+          <li><a href="https://github.com/keel-linux">GitHub</a></li>
+        </ul>
+      </nav>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" aria-labelledby="page-title">
+      <div class="wrap">
+        <p class="crumbs"><a href="index.html">Home</a> / Cloud &amp; replication</p>
+        <span class="eyebrow">Cloud &amp; replication</span>
+        <h1 id="page-title">From one box to a private cloud, on the same image</h1>
+        <p class="lead">The appliance that runs alone is the one that joins a mesh. What changes is the mode chosen at first boot, and what the nodes write about themselves in a shared registry. Most of this page is decided and on the roadmap; each part says so.</p>
+      </div>
+    </section>
+
+    <div class="wrap doc">
+      <nav class="toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#modes">Installation modes</a></li>
+          <li><a href="#mesh">The mesh</a></li>
+          <li><a href="#registry">The registry</a></li>
+          <li><a href="#failover">Databases and failover</a></li>
+          <li><a href="#directories">Directory replication</a></li>
+          <li><a href="#backup">Backup and object storage</a></li>
+          <li><a href="#monitoring">Monitoring</a></li>
+          <li><a href="#limits">What it does not promise</a></li>
+        </ol>
+      </nav>
+
+      <div class="prose">
+        <section id="modes" aria-labelledby="modes-title">
+          <h2 id="modes-title">Installation modes</h2>
+          <p>The installer uses two terms, simple and advanced installation, and offers three modes at first boot. <span class="badge badge-decided">Decided, 0028</span></p>
+          <div class="grid grid-3">
+            <div class="card mode">
+              <p class="nodes" aria-hidden="true"><span class="node primary">LXC</span></p>
+              <h3>Simple</h3>
+              <p>Everything in one LXC. No mesh and no etcd. The data services are embedded on the machine.</p>
+            </div>
+            <div class="card mode">
+              <p class="nodes" aria-hidden="true"><span class="node primary">primary</span><span class="node">standby</span></p>
+              <h3>Cloud simple</h3>
+              <p>The database replicated from a primary to a standby; the application's files in a single LXC. Failover is by hand.</p>
+            </div>
+            <div class="card mode">
+              <p class="nodes" aria-hidden="true"><span class="node primary">node</span><span class="node">node</span><span class="node voter">arbiter</span></p>
+              <h3>Cloud advanced</h3>
+              <p>Three LXC at least, an etcd quorum and directory replication. Three sites, or two plus an external arbiter.</p>
+            </div>
+          </div>
+          <ul>
+            <li><strong>The primary generates what the replica needs:</strong> the key, the password and the WireGuard endpoint. The replica is still configured on the replica.</li>
+            <li><strong>When all three nodes of cloud advanced share one host,</strong> the installer says so in one line: three copies on one host fail together.</li>
+            <li><strong>Installation by discovery.</strong> In cloud advanced, a new node asks for two things, the address of one node of the mesh and an entry secret. It reads the registry, lists what exists, such as a MariaDB, a Redis and two Nginx, and the operator selects what this machine consumes. Only the first appliance of a mesh takes real effort. <span class="badge badge-decided">Decided, 0026</span></li>
+          </ul>
+        </section>
+
+        <section id="mesh" aria-labelledby="mesh-title">
+          <h2 id="mesh-title">The mesh is the base, not an extra</h2>
+          <p><span class="badge badge-partial">WireGuard in Core; the rest decided, 0024</span></p>
+          <ul class="checks">
+            <li><strong>WireGuard ships in Keel Core,</strong> so every appliance can join a mesh, even when it is alone. <code>keel network wireguard key</code> prints this node's public key and never the private one.</li>
+            <li><strong>Tunnels are initiated from inside to outside,</strong> so a node behind NAT or a firewall needs only outbound UDP.</li>
+            <li><strong>IPv6 first.</strong> Native IPv6 goes direct between nodes, <code>2001:db8:a::10</code> to <code>2001:db8:c::10</code>. IPv4-only nodes enter through a rendezvous point that translates, with NAT64.</li>
+            <li><strong>Rendezvous points</strong> are nodes with a real edge and fixed addressing.</li>
+            <li><strong>A service address on the mesh,</strong> for database appliances only for now. WireGuard is layer 3 with no ARP, so the address is a <code>/128</code> route in <code>AllowedIPs</code> that a controller moves to the active node. Replication and node-to-node traffic always use the nodes' real addresses.</li>
+          </ul>
+          <p class="hint">Open: the successor to HubDNS for nodes behind NAT whose IPv6 prefix changes. A PowerDNS overlay fed from etcd is the likely shape, not yet decided.</p>
+        </section>
+
+        <section id="registry" aria-labelledby="registry-title">
+          <h2 id="registry-title">etcd is the mesh registry</h2>
+          <p><span class="badge badge-decided">Decided, 0025; Phase 5</span></p>
+          <ul>
+            <li>Every appliance announces itself in etcd: what it offers, where it is, and its site, which is the availability zone label.</li>
+            <li>etcd is control plane only. It holds cluster state, never application data; a few writes a minute tolerate a 30 ms round trip.</li>
+            <li>Quorum needs an odd number of voters. Two nodes cannot elect, so a third vote is required for automatic failover.</li>
+            <li>Site labels are enforced: two replicas of the same data are never placed in the same site.</li>
+            <li>etcd ships stopped, so a simple installation never runs it, and cloud simple does not either.</li>
+          </ul>
+        </section>
+
+        <section id="failover" aria-labelledby="failover-title">
+          <h2 id="failover-title">Databases: a primary and a hot standby</h2>
+          <p>PostgreSQL, MariaDB and Redis are appliances of their own, paired as a primary and a standby. A MariaDB pair, with seeding of the replica and a read-only replica, is mostly done in keel 0.11, and <code>keel database promote</code> makes a replica a primary by hand. <span class="badge badge-partial">Partly built; Phase 2</span></p>
+          <ul>
+            <li><strong>The standby is hot and serves no traffic</strong> until it is promoted.</li>
+            <li><strong>Replication is synchronous:</strong> a commit is confirmed only after the standby has received it. PostgreSQL uses <code>synchronous_commit</code>; MariaDB uses semi-synchronous replication, waiting until the standby has received the transaction, not applied it.</li>
+            <li><strong>Failover is the operator's decision</strong> in cloud simple, where two nodes cannot elect. In cloud advanced the election runs on the nodes themselves.</li>
+          </ul>
+          <h3>Chosen by the operator when the set is formed</h3>
+          <div class="table-wrap" role="region" aria-label="Scrollable table" tabindex="0">
+            <table>
+              <thead><tr><th scope="col">Choice</th><th scope="col">Options</th><th scope="col">Default</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Failover: a replica takes over when the primary is lost</th><td>automatic, manual</td><td>automatic, active only once three voters are present</td></tr>
+                <tr><th scope="row">Rejoin: the old primary comes back as a replica</th><td>automatic, manual</td><td>manual; automatic first keeps a copy of what the node held</td></tr>
+                <tr><th scope="row">Failback: the primary role returns to the original node</th><td>automatic, manual, never</td><td>manual</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Automatic failback is a goal: Keel implements it so that choosing it works, with one hard condition, that the role returns only after the original primary has fully caught up with what the standby wrote while it was primary. <span class="badge badge-goal">Goal, Phases 2 and 5</span></p>
+        </section>
+
+        <section id="directories" aria-labelledby="directories-title">
+          <h2 id="directories-title">Directory replication</h2>
+          <p><span class="badge badge-decided">Decided, 0032; Phase 5</span></p>
+          <ul>
+            <li>A generic mesh service, delivered by a Syncthing overlay, in cloud advanced.</li>
+            <li>Each appliance declares the paths of its durable state, <code>replicate:</code>, and what to leave out, <code>exclude:</code>: sessions, caches, temporary files, locks, logs and rebuildable indexes.</li>
+            <li>With one writer, folders are send-only on the primary and receive-only on the standby, and flipped on promotion in the same step that promotes the database.</li>
+            <li>Sessions go to the database or to Redis, never to a replicated directory, and data with its own replication, such as a database or a search index, is never replicated by file.</li>
+          </ul>
+        </section>
+
+        <section id="backup" aria-labelledby="backup-title">
+          <h2 id="backup-title">Backup and object storage</h2>
+          <p><span class="badge badge-decided">Decided, 0037 and 0038; Phase 7</span></p>
+          <ul>
+            <li><strong>Keel Backup</strong> is an appliance: a storage backend and a key service, installable as an LXC or a VM. TKLBAM stays as the client, with a backend abstraction so that it targets Keel Backup.</li>
+            <li><strong>Off-site by rule.</strong> A backup destination is never in the same site as its data: it refuses, or in a simple installation warns loudly.</li>
+            <li><strong>Taken from the standby,</strong> so the primary does not pay for it.</li>
+            <li><strong>Restores are tested</strong> periodically into a throwaway container, and the result is reported to etcd.</li>
+            <li><strong>Object storage on Garage,</strong> designed for nodes on unequal links, with its zones mapped to the site label and a replication factor of 3 across three zones. It is the recommended home for media, attachments and backups.</li>
+          </ul>
+        </section>
+
+        <section id="monitoring" aria-labelledby="monitoring-title">
+          <h2 id="monitoring-title">Monitoring</h2>
+          <p><span class="badge badge-decided">Decided, 0040</span></p>
+          <ul>
+            <li>Monit watches each machine and restarts what it can, with a limit per process so that a restart loop is reported rather than hidden. Its checks are generated from the manifest.</li>
+            <li>An agent writes a compact summary of Monit's state to the node's registry key; the site view is a view over etcd, and a node that stops writing its summary is the node that cannot speak for itself.</li>
+            <li>Prometheus is optional; the same agent can expose it.</li>
+          </ul>
+        </section>
+
+        <section id="limits" aria-labelledby="limits-title">
+          <h2 id="limits-title">What it does not promise</h2>
+          <ul>
+            <li>Every commit pays the round trip to the standby. MariaDB falls back to asynchronous replication when no acknowledgement arrives in time, and a PostgreSQL primary with one synchronous standby stops committing while the standby is away. The timeout policy for both is still to be written.</li>
+            <li>Public clients find the service by DNS with a health check, and DNS takes minutes to follow a failover; some resolvers ignore low TTLs.</li>
+            <li>In an LXC container there is no watchdog, so fencing relies on the process demoting itself in time. A VM can have one.</li>
+            <li>Keel configures the role of each node. It does not design a database layout or a partition scheme.</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="assets/keel-mark.svg" alt="" width="32" height="32"><span>Keel Linux</span></a>
+          <p>Composable, mesh-native appliances on Debian 13. IPv6-first and declarative. An independent fork of TurnKey Linux 19.</p>
+        </div>
+        <nav aria-label="Site">
+          <h2>Site</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="architecture.html">Architecture</a></li>
+            <li><a href="security.html">Security</a></li>
+            <li><a href="cloud.html">Cloud &amp; replication</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="guidelines.html">Guidelines</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Source">
+          <h2>Source</h2>
+          <ul>
+            <li><a href="https://github.com/keel-linux">github.com/keel-linux</a></li>
+            <li><a href="https://github.com/Keel-Linux/keel">keel, the spec and the command</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker">The tracker</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker/issues/46">Roadmap, tracker#46</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="legal">Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
+    </div>
+  </footer>
+</body>
+</html>

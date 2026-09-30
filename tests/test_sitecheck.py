@@ -17,7 +17,18 @@ sys.path.insert(0, join(ROOT, "tools"))
 
 import sitecheck  # noqa: E402
 
-HEAD = '<!doctype html><html lang="en"><head><title>Keel</title></head><body>'
+META = (
+    '<meta name="viewport" content="width=device-width">'
+    '<meta name="description" content="Keel">'
+    '<meta property="og:title" content="Keel">'
+    '<meta property="og:description" content="Keel">'
+    '<meta property="og:image" content="https://example.org/card.png">'
+    '<meta name="twitter:card" content="summary_large_image">'
+)
+HEAD = (
+    '<!doctype html><html lang="en"><head><title>Keel</title>'
+    f"{META}</head><body>"
+)
 BODY = "<h1>Keel</h1>"
 
 
@@ -205,6 +216,186 @@ class TestExternalLinks(unittest.TestCase):
         self.assertEqual(sitecheck.check({"index.html": text}, set()), [])
 
 
+class TestRequiredMeta(unittest.TestCase):
+    def test_a_page_without_a_description_is_reported(self):
+        text = page(head=HEAD.replace('name="description"', 'name="x"'))
+        self.assertEqual(
+            sitecheck.check({"index.html": text}),
+            ["index.html: no description meta"],
+        )
+
+    def test_every_missing_social_tag_is_reported(self):
+        head = '<!doctype html><html lang="en"><head><title>K</title></head><body>'
+        findings = sitecheck.check({"index.html": page(head=head)})
+        for key in sitecheck.REQUIRED_META:
+            self.assertIn(f"index.html: no {key} meta", findings)
+
+    def test_an_empty_content_counts_as_missing(self):
+        text = page(
+            head=HEAD.replace(
+                '<meta name="twitter:card" content="summary_large_image">',
+                '<meta name="twitter:card" content=" ">',
+            )
+        )
+        self.assertEqual(
+            sitecheck.check({"index.html": text}),
+            ["index.html: no twitter:card meta"],
+        )
+
+
+class TestSiteOrigin(unittest.TestCase):
+    def test_a_link_on_the_site_origin_is_checked_as_internal(self):
+        text = page('<a href="https://keellinux.org/gone.html">x</a>')
+        self.assertEqual(
+            sitecheck.check({"index.html": text}),
+            [
+                "index.html: https://keellinux.org/gone.html"
+                " does not resolve to a file"
+            ],
+        )
+
+    def test_the_origin_itself_is_the_home_page(self):
+        text = page('<link rel="canonical" href="https://keellinux.org/">')
+        self.assertEqual(sitecheck.check({"index.html": text}), [])
+
+    def test_a_social_card_on_the_origin_counts_as_a_reference(self):
+        text = page(
+            '<meta property="og:image"'
+            ' content="https://keellinux.org/assets/card.png">'
+        )
+        self.assertEqual(
+            sitecheck.check({"index.html": text}, {"assets/card.png"}), []
+        )
+
+    def test_a_fragment_on_the_origin_is_checked(self):
+        pages = {
+            "index.html": page('<a href="https://keellinux.org/two.html#no">x</a>'),
+            "two.html": page(),
+        }
+        self.assertEqual(
+            sitecheck.check(pages),
+            [
+                "index.html: https://keellinux.org/two.html#no"
+                " names an id that is not there"
+            ],
+        )
+
+
+class TestExternalResources(unittest.TestCase):
+    def test_an_external_script_is_reported(self):
+        text = page('<script src="https://cdn.example.org/x.js"></script>')
+        self.assertEqual(
+            sitecheck.check({"index.html": text}),
+            [
+                "index.html: https://cdn.example.org/x.js"
+                " loads an external resource"
+            ],
+        )
+
+    def test_an_external_stylesheet_is_reported(self):
+        text = page(
+            '<link rel="stylesheet" href="https://fonts.example.org/a.css">'
+        )
+        self.assertEqual(len(sitecheck.check({"index.html": text})), 1)
+
+    def test_an_external_image_is_reported(self):
+        text = page('<img src="https://example.org/a.png" alt="">')
+        self.assertEqual(len(sitecheck.check({"index.html": text})), 1)
+
+    def test_a_lazily_loaded_module_counts_as_a_resource(self):
+        text = page('<div data-src="https://example.org/m.js"></div>')
+        self.assertEqual(len(sitecheck.check({"index.html": text})), 1)
+
+    def test_a_lazily_loaded_module_is_an_asset_reference(self):
+        text = page('<div data-src="assets/js/m.js"></div>')
+        self.assertEqual(
+            sitecheck.check({"index.html": text}, {"assets/js/m.js"}), []
+        )
+
+    def test_the_analytics_script_is_allowed(self):
+        text = page(
+            '<script defer src="https://analytics.pop.coop/js/script.js">'
+            "</script>"
+        )
+        self.assertEqual(sitecheck.check({"index.html": text}), [])
+
+    def test_an_external_link_is_not_a_resource(self):
+        text = page(
+            '<a href="https://github.com/keel-linux">x</a>'
+            '<link rel="canonical" href="https://example.org/">'
+        )
+        self.assertEqual(sitecheck.check({"index.html": text}), [])
+
+    def test_an_external_url_in_a_stylesheet_is_reported(self):
+        styles = {
+            "style.css": "a{background:url('https://example.org/a.png')}"
+            "@import url(//fonts.example.org/b.css);"
+        }
+        self.assertEqual(
+            sitecheck.check_styles(styles),
+            [
+                "style.css: https://example.org/a.png"
+                " loads an external resource",
+                "style.css: //fonts.example.org/b.css"
+                " loads an external resource",
+            ],
+        )
+
+    def test_a_local_url_in_a_stylesheet_passes(self):
+        styles = {"style.css": 'a{background:url("assets/a.svg")} b{x:url(data:,)}'}
+        self.assertEqual(sitecheck.check_styles(styles), [])
+
+    def test_check_includes_the_stylesheets_it_is_given(self):
+        findings = sitecheck.check(
+            {"index.html": page()},
+            styles={"style.css": "@import 'https://example.org/c.css';"},
+        )
+        self.assertEqual(
+            findings,
+            ["style.css: https://example.org/c.css loads an external resource"],
+        )
+
+
+class TestCopy(unittest.TestCase):
+    def test_a_forbidden_term_in_the_text_is_reported(self):
+        text = page("<p>See our Pricing page.</p>")
+        self.assertEqual(
+            sitecheck.check({"index.html": text}),
+            ["index.html: the copy names 'pricing'"],
+        )
+
+    def test_a_city_is_reported(self):
+        text = page("<p>A node in Lisbon.</p>")
+        self.assertEqual(
+            sitecheck.check({"index.html": text}),
+            ["index.html: the copy names 'lisbon'"],
+        )
+
+    def test_a_term_inside_a_longer_word_is_not_reported(self):
+        text = page("<p>Priceless and contractual are fine.</p>")
+        self.assertEqual(sitecheck.check({"index.html": text}), [])
+
+    def test_a_forbidden_term_in_an_attribute_or_meta_is_reported(self):
+        text = page(
+            '<img src="data:," alt="customer logo">'
+            '<meta name="keywords" content="rudder">'
+        )
+        findings = sitecheck.check({"index.html": text})
+        self.assertIn("index.html: the copy names 'customer'", findings)
+        self.assertIn("index.html: the copy names 'rudder'", findings)
+
+    def test_scripts_and_styles_are_not_copy(self):
+        text = page("<script>var price = 1;</script><style>.pricing{}</style>")
+        self.assertEqual(sitecheck.check({"index.html": text}), [])
+
+    def test_an_em_dash_in_the_copy_is_reported(self):
+        text = page("<p>One file — the truth.</p>")
+        self.assertEqual(
+            sitecheck.check({"index.html": text}),
+            ["index.html: the copy has an em dash"],
+        )
+
+
 class TestReadSite(unittest.TestCase):
     def test_it_reads_pages_and_assets_and_skips_the_rest(self):
         pages, assets = sitecheck.read_site(ROOT)
@@ -236,6 +427,16 @@ class TestReadSite(unittest.TestCase):
 class TestCommandLine(unittest.TestCase):
     def test_the_site_of_this_repository_has_no_findings(self):
         self.assertEqual(sitecheck.main(["sitecheck", ROOT]), 0)
+
+    def test_it_reads_the_stylesheets_of_the_tree(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(join(tmp, "index.html"), "w") as fob:
+                fob.write(page('<link rel="stylesheet" href="style.css">'))
+            with open(join(tmp, "style.css"), "w") as fob:
+                fob.write("@import 'https://example.org/c.css';")
+            self.assertEqual(sitecheck.main(["sitecheck", tmp]), 1)
 
     def test_a_tree_with_no_page_is_a_usage_failure(self):
         self.assertEqual(sitecheck.main(["sitecheck", join(ROOT, "assets")]), 2)

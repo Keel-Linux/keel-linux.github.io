@@ -4,148 +4,199 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Guidelines, Keel Linux</title>
-  <meta name="description" content="How the Keel Linux repositories are organised and what every change must meet.">
+  <meta name="description" content="How the Keel Linux repositories are organised, what every change must meet, and how to use the mark.">
+  <link rel="canonical" href="https://keellinux.org/guidelines.html">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F4F7FA">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B1F3A">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07182B">
   <link rel="icon" type="image/svg+xml" href="assets/keel-mark.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
   <link rel="apple-touch-icon" href="assets/keel-mark-512.png">
-  <meta property="og:image" content="assets/keel-social.png">
-  <meta property="og:title" content="Keel Linux">
-  <meta property="og:description" content="Declarative, layered, IPv6-first system-container appliances.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Keel Linux">
+  <meta property="og:url" content="https://keellinux.org/guidelines.html">
+  <meta property="og:title" content="Keel Linux guidelines">
+  <meta property="og:description" content="How the repositories are organised, what every change must meet, and how to use the mark.">
+  <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
+  <meta property="og:image:alt" content="The Keel Linux mark">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Keel Linux guidelines">
+  <meta name="twitter:description" content="How the repositories are organised, what every change must meet, and how to use the mark.">
+  <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
   <link rel="stylesheet" href="style.css">
   <script>
-    try {
-      var savedTheme = localStorage.getItem("keel-theme");
-      if (savedTheme === "light" || savedTheme === "dark") {
-        document.documentElement.setAttribute("data-theme", savedTheme);
+    (function () {
+      var root = document.documentElement;
+      root.className += " js";
+      try {
+        var saved = localStorage.getItem("keel-theme");
+        if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+      } catch (e) {}
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        root.className += " js-motion";
+        setTimeout(function () { if (!window.keelReady) { root.className = root.className.replace(" js-motion", ""); } }, 2500);
       }
-    } catch (e) {}
+    })();
   </script>
+  <script defer src="assets/js/site.js"></script>
+  <script defer data-domain="keellinux.org" src="https://analytics.pop.coop/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+  <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="index.html">
+      <a class="brand" href="index.html" aria-label="Keel Linux, home">
         <img src="assets/keel-mark.svg" alt="" width="32" height="32">
         <span>Keel Linux</span>
       </a>
-      <nav class="site-nav" aria-label="Sections">
+      <nav class="site-nav" id="site-nav" aria-label="Main">
         <ul>
-          <li><a href="index.html#what-changes">What changes</a></li>
-          <li><a href="index.html#how-it-is-built">How it is built</a></li>
-          <li><a href="index.html#standards">Standards</a></li>
-          <li><a href="index.html#status">Status</a></li>
           <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="cloud.html">Cloud &amp; replication</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
           <li><a href="guidelines.html" aria-current="page">Guidelines</a></li>
           <li><a href="https://github.com/keel-linux">GitHub</a></li>
         </ul>
       </nav>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>
-        </svg>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
     </div>
   </header>
 
   <main id="main">
-    <section class="page" aria-labelledby="page-title">
+    <section class="page-hero" aria-labelledby="page-title">
       <div class="wrap">
+        <p class="crumbs"><a href="index.html">Home</a> / Guidelines</p>
         <span class="eyebrow">Guidelines</span>
         <h1 id="page-title">How the project is organised</h1>
         <p class="lead">Short by design. The rules below apply to every repository under the organization.</p>
+      </div>
+    </section>
 
-        <div class="guide">
-          <h2>One organization for everything</h2>
+    <div class="wrap doc">
+      <nav class="toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#organization">One organization</a></li>
+          <li><a href="#issues">Issues and decisions</a></li>
+          <li><a href="#tests">Tests and coverage</a></li>
+          <li><a href="#conventions">Conventions</a></li>
+          <li><a href="#upstream">Upstream</a></li>
+          <li><a href="#the-mark">The mark</a></li>
+        </ol>
+      </nav>
+
+      <div class="prose guide">
+        <section id="organization" aria-labelledby="organization-title">
+          <h2 id="organization-title">One organization for everything</h2>
           <ul>
-            <li>Infrastructure repositories keep their upstream names: <code>common</code>, <code>fab</code>, <code>buildtasks</code>, <code>inithooks</code>, <code>confconsole</code>, <code>tkldev</code>, <code>webmin</code>, <code>tklbam</code>, <code>keel</code>.</li>
-            <li>Appliance repositories carry the <code>keel-</code> prefix: <code>keel-core</code>, <code>keel-wordpress</code>, <code>keel-odoo</code>, <code>keel-moodle</code>, <code>keel-lamp</code>, <code>keel-lapp</code>, <code>keel-nginx-php-fastcgi</code>, <code>keel-redis</code>, <code>keel-ejabberd</code>.</li>
+            <li>Infrastructure repositories keep their upstream names: <code>common</code>, <code>fab</code>, <code>buildtasks</code>, <code>inithooks</code>, <code>confconsole</code>, <code>tkldev</code>, <code>webmin</code>, <code>tklbam</code>, and <code>keel</code> for the spec and the command.</li>
+            <li>Appliance repositories carry the <code>keel-</code> prefix: <code>keel-core</code>, <code>keel-wordpress</code>, <code>keel-odoo</code>, <code>keel-mariadb</code>, <code>keel-postgresql</code>, <code>keel-redis</code>, <code>keel-moodle</code>, <code>keel-ejabberd</code>.</li>
+            <li>Under the composition architecture, a component shared by two or more images is an overlay in <code>common</code>, shipped as its own package. <code>keel-lamp</code>, <code>keel-lapp</code> and <code>keel-nginx-php-fastcgi</code> stop being appliances and are kept as the history of the organization.</li>
           </ul>
+        </section>
 
-          <h2>Issues</h2>
+        <section id="issues" aria-labelledby="issues-title">
+          <h2 id="issues-title">Issues and decisions</h2>
           <ul>
-            <li>Issues live in the repository they concern. There is no global tracker.</li>
+            <li>Issues live in the repository they concern.</li>
+            <li>Work that spans repositories, the order of work and the decisions live in the <a href="https://github.com/Keel-Linux/tracker">tracker</a>. The roadmap is <a href="https://github.com/Keel-Linux/tracker/issues/46">tracker#46</a>.</li>
+            <li>Every direction taken is a numbered decision that says which earlier decisions it amends.</li>
           </ul>
+        </section>
 
-          <h2>Tests and coverage</h2>
+        <section id="tests" aria-labelledby="tests-title">
+          <h2 id="tests-title">Tests and coverage</h2>
           <ul>
             <li>Every repository has tests.</li>
             <li>Coverage is measured on every pull request in GitHub, and the check is required.</li>
             <li>At least 90 percent for any repository; 95 percent for code the project writes.</li>
             <li>A pull request that fails tests or the threshold cannot be merged.</li>
+            <li>A phase of the roadmap is done only when it holds on a built image, not on a machine assembled by hand.</li>
           </ul>
+        </section>
 
-          <h2>Conventions</h2>
+        <section id="conventions" aria-labelledby="conventions-title">
+          <h2 id="conventions-title">Conventions</h2>
           <ul>
             <li>IPv6 in every example and default, for instance <code>[2001:db8:4b1::10]:443</code>.</li>
             <li>English in commits, code and documentation.</li>
             <li>History is never rewritten.</li>
             <li>System containers only.</li>
           </ul>
+        </section>
 
-          <h2>Upstream</h2>
+        <section id="upstream" aria-labelledby="upstream-title">
+          <h2 id="upstream-title">Upstream</h2>
           <ul>
             <li>Forks keep TurnKey Linux as an upstream remote.</li>
             <li>Changes are offered back upstream where they apply.</li>
+            <li>What Keel packages that Debian lacks is offered to Debian, coordinating with those already packaging it.</li>
           </ul>
+        </section>
 
-          <h2 id="the-mark">The mark</h2>
-          <p>The mark is a keel seen from astern, with the waterline across it and a drop below. It is drawn as a vector and every other size is an export of it; a change to the mark is a re-export, never an edit of an export.</p>
+        <section id="the-mark" aria-labelledby="mark-title">
+          <h2 id="mark-title">The mark</h2>
+          <p>The mark is a keel seen head on: two swept wings meeting at a mast, a waterline crossing where they meet, and a blade descending to a point. It is the part of a boat nobody sees and everything depends on. Every file is an export of the master drawing; a change to the mark is a new export, never an edit of an export.</p>
+          <div class="mark-row">
+            <figure><img src="assets/keel-mark.svg" alt="The Keel Linux mark on a light background" width="96" height="96"></figure>
+            <figure class="dark"><img src="assets/keel-mark-dark.svg" alt="The Keel Linux mark for a dark background" width="96" height="96"></figure>
+            <figure><img src="assets/keel-mark-mono.svg" alt="The Keel Linux mark in one colour" width="96" height="96"></figure>
+          </div>
+          <ul class="swatches">
+            <li><span class="chip-color" style="--c:#0B2847"></span><p><strong>Navy</strong><br><code>#0B2847</code>, the symbol</p></li>
+            <li><span class="chip-color" style="--c:#0072C9"></span><p><strong>Waterline</strong><br><code>#0072C9</code>, the band only</p></li>
+            <li><span class="chip-color" style="--c:#7F8D9D"></span><p><strong>Grey</strong><br><code>#7F8D9D</code>, the subtitle only</p></li>
+          </ul>
           <ul>
             <li><a href="assets/keel-mark.svg">Mark, vector</a>, for a light background.</li>
             <li><a href="assets/keel-mark-dark.svg">Mark, vector, for a dark background</a>.</li>
-            <li><a href="assets/keel-mark-mono.svg">Mark, vector, one colour</a>, for a stencil, an engraving or a fax of a print.</li>
+            <li><a href="assets/keel-mark-mono.svg">Mark, vector, one colour</a>, where the waterline is a gap: a stencil or an engraving.</li>
             <li><a href="assets/keel-mark-512.png">Mark, 512 pixels</a>, for somewhere that takes no vector.</li>
           </ul>
-          <p>Keep the clear space around it equal to the height of the drop, do not recolour it, and do not set it on a background that leaves the waterline invisible.</p>
-        </div>
+          <p>Keep a clear space equal to the height of the waterline band on every side. Do not recolour the mark, do not add a second blue, and do not stretch it. The symbol alone reads down to 16 pixels; below 140 pixels of width, use the symbol rather than the horizontal lockup.</p>
+        </section>
       </div>
-    </section>
+    </div>
   </main>
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
-      <p><a href="index.html">Home</a> · <a href="architecture.html">Architecture</a> · <a href="guidelines.html">Guidelines</a> · <a href="https://github.com/keel-linux">github.com/keel-linux</a></p>
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="assets/keel-mark.svg" alt="" width="32" height="32"><span>Keel Linux</span></a>
+          <p>Composable, mesh-native appliances on Debian 13. IPv6-first and declarative. An independent fork of TurnKey Linux 19.</p>
+        </div>
+        <nav aria-label="Site">
+          <h2>Site</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="architecture.html">Architecture</a></li>
+            <li><a href="security.html">Security</a></li>
+            <li><a href="cloud.html">Cloud &amp; replication</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="guidelines.html">Guidelines</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Source">
+          <h2>Source</h2>
+          <ul>
+            <li><a href="https://github.com/keel-linux">github.com/keel-linux</a></li>
+            <li><a href="https://github.com/Keel-Linux/keel">keel, the spec and the command</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker">The tracker</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker/issues/46">Roadmap, tracker#46</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="legal">Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
     </div>
   </footer>
-
-  <script>
-    (function () {
-      var root = document.documentElement;
-      var button = document.getElementById("theme-toggle");
-      if (!button || !window.matchMedia) { return; }
-      var query = window.matchMedia("(prefers-color-scheme: dark)");
-
-      function currentTheme() {
-        var set = root.getAttribute("data-theme");
-        if (set === "light" || set === "dark") { return set; }
-        return query.matches ? "dark" : "light";
-      }
-
-      function describe() {
-        var next = currentTheme() === "dark" ? "light" : "dark";
-        button.setAttribute("aria-label", "Switch to " + next + " theme");
-        button.title = "Switch to " + next + " theme";
-      }
-
-      button.addEventListener("click", function () {
-        var next = currentTheme() === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", next);
-        try { localStorage.setItem("keel-theme", next); } catch (e) {}
-        describe();
-      });
-
-      if (query.addEventListener) { query.addEventListener("change", describe); }
-      describe();
-      button.hidden = false;
-    })();
-  </script>
 </body>
 </html>

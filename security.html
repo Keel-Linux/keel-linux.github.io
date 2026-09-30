@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Security, Keel Linux</title>
+  <meta name="description" content="How Keel Linux appliances are secure by default: images without shared keys, CrowdSec, a WAF and Anubis in front of every web application, and every port declared loopback, mesh or public.">
+  <link rel="canonical" href="https://keellinux.org/security.html">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07182B">
+  <link rel="icon" type="image/svg+xml" href="assets/keel-mark.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" href="assets/keel-mark-512.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Keel Linux">
+  <meta property="og:url" content="https://keellinux.org/security.html">
+  <meta property="og:title" content="Keel Linux security: secure by default">
+  <meta property="og:description" content="No shared keys in images, CrowdSec, a WAF and Anubis, and every port declared loopback, mesh or public.">
+  <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
+  <meta property="og:image:alt" content="The Keel Linux mark">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Keel Linux security: secure by default">
+  <meta name="twitter:description" content="No shared keys in images, CrowdSec, a WAF and Anubis, and every port declared loopback, mesh or public.">
+  <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.className += " js";
+      try {
+        var saved = localStorage.getItem("keel-theme");
+        if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+      } catch (e) {}
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        root.className += " js-motion";
+        setTimeout(function () { if (!window.keelReady) { root.className = root.className.replace(" js-motion", ""); } }, 2500);
+      }
+    })();
+  </script>
+  <script defer src="assets/js/site.js"></script>
+  <script defer data-domain="keellinux.org" src="https://analytics.pop.coop/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+  <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="Keel Linux, home">
+        <img src="assets/keel-mark.svg" alt="" width="32" height="32">
+        <span>Keel Linux</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="security.html" aria-current="page">Security</a></li>
+          <li><a href="cloud.html">Cloud &amp; replication</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="guidelines.html">Guidelines</a></li>
+          <li><a href="https://github.com/keel-linux">GitHub</a></li>
+        </ul>
+      </nav>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" aria-labelledby="page-title">
+      <div class="wrap">
+        <p class="crumbs"><a href="index.html">Home</a> / Security</p>
+        <span class="eyebrow">Security</span>
+        <h1 id="page-title">Secure by default, and clear about what is built</h1>
+        <p class="lead">Security in Keel is a set of defaults an operator does not have to remember: no shared secrets in an image, a filter in front of every web application, and no port open that nobody declared. Each part below says whether it is in the code or decided and on the roadmap.</p>
+      </div>
+    </section>
+
+    <div class="wrap doc">
+      <nav class="toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#identity">Keys and identity</a></li>
+          <li><a href="#pipeline">The request pipeline</a></li>
+          <li><a href="#modes">What each mode enables</a></li>
+          <li><a href="#exposure">Exposure classes</a></li>
+          <li><a href="#network">Network changes</a></li>
+          <li><a href="#secrets">Secrets</a></li>
+          <li><a href="#supply">Where packages come from</a></li>
+        </ol>
+      </nav>
+
+      <div class="prose">
+        <section id="identity" aria-labelledby="identity-title">
+          <h2 id="identity-title">Keys and identity: none in the image</h2>
+          <p>An image that carries a private key hands that key to everyone who downloads it. Keel removes them in three places, so that none depends on another being remembered. <span class="badge badge-partial">Built; test layers to be republished</span></p>
+          <ul class="checks">
+            <li><strong>The build removes them.</strong> SSH host keys, the TLS key and certificate, Webmin's key and the snakeoil pair are removed before a layer is exported, and every layer is exported with an empty machine-id.</li>
+            <li><strong>The export refuses them.</strong> The layer export audits the tree and refuses one that still holds a private key.</li>
+            <li><strong>Every boot replaces them.</strong> A unit that runs before SSH, Webmin, the web servers and PostgreSQL generates what is missing and replaces any key on the list of published ones.</li>
+          </ul>
+          <div class="callout warn">
+            <strong>Not done yet</strong>
+            <p>The test layers on the mirror were built before the fix, and an attended release replaces them (Phase 0 of the <a href="roadmap.html">roadmap</a>). Until then the boot unit is what protects a machine made from one. ISO and VM images still ship the build's machine-id (<a href="https://github.com/Keel-Linux/tracker/issues/24">tracker#24</a>).</p>
+          </div>
+        </section>
+
+        <section id="pipeline" aria-labelledby="pipeline-title">
+          <h2 id="pipeline-title">The request pipeline</h2>
+          <p>Keel Web is an appliance of its own and the base of every web appliance: Nginx, the Coraza WAF and Anubis. In an advanced installation a request passes them in a fixed order. <span class="badge badge-decided">Decided, 0029 and 0030; Phases 1 and 3</span></p>
+          <figure class="pipeline" data-module="pipeline" data-src="assets/js/pipeline.js" style="margin:1.5rem 0">
+            <div class="pipeline-stage"><canvas aria-hidden="true"></canvas></div>
+            <ol class="pipeline-steps">
+              <li><strong>Internet</strong>A request arrives, over IPv6 first.</li>
+              <li><strong>CrowdSec</strong>Bans known bad addresses first, with its firewall bouncer.</li>
+              <li><strong>Nginx + WAF</strong>Terminates TLS, serves static files and runs Coraza inline with the OWASP Core Rule Set.</li>
+              <li><strong>Anubis</strong>Proof of work, behind Nginx and never at the edge. Googlebot and Bingbot are exempt.</li>
+              <li><strong>Application</strong>Only what passed the gates reaches it.</li>
+            </ol>
+            <figcaption class="pipeline-foot">
+              <span><i class="ban" aria-hidden="true"></i>banned by CrowdSec</span>
+              <span><i class="waf" aria-hidden="true"></i>refused by the WAF</span>
+              <span><i class="pow" aria-hidden="true"></i>challenged by Anubis</span>
+              <span><i class="ok" aria-hidden="true"></i>exempt crawler</span>
+              <span>An illustration, not a measurement.</span>
+            </figcaption>
+          </figure>
+          <h3>Why this order</h3>
+          <ul>
+            <li><strong>CrowdSec bans first,</strong> so an address already known to be hostile costs nothing further. It ships in Keel Core, installed in every mode and disabled in a simple installation.</li>
+            <li><strong>The WAF runs inside Nginx.</strong> Its health check is not that it loaded but that it blocks: a Core Rule Set test payload must get 403. If Coraza's Nginx connector proves unusable, the known fallbacks are ModSecurity v3 with the same Rule Set, or Coraza as a proxy; choosing one would be a new decision.</li>
+            <li><strong>Anubis sits behind Nginx.</strong> It listens on the loopback only, and one signing key is shared by every node of a set, so a failover does not make every visitor solve the challenge again.</li>
+          </ul>
+        </section>
+
+        <section id="modes" aria-labelledby="modes-title">
+          <h2 id="modes-title">What each installation mode enables</h2>
+          <p>The image is the same in every mode; the mode decides what runs. These are the default states of the version 1 manifests of Keel Core and Keel Web. <span class="badge badge-decided">Decided, 0041</span></p>
+          <div class="table-wrap" role="region" aria-label="Scrollable table" tabindex="0">
+            <table>
+              <thead><tr><th scope="col">Overlay</th><th scope="col">Appliance</th><th scope="col">Simple</th><th scope="col">Cloud simple</th><th scope="col">Cloud advanced</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">installer</th><td>Core</td><td><span class="state state-on">enabled</span></td><td><span class="state state-on">enabled</span></td><td><span class="state state-on">enabled</span></td></tr>
+                <tr><th scope="row">wireguard</th><td>Core</td><td><span class="state state-off">disabled</span></td><td><span class="state state-on">enabled</span></td><td><span class="state state-on">enabled</span></td></tr>
+                <tr><th scope="row">etcd</th><td>Core</td><td><span class="state state-off">disabled</span></td><td><span class="state state-off">disabled</span></td><td><span class="state state-on">enabled</span></td></tr>
+                <tr><th scope="row">crowdsec</th><td>Core</td><td><span class="state state-off">disabled</span></td><td><span class="state state-on">enabled</span></td><td><span class="state state-on">enabled</span></td></tr>
+                <tr><th scope="row">nginx</th><td>Web</td><td><span class="state state-on">enabled</span></td><td><span class="state state-on">enabled</span></td><td><span class="state state-on">enabled</span></td></tr>
+                <tr><th scope="row">coraza</th><td>Web</td><td><span class="state state-off">disabled</span></td><td><span class="state state-on">enabled</span></td><td><span class="state state-on">enabled</span></td></tr>
+                <tr><th scope="row">anubis</th><td>Web</td><td><span class="state state-off">disabled</span></td><td><span class="state state-on">enabled</span></td><td><span class="state state-on">enabled</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>An operator can depart from a default on one machine, in the spec. A disabled overlay is still installed, so turning it on is a change to the spec, not a new image.</p>
+        </section>
+
+        <section id="exposure" aria-labelledby="exposure-title">
+          <h2 id="exposure-title">Every port has an exposure class</h2>
+          <p>Every listening port in a manifest carries one of three classes, and the firewall is derived from them rather than written by hand. A port is reserved across the whole chain of appliances, whatever its state, since an operator can turn a disabled overlay on. <span class="badge badge-decided">Decided, 0041</span></p>
+          <div class="grid grid-3">
+            <div class="card"><span class="state state-off">loopback</span><h3>Loopback</h3><p>Only the machine itself: postfix on 25, Anubis behind Nginx.</p></div>
+            <div class="card"><span class="state state-on">mesh</span><h3>Mesh</h3><p>Only other nodes, over WireGuard: etcd on 2379 and 2380.</p></div>
+            <div class="card"><span class="state" style="background:var(--accent-soft);color:var(--accent-text)">public</span><h3>Public</h3><p>Anyone: SSH on 22, the web shell on 12320, Webmin on 12321, Nginx on 80 and 443.</p></div>
+          </div>
+<pre class="code" tabindex="0" aria-label="The nginx overlay manifest"><span class="c"># /usr/share/keel/overlays/nginx.yaml, from keel-overlay-nginx</span>
+<span class="k">manifest_version:</span> 1
+<span class="k">kind:</span> overlay
+<span class="k">name:</span> nginx
+<span class="k">processes:</span>
+  - <span class="k">name:</span> nginx
+    <span class="k">unit:</span> nginx.service
+    <span class="k">listen:</span>
+      - {port: 80, protocol: tcp, <span class="k">expose:</span> <span class="s">public</span>}
+      - {port: 443, protocol: tcp, <span class="k">expose:</span> <span class="s">public</span>}
+<span class="k">checks:</span>
+  - {name: nginx, process: nginx, type: http, address: loopback, port: 80,
+     path: /keel-health, expect: 204, on_failure: restart}</pre>
+        </section>
+
+        <section id="network" aria-labelledby="network-title">
+          <h2 id="network-title">Network changes that undo themselves</h2>
+          <p>A machine reached only over SSH is one bad network change away from being unreachable. <span class="badge badge-live">In keel</span></p>
+          <ul>
+            <li>On a VM, a network change made by <code>keel spec apply --system</code> reverts by itself unless <code>keel network confirm</code> arrives from a new session over the new configuration. In an LXC container the host owns the network; Keel compares it and does not change it.</li>
+            <li>The WireGuard overlay is converged under the same confirmation window. The one exception, decided in 0029, is a move of a database appliance's service address on the mesh, which changes neither the node's uplink nor its own overlay address.</li>
+            <li>The network is changed in the console or at the command line, never through Webmin, which shows it read-only.</li>
+          </ul>
+        </section>
+
+        <section id="secrets" aria-labelledby="secrets-title">
+          <h2 id="secrets-title">Secrets are references, never values</h2>
+          <ul>
+            <li>The spec names a secret by the file that holds it, and <code>keel spec validate</code> checks that the file exists with the right owner and mode.</li>
+            <li><code>keel inspect</code> and <code>keel diff</code> never read a secret, on either side, and a private WireGuard key is never printed.</li>
+            <li>A manifest declares each secret by name with a policy: whether it may, must or must never be generated, and whether every node of a set shares it. The primary generates what the replica needs. <span class="badge badge-decided">Decided, 0028 and 0041</span></li>
+          </ul>
+        </section>
+
+        <section id="supply" aria-labelledby="supply-title">
+          <h2 id="supply-title">Where packages come from</h2>
+          <p>Every image rebuilds from the project's own archive: a dated, pinned pool, verified by the build before it is read. What Debian 13 does not carry, Keel builds from source and signs in the same repository: Coraza's Nginx connector, Anubis and Garage. Anubis and Garage have packaging in progress in Debian, and Keel coordinates with those efforts rather than packaging in parallel. <span class="badge badge-decided">Decided, 0039</span></p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="assets/keel-mark.svg" alt="" width="32" height="32"><span>Keel Linux</span></a>
+          <p>Composable, mesh-native appliances on Debian 13. IPv6-first and declarative. An independent fork of TurnKey Linux 19.</p>
+        </div>
+        <nav aria-label="Site">
+          <h2>Site</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="architecture.html">Architecture</a></li>
+            <li><a href="security.html">Security</a></li>
+            <li><a href="cloud.html">Cloud &amp; replication</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="guidelines.html">Guidelines</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Source">
+          <h2>Source</h2>
+          <ul>
+            <li><a href="https://github.com/keel-linux">github.com/keel-linux</a></li>
+            <li><a href="https://github.com/Keel-Linux/keel">keel, the spec and the command</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker">The tracker</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker/issues/46">Roadmap, tracker#46</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="legal">Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
+    </div>
+  </footer>
+</body>
+</html>

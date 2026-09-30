@@ -19,7 +19,14 @@ What is checked, and why each one is worth a failed build:
   - an external link is https, because a page served over TLS that links
     over plain HTTP teaches the reader the wrong habit;
   - a page carries a title, a language and one h1, which is the least a
-    reader and a search engine can expect.
+    reader and a search engine can expect, and the description and social
+    tags a shared link is previewed from;
+  - a page loads nothing from another origin but the analytics script, and
+    neither does a stylesheet: the site is self-hosted, so a reader's
+    browser talks to one other party at most, and that one is named here;
+  - the copy names no commercial offer, customer or place, and has no em
+    dash: the site describes the architecture of the project and nothing
+    else, and the house style keeps to plain punctuation.
 
 Pure but for `read_site`: `check` is given a mapping of path to text and
 returns the findings, so every rule is tested without a filesystem.
@@ -28,11 +35,53 @@ returns the findings, so every rule is tested without a filesystem.
 from __future__ import annotations
 
 import os
+import re
 import sys
 from html.parser import HTMLParser
 
-# Attributes that carry a reference to something else
-REFERENCE_ATTRS = ("href", "src", "srcset", "poster")
+# Attributes that carry a reference to something else. data-src is where a
+# page names a script it loads only when the element comes into view.
+REFERENCE_ATTRS = ("href", "src", "srcset", "poster", "data-src")
+# The site's own origin: a reference to it is a reference into the tree, and
+# is checked as one, so an absolute og:image or canonical URL cannot rot.
+SITE_ORIGIN = "https://keellinux.org"
+# Attributes whose reference the browser loads, whatever the tag
+LOADING_ATTRS = ("src", "srcset", "poster", "data-src")
+# rel values of a link element that make the browser load the target
+LOADING_RELS = (
+    "stylesheet", "icon", "apple-touch-icon", "mask-icon", "manifest",
+    "preload", "modulepreload", "prefetch",
+)
+# The only other origin a page may load from: the analytics script
+ALLOWED_RESOURCE_PREFIXES = ("https://analytics.pop.coop/",)
+# meta tags a page must carry with a non-empty content: the description a
+# search engine shows and the tags a shared link is previewed from
+REQUIRED_META = (
+    "viewport",
+    "description",
+    "og:title",
+    "og:description",
+    "og:image",
+    "twitter:card",
+)
+# meta tags whose content is copy a reader sees, in a result or a preview
+COPY_META_KEYS = (
+    "description", "keywords", "og:title", "og:description", "og:site_name",
+    "og:image:alt", "twitter:title", "twitter:description", "twitter:image:alt",
+)
+# Attributes that are copy: read aloud, or shown on hover
+COPY_ATTRS = ("alt", "title", "aria-label")
+# What the site never names. It describes the architecture of Keel Linux:
+# no commercial offer, no customer, no place a node runs in. Matched as whole
+# words, case insensitively.
+FORBIDDEN_TERMS = (
+    "pricing", "price", "prices", "customer", "customers", "testimonial",
+    "testimonials", "contract", "contracts", "rudder",
+    "lisbon", "lisboa", "porto", "madrid", "são paulo", "sao paulo",
+    "curitiba", "florianópolis", "florianopolis", "rio de janeiro",
+    "brasília", "brasilia",
+)
+EM_DASH = "\u2014"
 # Extensions that are pages rather than assets
 PAGE_SUFFIX = ".html"
 # meta tags whose content is a reference, not text: the social card is
@@ -69,9 +118,13 @@ class Page(HTMLParser):
         self.ids: set[str] = set()
         self.titles: list[str] = []
         self.headings: list[str] = []
+        self.resources: list[str] = []
+        self.meta: dict[str, str] = {}
+        self.copy: list[str] = []
         self.language = ""
         self._in_title = False
         self._in_h1 = False
+        self._hidden = 0
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = {name: (value or "") for name, value in attrs}
@@ -85,23 +138,49 @@ class Page(HTMLParser):
             self.headings.append("")
         if "id" in values and values["id"]:
             self.ids.add(values["id"])
+        if tag in ("script", "style"):
+            self._hidden += 1
         if tag == "meta":
-            key = values.get("property") or values.get("name") or ""
-            content = values.get("content", "").strip()
-            if key.lower() in META_REFERENCE_KEYS and content:
-                self.references.append(content)
+            self._handle_meta(values)
         for attr in REFERENCE_ATTRS:
             value = values.get(attr, "").strip()
             if value:
                 self.references.append(value)
+                if self._loads(tag, attr, values):
+                    self.resources.append(value)
+        self.copy.extend(values[attr] for attr in COPY_ATTRS if values.get(attr))
+
+    def _handle_meta(self, values: dict[str, str]) -> None:
+        key = (values.get("property") or values.get("name") or "").lower()
+        content = values.get("content", "").strip()
+        if key and content:
+            self.meta[key] = content
+        if key in META_REFERENCE_KEYS and content:
+            self.references.append(content)
+        if key in COPY_META_KEYS:
+            self.copy.append(content)
+
+    @staticmethod
+    def _loads(tag: str, attr: str, values: dict[str, str]) -> bool:
+        """Whether the browser fetches this reference to render the page"""
+        if attr in LOADING_ATTRS:
+            return True
+        if tag == "link" and attr == "href":
+            rels = values.get("rel", "").lower().split()
+            return any(rel in LOADING_RELS for rel in rels)
+        return False
 
     def handle_endtag(self, tag: str) -> None:
         if tag == "title":
             self._in_title = False
         if tag == "h1":
             self._in_h1 = False
+        if tag in ("script", "style") and self._hidden:
+            self._hidden -= 1
 
     def handle_data(self, data: str) -> None:
+        if not self._hidden:
+            self.copy.append(data)
         if self._in_title and self.titles:
             self.titles[-1] += data
         if self._in_h1 and self.headings:
@@ -119,17 +198,35 @@ def is_external(reference: str) -> bool:
     return "//" in reference.split("?")[0] or reference.startswith("mailto:")
 
 
+def on_site_origin(reference: str) -> bool:
+    return reference == SITE_ORIGIN or reference.startswith(SITE_ORIGIN + "/")
+
+
+def from_site_origin(reference: str) -> str:
+    """A reference on the site's origin as a path from the site root"""
+    rest = reference[len(SITE_ORIGIN):]
+    target, sep, fragment = rest.partition("#")
+    if not target or target.endswith("/"):
+        target += "index.html"
+    return target + sep + fragment
+
+
 def split_fragment(reference: str) -> tuple[str, str]:
     """A reference as (path, fragment); either part may be empty"""
     path, _, fragment = reference.partition("#")
     return path, fragment
 
 
-def check(pages: dict[str, str], assets: set[str] | None = None) -> list[str]:
+def check(
+    pages: dict[str, str],
+    assets: set[str] | None = None,
+    styles: dict[str, str] | None = None,
+) -> list[str]:
     """Findings for a site given as {path: text}, one line each
 
     `assets` is every non page file in the tree, used to find the ones no
-    page references. Leave it out to skip that rule.
+    page references. Leave it out to skip that rule. `styles` is the text of
+    each stylesheet, checked for what it loads from elsewhere.
     """
     findings: list[str] = []
     parsed = {path: parse(text) for path, text in sorted(pages.items())}
@@ -137,13 +234,19 @@ def check(pages: dict[str, str], assets: set[str] | None = None) -> list[str]:
 
     for path, page in parsed.items():
         findings.extend(_check_shape(path, page))
+        findings.extend(_check_meta(path, page))
+        findings.extend(_check_resources(path, page))
+        findings.extend(_check_copy(path, page))
         for reference in page.references:
             if reference.startswith("data:"):
                 continue
-            if is_external(reference):
+            local = reference
+            if on_site_origin(reference):
+                local = from_site_origin(reference)
+            elif is_external(reference):
                 findings.extend(_check_external(path, reference))
                 continue
-            target, fragment = split_fragment(reference)
+            target, fragment = split_fragment(local)
             if target:
                 referenced.add(_resolve(path, target))
             findings.extend(
@@ -155,6 +258,59 @@ def check(pages: dict[str, str], assets: set[str] | None = None) -> list[str]:
     if assets is not None:
         for asset in sorted(assets - referenced):
             findings.append(f"{asset}: no page references it")
+    findings.extend(check_styles(styles or {}))
+    return findings
+
+
+def _check_meta(path: str, page: Page) -> list[str]:
+    return [
+        f"{path}: no {key} meta" for key in REQUIRED_META if key not in page.meta
+    ]
+
+
+def _loads_elsewhere(reference: str) -> bool:
+    if reference.startswith("data:") or on_site_origin(reference):
+        return False
+    if not is_external(reference) or reference.startswith("mailto:"):
+        return False
+    return not reference.startswith(ALLOWED_RESOURCE_PREFIXES)
+
+
+def _check_resources(path: str, page: Page) -> list[str]:
+    return [
+        f"{path}: {reference} loads an external resource"
+        for reference in page.resources
+        if _loads_elsewhere(reference)
+    ]
+
+
+def _check_copy(path: str, page: Page) -> list[str]:
+    text = " ".join(page.copy)
+    lowered = text.lower()
+    findings = [
+        f"{path}: the copy names {term!r}"
+        for term in FORBIDDEN_TERMS
+        if re.search(r"(?<!\w)" + re.escape(term) + r"(?!\w)", lowered)
+    ]
+    if EM_DASH in text:
+        findings.append(f"{path}: the copy has an em dash")
+    return findings
+
+
+# url(...) and @import in a stylesheet, quoted or not
+STYLE_REFERENCE = re.compile(
+    r"""url\(\s*['"]?([^'")\s]+)|@import\s+['"]([^'"]+)['"]"""
+)
+
+
+def check_styles(styles: dict[str, str]) -> list[str]:
+    """Findings for stylesheets given as {path: text}: what they load"""
+    findings = []
+    for path, text in sorted(styles.items()):
+        for match in STYLE_REFERENCE.finditer(text):
+            reference = match.group(1) or match.group(2)
+            if _loads_elsewhere(reference):
+                findings.append(f"{path}: {reference} loads an external resource")
     return findings
 
 
@@ -265,7 +421,12 @@ def main(argv: list[str]) -> int:
     if not pages:
         print(f"{root}: no pages found", file=sys.stderr)
         return 2
-    findings = check(pages, assets)
+    styles = {}
+    for asset in sorted(assets):
+        if asset.endswith(".css"):
+            with open(os.path.join(root, asset), encoding="utf-8") as fob:
+                styles[asset] = fob.read()
+    findings = check(pages, assets, styles)
     for finding in findings:
         print(finding)
     print(
