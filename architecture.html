@@ -4,582 +4,314 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Architecture, Keel Linux</title>
-  <meta name="description" content="How far the Keel Linux architecture goes: one appliance today, a replicated set of three planned, separated tiers in the future.">
+  <meta name="description" content="The Keel Linux architecture: appliances composed from overlays on Keel Core and Keel Web, data services beside them, a WireGuard mesh, one YAML file per machine and signed, content-addressed layers.">
+  <link rel="canonical" href="https://keellinux.org/architecture.html">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F4F7FA">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B1F3A">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07182B">
   <link rel="icon" type="image/svg+xml" href="assets/keel-mark.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
   <link rel="apple-touch-icon" href="assets/keel-mark-512.png">
-  <meta property="og:image" content="assets/keel-social.png">
-  <meta property="og:title" content="Keel Linux architecture">
-  <meta property="og:description" content="One appliance today, a replicated set of three planned, separated tiers in the future.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Keel Linux">
+  <meta property="og:url" content="https://keellinux.org/architecture.html">
+  <meta property="og:title" content="Keel Linux architecture: composition on a mesh">
+  <meta property="og:description" content="Overlays, appliances and applications; the manifest and the spec; IPv6-first networking and signed layers.">
+  <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
+  <meta property="og:image:alt" content="The Keel Linux mark">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Keel Linux architecture: composition on a mesh">
+  <meta name="twitter:description" content="Overlays, appliances and applications; the manifest and the spec; IPv6-first networking and signed layers.">
+  <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
   <link rel="stylesheet" href="style.css">
   <script>
-    try {
-      var savedTheme = localStorage.getItem("keel-theme");
-      if (savedTheme === "light" || savedTheme === "dark") {
-        document.documentElement.setAttribute("data-theme", savedTheme);
+    (function () {
+      var root = document.documentElement;
+      root.className += " js";
+      try {
+        var saved = localStorage.getItem("keel-theme");
+        if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+      } catch (e) {}
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        root.className += " js-motion";
+        setTimeout(function () { if (!window.keelReady) { root.className = root.className.replace(" js-motion", ""); } }, 2500);
       }
-    } catch (e) {}
+    })();
   </script>
+  <script defer src="assets/js/site.js"></script>
+  <script defer data-domain="keellinux.org" src="https://analytics.pop.coop/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+  <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="index.html">
+      <a class="brand" href="index.html" aria-label="Keel Linux, home">
         <img src="assets/keel-mark.svg" alt="" width="32" height="32">
         <span>Keel Linux</span>
       </a>
-      <nav class="site-nav" aria-label="Sections">
+      <nav class="site-nav" id="site-nav" aria-label="Main">
         <ul>
-          <li><a href="index.html#what-changes">What changes</a></li>
-          <li><a href="index.html#how-it-is-built">How it is built</a></li>
-          <li><a href="index.html#standards">Standards</a></li>
-          <li><a href="index.html#status">Status</a></li>
           <li><a href="architecture.html" aria-current="page">Architecture</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="cloud.html">Cloud &amp; replication</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
           <li><a href="guidelines.html">Guidelines</a></li>
           <li><a href="https://github.com/keel-linux">GitHub</a></li>
         </ul>
       </nav>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>
-        </svg>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
     </div>
   </header>
 
   <main id="main">
-    <section class="page" aria-labelledby="page-title">
+    <section class="page-hero" aria-labelledby="page-title">
       <div class="wrap">
+        <p class="crumbs"><a href="index.html">Home</a> / Architecture</p>
         <span class="eyebrow">Architecture</span>
-        <h1 id="page-title">How far the architecture goes</h1>
-        <p class="lead">The architecture the project aims for, in three scenarios. The first is the goal of the first release. The second is decided (decision 0020) and not built. The third is a direction with no design yet.</p>
+        <h1 id="page-title">Composition on a mesh</h1>
+        <p class="lead">Keel Linux builds appliances from small components instead of shipping one image per stack. Each component is a Debian package, each machine is one YAML file, and the machines find each other over a WireGuard mesh that is IPv6-first.</p>
+        <p><span class="badge badge-decided">Decided 2026-09-30</span> <span class="badge badge-live">spec, inspect, diff, apply working today</span></p>
+      </div>
+    </section>
 
-        <ol class="scenarios">
-          <li>
-            <a href="#standalone">Keel Linux Standalone</a>
-            <span class="badge badge-goal">Our goal · not yet released</span>
-          </li>
-          <li>
-            <a href="#cloud">Keel Cloud, three nodes</a>
-            <span class="badge badge-planned">Planned</span>
-          </li>
-          <li>
-            <a href="#tiers">Separated tiers</a>
-            <span class="badge badge-future">Future</span>
-          </li>
+    <div class="wrap doc">
+      <nav class="toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#composition">Composition</a></li>
+          <li><a href="#overlays">Overlays</a></li>
+          <li><a href="#appliances">Appliances</a></li>
+          <li><a href="#applications">Applications</a></li>
+          <li><a href="#manifest">The manifest</a></li>
+          <li><a href="#spec">The spec</a></li>
+          <li><a href="#ipv6">IPv6-first</a></li>
+          <li><a href="#layers">Layers</a></li>
+          <li><a href="#upgrades">Upgrades</a></li>
         </ol>
+      </nav>
+
+      <div class="prose">
+        <section id="composition" aria-labelledby="composition-title">
+          <h2 id="composition-title">Composition</h2>
+          <p>Each service, PostgreSQL, MariaDB, Redis or Nginx, is a first-class component that runs standalone or is consumed by another appliance. The stack that used to be LAMP becomes LEMP (Linux, Nginx, PHP-FPM and a database), and LEMP is a recipe built from components, not an image with an identity of its own.</p>
+          <div class="callout">
+            <strong>The rule</strong>
+            <p>What two or more images use is an overlay, kept in <code>common</code> with its configuration and first boot scripts. A named combination with an identity is an appliance.</p>
+          </div>
+          <div class="compose" data-reveal>
+            <div>
+              <p class="stack-title" id="stack-label">An appliance, top to bottom</p>
+              <ul class="stack" aria-labelledby="stack-label">
+                <li class="layer layer-app"><strong>Application</strong><span>a manifest and an application inithook</span><em>Phases 4 and 6</em></li>
+                <li class="layer layer-runtime"><strong>Runtime</strong><span>Keel PHP, Python, Ruby or Node: Keel Web and the runtime</span><em>Phase 4</em></li>
+                <li class="layer layer-web"><strong>Keel Web</strong><span>Core, nginx, coraza, anubis</span><em>Phase 3</em></li>
+                <li class="layer layer-core"><strong>Keel Core</strong><span>Debian, wireguard, etcd, crowdsec, the installer</span><em>Phase 1</em></li>
+              </ul>
+            </div>
+            <div class="mesh-link" aria-hidden="true"><i class="flow"></i><i class="flow two"></i><span>WireGuard<br>mesh</span></div>
+            <div>
+              <p class="services-title" id="services-label">Data services, beside it</p>
+              <ul class="services" aria-labelledby="services-label">
+                <li class="layer service"><strong>Keel PostgreSQL, Keel MariaDB</strong><span>Core, the database, vip, syncthing</span></li>
+                <li class="layer service"><strong>Keel Redis</strong><span>Core, redis</span></li>
+                <li class="layer service"><strong>Search</strong><span>Elasticsearch or OpenSearch, not yet chosen</span></li>
+                <li class="layer service"><strong>Object storage</strong><span>Garage, as an <code>s3</code> overlay</span></li>
+              </ul>
+            </div>
+          </div>
+          <p class="compose-note">Embedded in a simple installation; discovered on the mesh in an advanced one. A search index is derived data: it is rebuilt when a node joins and never replicated by file. Decisions <a href="https://github.com/Keel-Linux/tracker/issues/28">0023</a>, <a href="https://github.com/Keel-Linux/tracker/issues/38">0033</a> and <a href="https://github.com/Keel-Linux/tracker/issues/41">0036</a>.</p>
+        </section>
+
+        <section id="overlays" aria-labelledby="overlays-title">
+          <h2 id="overlays-title">Overlays</h2>
+          <p>An overlay is one component: its packages, its configuration and its first boot scripts. Under decision 0039 each overlay is its own Debian source package, <code>keel-overlay-&lt;name&gt;</code>, released on its own with its own changelog.</p>
+          <div class="table-wrap" role="region" aria-label="Scrollable table" tabindex="0">
+            <table>
+              <thead><tr><th scope="col">Group</th><th scope="col">Overlays</th><th scope="col">Default</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Mesh</th><td>wireguard, etcd, vip, syncthing</td><td>etcd stopped</td></tr>
+                <tr><th scope="row">Protection</th><td>crowdsec, coraza, anubis</td><td>disabled</td></tr>
+                <tr><th scope="row">Web</th><td>nginx</td><td></td></tr>
+                <tr><th scope="row">Runtimes</th><td>php-fpm, python, ruby, nodejs, go</td><td></td></tr>
+                <tr><th scope="row">Data</th><td>postgresql, mariadb, redis, a search engine</td><td></td></tr>
+                <tr><th scope="row">Installer</th><td>simple and advanced installation, cloud simple and cloud advanced, discovery, YAML emission and consumption</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Apache is not an overlay: it is retired as the default web server and migrated appliance by appliance. The WordPress test images built today still use it, until Keel PHP exists.</p>
+        </section>
+
+        <section id="appliances" aria-labelledby="appliances-title">
+          <h2 id="appliances-title">Appliances</h2>
+          <div class="table-wrap" role="region" aria-label="Scrollable table" tabindex="0">
+            <table>
+              <thead><tr><th scope="col">Appliance</th><th scope="col">Composition</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Keel Core</th><td>Debian, wireguard, etcd, crowdsec, the installer</td></tr>
+                <tr><th scope="row">Keel Web</th><td>Core, nginx, coraza, anubis</td></tr>
+                <tr><th scope="row">Keel PostgreSQL, Keel MariaDB</th><td>Core, the database, vip, syncthing</td></tr>
+                <tr><th scope="row">Keel Redis</th><td>Core, redis</td></tr>
+                <tr><th scope="row">Keel search</th><td>Core, the search engine</td></tr>
+                <tr><th scope="row">Keel PHP</th><td>Web, php-fpm; replaces LAMP and LAPP</td></tr>
+                <tr><th scope="row">Keel Python, Keel Ruby, Keel Node</th><td>Web and the runtime</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="applications" aria-labelledby="applications-title">
+          <h2 id="applications-title">Applications</h2>
+          <p>An application appliance declares its runtime, the data services it consumes, the paths of its durable state and its workers. Workers are stateless: they read a queue and write to data services, never to local disk. <span class="badge badge-goal">Planned, Phases 4 and 6</span></p>
+          <div class="table-wrap" role="region" aria-label="Scrollable table" tabindex="0">
+            <table>
+              <thead><tr><th scope="col">Application</th><th scope="col">Consumes</th><th scope="col">Replicated state, workers</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">WordPress</th><td>PHP, MariaDB</td><td>wp-content</td></tr>
+                <tr><th scope="row">Nextcloud</th><td>PHP, MariaDB, Redis, optionally search</td><td>data</td></tr>
+                <tr><th scope="row">Odoo</th><td>Python, PostgreSQL, optionally Redis</td><td>filestore and addons; cron and queue workers</td></tr>
+                <tr><th scope="row">Mastodon</th><td>Ruby, PostgreSQL, Redis, optionally search</td><td>media; Sidekiq</td></tr>
+                <tr><th scope="row">Ghost</th><td>Node, MariaDB</td><td></td></tr>
+                <tr><th scope="row">Discourse</th><td>Ruby, PostgreSQL, Redis</td><td>Sidekiq</td></tr>
+                <tr><th scope="row">Gitea or Forgejo</th><td>Web, go, PostgreSQL</td><td>repositories</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Mastodon is the reference appliance: Ruby, Node.js, PostgreSQL, Redis, Sidekiq and usually object storage and search make it the heaviest of the set, so it is the proof of the composition model. It is built last in its phase, after WordPress, Odoo and Nextcloud (<a href="https://github.com/Keel-Linux/tracker/issues/40">0035</a>).</p>
+        </section>
+
+        <section id="manifest" aria-labelledby="manifest-title">
+          <h2 id="manifest-title">The manifest</h2>
+          <p>Backup, monitoring, upgrades, directory replication and discovery all read the same facts: which paths hold data, which processes to watch, what a node offers. So the manifest format came first. Version 1 is decided, and its reader is the first step of the implementation (<a href="https://github.com/Keel-Linux/tracker/issues/39">tracker#39</a>). <span class="badge badge-decided">Decided, 0041</span></p>
+          <ul>
+            <li><strong>Two kinds, one schema.</strong> An overlay manifest ships in each overlay's package and says what it runs. An appliance manifest ships in each appliance's package and says what it is built on and which overlays it adds.</li>
+            <li><strong>The manifest owns facts, the spec owns choices.</strong> A manifest never names a host, an address, a secret file or a count.</li>
+            <li><strong>A state per installation mode.</strong> Every overlay is <code>enabled</code>, <code>disabled</code> or <code>ask</code> in each of the three modes. The image is the same; the mode decides what runs.</li>
+            <li><strong>Inheritance is additive.</strong> Keel Web in a simple installation is one thing for every appliance built on it.</li>
+            <li><strong>Derived, never declared.</strong> Monit's checks, the firewall, the backup set, the Syncthing folders and the registry entry are rendered from the manifests.</li>
+            <li><strong>Versioned by an integer</strong>, with unknown keys refused at every level.</li>
+          </ul>
+<pre class="code" tabindex="0" aria-label="The Keel Web appliance manifest"><span class="c"># /usr/share/keel/appliances/web.yaml, from keel-web</span>
+<span class="k">manifest_version:</span> 1
+<span class="k">kind:</span> appliance
+<span class="k">name:</span> web
+<span class="k">title:</span> Keel Web
+<span class="k">summary:</span> <span class="s">Nginx, Coraza and Anubis, the base of every web appliance</span>
+<span class="k">base:</span> core
+<span class="k">overlays:</span>
+  <span class="k">nginx:</span>  {simple: enabled,  cloud_simple: enabled, cloud_advanced: enabled}
+  <span class="k">coraza:</span> {simple: disabled, cloud_simple: enabled, cloud_advanced: enabled}
+  <span class="k">anubis:</span> {simple: disabled, cloud_simple: enabled, cloud_advanced: enabled}</pre>
+          <p class="hint">From the version 1 format. Keel Web has no process of its own; its manifest is three lines of states over Core's.</p>
+        </section>
+
+        <section id="spec" aria-labelledby="spec-title">
+          <h2 id="spec-title">The spec: one file is the truth</h2>
+          <p>The instance spec, <code>/etc/keel/instance.yaml</code>, declares one machine: its names, IPv6 network, certificate policy, users, secrets by reference, database role and monitoring. It is rendered into the variables TurnKey's first boot hooks already read, so no hook has to know that it exists, and the <code>keel</code> command and the console are both clients of the same library. <span class="badge badge-live">Working today</span></p>
+          <div class="table-wrap" role="region" aria-label="Scrollable table" tabindex="0">
+            <table>
+              <thead><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead>
+              <tbody>
+                <tr><th scope="row"><code>keel inspect</code></th><td>Write a spec from the running machine or an offline root, every field with its source or the reason it was not inferred. Secrets are never read.</td></tr>
+                <tr><th scope="row"><code>keel diff</code></th><td>Report drift between the spec and the machine, field by field, through the same collector.</td></tr>
+                <tr><th scope="row"><code>keel spec apply</code></th><td>Converge what the spec declares, only where it differs. Safe to run again.</td></tr>
+                <tr><th scope="row"><code>keel spec validate</code></th><td>Report every error in the spec, not just the first.</td></tr>
+                <tr><th scope="row"><code>keel network confirm</code></th><td>Keep a network change; without it, the change reverts by itself.</td></tr>
+              </tbody>
+            </table>
+          </div>
+<pre class="code" tabindex="0" aria-label="Part of an instance spec"><span class="k">version:</span> 1
+<span class="k">instance:</span>
+  <span class="k">hostname:</span> blog
+  <span class="k">fqdn:</span> blog.example.org
+<span class="k">network:</span>
+  <span class="k">interfaces:</span>
+    <span class="k">eth0:</span>
+      <span class="k">ipv6:</span>
+        <span class="k">method:</span> static
+        <span class="k">address:</span> <span class="s">2001:db8:1::10/64</span>
+        <span class="k">gateway:</span> fe80::1
+  <span class="k">nameservers:</span>
+    - <span class="s">2001:db8:1::53</span>
+<span class="k">secrets:</span>
+  <span class="k">root_password:</span>
+    <span class="k">file:</span> /etc/keel/secrets/root_password</pre>
+          <p>Decided next (<a href="https://github.com/Keel-Linux/tracker/issues/32">0027</a>, 0041): every installation, simple or advanced, by hand or automated, emits its complete YAML with every default written out, and re-emits it after every upgrade. The spec gains the appliance, the installation mode and the state of every overlay.</p>
+        </section>
+
+        <section id="ipv6" aria-labelledby="ipv6-title">
+          <h2 id="ipv6-title">IPv6-first</h2>
+          <p>Every appliance is reachable on a routable address of its own, such as <code>2001:db8:4b1::10</code>, with an ACME certificate and its own host keys. No port mapping. IPv4 is optional and never assumed, and the project's examples and defaults use IPv6.</p>
+          <ul>
+            <li><strong>Between nodes,</strong> native IPv6 goes direct. An IPv4-only node enters the mesh through a rendezvous point that translates (NAT64 with Tayga, in Debian 13).</li>
+            <li><strong>On the mesh,</strong> <code>keel network wireguard suggest-address</code> prints a random unique local IPv6 address with its /64 for the first node of an overlay.</li>
+            <li><strong>In the spec,</strong> nameservers are listed IPv6 first, and a database listens on literal addresses such as <code>::1</code>, because on Debian <code>localhost</code> is an IPv4-only name.</li>
+          </ul>
+        </section>
+
+        <section id="layers" aria-labelledby="layers-title">
+          <h2 id="layers-title">Signed, content-addressed layers</h2>
+          <p>An appliance is assembled from read-only layers, one per appliance in the chain. Each layer is a deterministic tarball with a sha256, listed in a plain-text <em>layer manifest</em> that is signed by the project key and tied to a git commit. The same commit and manifest give the same bytes, and an update downloads only the layer that changed.</p>
+          <ul>
+            <li><code>keel pull</code> fetches the layers the cache lacks, from a directory or an https URL, checking every digest.</li>
+            <li><code>keel assemble</code> extracts a cached chain into a root filesystem and packs it as a Proxmox template with its sha512.</li>
+            <li><code>keel verify</code> checks installed layers against their manifests.</li>
+            <li>Layers are published on two channels, <code>stable</code> and <code>testing</code>; a third channel would need a decision of its own.</li>
+          </ul>
+          <p class="hint">Build measurements, on the build host with unmodified TurnKey 19.0 recipes: core layer 326 MB, LAMP stack delta 80 MB, WordPress app delta 133 MB, WordPress rebuilt on cached layers in 69 s instead of 451 s. <a href="index.html#how-it-is-built">On the home page</a>.</p>
+        </section>
+
+        <section id="upgrades" aria-labelledby="upgrades-title">
+          <h2 id="upgrades-title">Upgrades come from the Keel repository</h2>
+          <p><span class="badge badge-decided">Decided, 0039</span></p>
+          <ul>
+            <li>Everything Keel installs is a <code>.deb</code> in the Keel repository, overlays included, and <code>apt upgrade</code> is the only update mechanism.</li>
+            <li>Application packages carry a post-install migration hook, such as Odoo's module update or Mastodon's <code>db:migrate</code>.</li>
+            <li>Upgrades are ordered across the mesh: a database primary hands over to its standby, upgrades, and takes the role back after catching up.</li>
+            <li>Two tracks, <code>stable</code> and <code>testing</code>, declared in the YAML. A simple installation defaults to stable, with unattended upgrades for security only.</li>
+            <li>The archive is built from a dated, pinned pool, so every image rebuilds from the project's own archive.</li>
+          </ul>
+        </section>
       </div>
-    </section>
-
-    <!-- 1. Standalone -->
-    <section class="arch" id="standalone" aria-labelledby="standalone-title">
-      <div class="wrap">
-        <span class="eyebrow">Scenario 1</span>
-        <div class="arch-head">
-          <h2 id="standalone-title">Keel Linux Standalone</h2>
-          <span class="badge badge-goal">Our goal · not yet released</span>
-        </div>
-        <p class="arch-note">This is what Keel Linux is building first. It runs today from source and test images; there is no release for end users yet.</p>
-        <p class="lead">One LXC container or VM runs the whole stack: the application, its database and its files. One instance spec describes it, and Keel keeps the machine and the spec in step.</p>
-
-        <figure class="diagram-arch">
-          <svg class="wide" viewBox="-2 -2 884 404" role="img" aria-labelledby="s1w-title s1w-desc">
-            <title id="s1w-title">Keel Linux Standalone, the project's goal, not yet released</title>
-            <desc id="s1w-desc">An operator runs keel inspect, keel diff and keel spec apply against one LXC container or VM at 2001:db8:4b1::10, which holds the application, the database and the files, described by one instance spec. On a VM, a network change opens a 120 second window: keel network confirm from a new session keeps it, otherwise the old network is restored, also after a reboot. In an LXC container the host owns the network and keel only compares it. The network change is marked as VM only, in keel 0.9.0, not yet released. The whole scenario is the project's goal and not yet released.</desc>
-            <defs>
-              <marker id="s1w-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M0 0L10 5L0 10z" fill="currentColor"/>
-              </marker>
-            </defs>
-
-            <rect class="badge-goal-shape" x="0" y="0" width="300" height="30" rx="15"/>
-            <text class="t-cap badge-goal-text" x="150" y="20" text-anchor="middle">OUR GOAL · NOT YET RELEASED</text>
-
-            <!-- operator -->
-            <rect class="box" x="0" y="60" width="240" height="220" rx="8"/>
-            <text class="t-b" x="16" y="88">Operator</text>
-            <text class="t-s f-muted" x="16" y="108">over SSH or in confconsole</text>
-            <text class="t-m" x="16" y="144">keel inspect</text>
-            <text class="t-s f-muted" x="16" y="163">what the machine is</text>
-            <text class="t-m" x="16" y="196">keel diff</text>
-            <text class="t-s f-muted" x="16" y="215">spec against machine</text>
-            <text class="t-m" x="16" y="248">keel spec apply</text>
-            <text class="t-s f-muted" x="16" y="267">converge, safe to re-run</text>
-
-            <line class="flow" x1="242" y1="170" x2="286" y2="170" marker-end="url(#s1w-arrow)"/>
-
-            <!-- appliance -->
-            <rect class="box box-key" x="290" y="60" width="264" height="320" rx="8"/>
-            <text class="t-b" x="306" y="90">One LXC or VM</text>
-            <text class="t-m" x="306" y="112">2001:db8:4b1::10</text>
-            <rect class="box-inner" x="306" y="128" width="232" height="52" rx="6"/>
-            <text class="t-b" x="320" y="150">application</text>
-            <text class="t-s f-muted" x="320" y="169">WordPress, NodeBB, LAMP</text>
-            <rect class="box-inner" x="306" y="190" width="232" height="52" rx="6"/>
-            <text class="t-b" x="320" y="212">database</text>
-            <text class="t-s f-muted" x="320" y="231">MariaDB or PostgreSQL, local</text>
-            <rect class="box-inner" x="306" y="252" width="232" height="52" rx="6"/>
-            <text class="t-b" x="320" y="274">files</text>
-            <text class="t-s f-muted" x="320" y="293">uploads and other state</text>
-            <text class="t-s" x="306" y="332">described by one instance spec</text>
-            <text class="t-s f-muted" x="306" y="352">IPv6 first, IPv4 optional</text>
-
-            <!-- network change -->
-            <rect class="box" x="584" y="60" width="296" height="320" rx="8"/>
-            <text class="t-b" x="600" y="90">Network change</text>
-            <rect class="tag" x="600" y="102" width="272" height="24" rx="12"/>
-            <text class="t-xs f-accent" x="736" y="119" text-anchor="middle">VM only · in keel 0.9.0, not yet released</text>
-            <line class="rail" x1="608" y1="156" x2="608" y2="300"/>
-            <circle class="dot" cx="608" cy="156" r="5"/>
-            <text class="t-s" x="624" y="161">apply writes the new network</text>
-            <circle class="dot" cx="608" cy="196" r="5"/>
-            <text class="t-s" x="624" y="201">a 120 s window opens</text>
-            <circle class="dot" cx="608" cy="236" r="5"/>
-            <text class="t-m" x="624" y="241">keel network confirm</text>
-            <text class="t-s f-muted" x="624" y="260">from a new session: kept</text>
-            <circle class="dot dot-open" cx="608" cy="300" r="5"/>
-            <text class="t-s" x="624" y="305">no confirmation in time:</text>
-            <text class="t-s f-muted" x="624" y="324">the old network is restored,</text>
-            <text class="t-s f-muted" x="624" y="343">also after a reboot</text>
-            <text class="t-s f-muted" x="600" y="368">In LXC the host owns it: compared only</text>
-          </svg>
-
-          <svg class="narrow" viewBox="-2 -2 364 880" role="img" aria-labelledby="s1n-title s1n-desc">
-            <title id="s1n-title">Keel Linux Standalone, the project's goal, not yet released</title>
-            <desc id="s1n-desc">An operator runs keel inspect, keel diff and keel spec apply against one LXC container or VM at 2001:db8:4b1::10, which holds the application, the database and the files, described by one instance spec. On a VM, a network change opens a 120 second window: keel network confirm from a new session keeps it, otherwise the old network is restored, also after a reboot. In an LXC container the host owns the network and keel only compares it. The network change is marked as VM only, in keel 0.9.0, not yet released. The whole scenario is the project's goal and not yet released.</desc>
-            <defs>
-              <marker id="s1n-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M0 0L10 5L0 10z" fill="currentColor"/>
-              </marker>
-            </defs>
-
-            <rect class="badge-goal-shape" x="0" y="0" width="300" height="30" rx="15"/>
-            <text class="t-cap badge-goal-text" x="150" y="20" text-anchor="middle">OUR GOAL · NOT YET RELEASED</text>
-
-            <rect class="box" x="0" y="50" width="360" height="176" rx="8"/>
-            <text class="t-b" x="16" y="78">Operator</text>
-            <text class="t-s f-muted" x="16" y="98">over SSH or in confconsole</text>
-            <text class="t-m" x="16" y="136">keel inspect</text>
-            <text class="t-s f-muted" x="150" y="136">what the machine is</text>
-            <text class="t-m" x="16" y="170">keel diff</text>
-            <text class="t-s f-muted" x="150" y="170">spec against machine</text>
-            <text class="t-m" x="16" y="204">keel spec apply</text>
-            <text class="t-s f-muted" x="150" y="204">converge, safe to re-run</text>
-
-            <line class="flow" x1="180" y1="228" x2="180" y2="258" marker-end="url(#s1n-arrow)"/>
-
-            <rect class="box box-key" x="0" y="262" width="360" height="270" rx="8"/>
-            <text class="t-b" x="16" y="290">One LXC or VM</text>
-            <text class="t-m" x="16" y="312">2001:db8:4b1::10</text>
-            <rect class="box-inner" x="16" y="326" width="328" height="50" rx="6"/>
-            <text class="t-b" x="30" y="347">application</text>
-            <text class="t-s f-muted" x="30" y="366">WordPress, NodeBB, LAMP</text>
-            <rect class="box-inner" x="16" y="384" width="328" height="50" rx="6"/>
-            <text class="t-b" x="30" y="405">database</text>
-            <text class="t-s f-muted" x="30" y="424">MariaDB or PostgreSQL, local</text>
-            <rect class="box-inner" x="16" y="442" width="328" height="50" rx="6"/>
-            <text class="t-b" x="30" y="463">files</text>
-            <text class="t-s f-muted" x="30" y="482">uploads and other state</text>
-            <text class="t-s" x="16" y="516">described by one instance spec</text>
-
-            <rect class="box" x="0" y="552" width="360" height="322" rx="8"/>
-            <text class="t-b" x="16" y="580">Network change</text>
-            <rect class="tag" x="16" y="592" width="272" height="24" rx="12"/>
-            <text class="t-xs f-accent" x="152" y="609" text-anchor="middle">VM only · in keel 0.9.0, not yet released</text>
-            <line class="rail" x1="24" y1="646" x2="24" y2="786"/>
-            <circle class="dot" cx="24" cy="646" r="5"/>
-            <text class="t-s" x="40" y="651">apply writes the new network</text>
-            <circle class="dot" cx="24" cy="686" r="5"/>
-            <text class="t-s" x="40" y="691">a 120 s window opens</text>
-            <circle class="dot" cx="24" cy="726" r="5"/>
-            <text class="t-m" x="40" y="731">keel network confirm</text>
-            <text class="t-s f-muted" x="40" y="750">from a new session: kept</text>
-            <circle class="dot dot-open" cx="24" cy="786" r="5"/>
-            <text class="t-s" x="40" y="791">no confirmation in time:</text>
-            <text class="t-s f-muted" x="40" y="810">the old network is restored,</text>
-            <text class="t-s f-muted" x="40" y="829">also after a reboot</text>
-            <text class="t-s f-muted" x="16" y="858">In LXC the host owns it: compared only</text>
-          </svg>
-          <figcaption>Everything runs on one machine. What the spec declares, <code>keel diff</code> compares and <code>keel spec apply</code> converges.</figcaption>
-        </figure>
-
-        <ul class="facts">
-          <li><strong>Declared and compared.</strong> <code>keel inspect</code> reads the running machine, <code>keel diff</code> shows where it differs from the spec, <code>keel spec apply</code> converges it and is safe to run again.</li>
-          <li><strong>Network changes that undo themselves.</strong> <span class="badge badge-soon">VM only · in keel 0.9.0, not yet released</span> On a VM, a changed network must be confirmed with <code>keel network confirm</code> from a new session within 120 seconds, or the previous configuration comes back. A machine reached only over SSH is the case this is for. In an LXC container the host owns the network; keel compares it and does not change it.</li>
-          <li><strong>Not through Webmin.</strong> The network is changed in confconsole or at the command line; Webmin shows it read-only (decision 0019).</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- 2. Keel Cloud -->
-    <section class="arch" id="cloud" aria-labelledby="cloud-title">
-      <div class="wrap">
-        <span class="eyebrow">Scenario 2</span>
-        <div class="arch-head">
-          <h2 id="cloud-title">Keel Cloud, three nodes</h2>
-          <span class="badge badge-planned">Planned, decision 0020</span>
-        </div>
-        <p class="lead">Three nodes, LXC containers or VMs, two or three of them holding the application: one primary takes the writes, the replicas follow it and stand ready to take over. Keel Cloud is optional: three standalone appliances configured by hand do the same, and Keel Cloud only automates the setup; without it, the public name is moved by hand after a failover.</p>
-
-        <figure class="diagram-arch">
-          <svg class="wide" viewBox="-2 -2 884 574" role="img" aria-labelledby="s2w-title s2w-desc">
-            <title id="s2w-title">Keel Cloud with three nodes, planned</title>
-            <desc id="s2w-desc">Visitors resolve the name through keel-cloud, an optional service with DNS and a health check, node discovery and WireGuard key exchange, which points the name at node A, the primary. Nodes A, B and C sit on a WireGuard private network. Node A at 2001:db8:4b1::11 is the primary and takes the writes. Nodes B and C at ::12 and ::13 are replicas: the database replicates to them and they pull the files from A with rsync. Node C may instead be a voter holding no data. Every node runs etcd and keel-quorum; a majority of the three elects the primary, and a primary that loses the majority turns itself read-only. Without keel-cloud, the same three nodes set up by hand elect and fail over alike; the public name is then moved by hand.</desc>
-            <defs>
-              <marker id="s2w-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M0 0L10 5L0 10z" fill="currentColor"/>
-              </marker>
-            </defs>
-
-            <rect class="badge-planned-shape" x="1" y="1" width="262" height="28" rx="14"/>
-            <text class="t-cap f-accent" x="132" y="20" text-anchor="middle">PLANNED · DECISION 0020</text>
-
-            <!-- visitors and keel-cloud -->
-            <rect class="box" x="0" y="62" width="150" height="62" rx="8"/>
-            <text class="t-b" x="16" y="88">Visitors</text>
-            <text class="t-s f-muted" x="16" y="108">resolve the name</text>
-            <line class="flow" x1="152" y1="93" x2="206" y2="93" marker-end="url(#s2w-arrow)"/>
-
-            <rect class="box dashed" x="210" y="50" width="450" height="96" rx="8"/>
-            <text class="t-b" x="226" y="78">keel-cloud</text>
-            <rect class="tag" x="324" y="62" width="76" height="22" rx="11"/>
-            <text class="t-xs f-accent" x="362" y="77" text-anchor="middle">optional</text>
-            <text class="t-s" x="226" y="104">DNS with a health check: the name points at the primary</text>
-            <text class="t-s f-muted" x="226" y="126">node discovery · WireGuard key exchange</text>
-
-            <rect class="box-inner" x="690" y="50" width="190" height="128" rx="8"/>
-            <text class="t-b t-s" x="704" y="72">Without keel-cloud</text>
-            <text class="t-s f-muted" x="704" y="92">the same three nodes,</text>
-            <text class="t-s f-muted" x="704" y="110">set up by hand, elect</text>
-            <text class="t-s f-muted" x="704" y="128">and fail over alike;</text>
-            <text class="t-s f-muted" x="704" y="146">the public name is then</text>
-            <text class="t-s f-muted" x="704" y="164">moved by hand</text>
-
-            <path class="flow" d="M240 148V170H126V218" marker-end="url(#s2w-arrow)"/>
-            <text class="t-s f-muted" x="252" y="174">DNS answer: node A</text>
-
-            <!-- overlay -->
-            <rect class="overlay" x="0" y="190" width="880" height="275" rx="12"/>
-            <text class="t-s f-accent" x="864" y="212" text-anchor="end">WireGuard private network</text>
-
-            <!-- nodes -->
-            <rect class="box box-key" x="16" y="224" width="220" height="186" rx="8"/>
-            <text class="t-b" x="32" y="250">Node A · primary</text>
-            <text class="t-m" x="32" y="272">2001:db8:4b1::11</text>
-            <text class="t-s" x="32" y="300">app · database · files</text>
-            <text class="t-s f-muted" x="32" y="320">takes the writes</text>
-            <text class="t-s" x="32" y="352">etcd · keel-quorum</text>
-            <text class="t-s f-muted" x="32" y="372">a voter</text>
-
-            <rect class="box" x="326" y="224" width="220" height="186" rx="8"/>
-            <text class="t-b" x="342" y="250">Node B · replica</text>
-            <text class="t-m" x="342" y="272">2001:db8:4b1::12</text>
-            <text class="t-s" x="342" y="300">app · database · files</text>
-            <text class="t-s f-muted" x="342" y="320">follows, can be promoted</text>
-            <text class="t-s" x="342" y="352">etcd · keel-quorum</text>
-            <text class="t-s f-muted" x="342" y="372">a voter</text>
-
-            <rect class="box" x="636" y="224" width="228" height="186" rx="8"/>
-            <text class="t-b" x="652" y="250">Node C · replica</text>
-            <text class="t-m" x="652" y="272">2001:db8:4b1::13</text>
-            <text class="t-s" x="652" y="300">app · database · files</text>
-            <text class="t-s f-muted" x="652" y="320">follows, can be promoted</text>
-            <text class="t-s" x="652" y="352">etcd · keel-quorum</text>
-            <text class="t-s f-muted" x="652" y="372">or only a voter, no data:</text>
-            <text class="t-s f-muted" x="652" y="391">etcd and keel-quorum alone</text>
-
-            <!-- flows A to B -->
-            <text class="t-xs" x="281" y="284" text-anchor="middle">database</text>
-            <line class="flow" x1="238" y1="294" x2="322" y2="294" marker-end="url(#s2w-arrow)"/>
-            <text class="t-xs" x="281" y="332" text-anchor="middle">files, pulled</text>
-            <line class="flow dashed-line" x1="238" y1="342" x2="322" y2="342" marker-end="url(#s2w-arrow)"/>
-            <text class="t-xs f-muted" x="281" y="360" text-anchor="middle">by B, rsync</text>
-
-            <!-- flows A to C, under B -->
-            <path class="flow" d="M126 410V436H750V414" marker-end="url(#s2w-arrow)"/>
-            <text class="t-xs f-muted" x="440" y="454" text-anchor="middle">the same flows reach node C</text>
-
-            <!-- election -->
-            <rect class="box" x="0" y="482" width="880" height="84" rx="8"/>
-            <text class="t-b" x="16" y="508">Election on the nodes: keel-quorum on etcd</text>
-            <text class="t-s" x="16" y="530">A majority of the three voters elects the primary. A primary that loses the majority turns itself read-only (fencing).</text>
-            <text class="t-s f-muted" x="16" y="552">Automatic failover needs three voters, to avoid split brain. With fewer, a replica is promoted by hand.</text>
-          </svg>
-
-          <svg class="narrow" viewBox="-2 -2 364 954" role="img" aria-labelledby="s2n-title s2n-desc">
-            <title id="s2n-title">Keel Cloud with three nodes, planned</title>
-            <desc id="s2n-desc">keel-cloud, an optional service with DNS and a health check, node discovery and WireGuard key exchange, points the name at node A, the primary. Nodes A, B and C sit on a WireGuard private network. Node A at 2001:db8:4b1::11 is the primary and takes the writes. Nodes B and C at ::12 and ::13 are replicas: the database replicates to them and they pull the files from A with rsync. Node C may instead be a voter holding no data. Every node runs etcd and keel-quorum; a majority of the three elects the primary, and a primary that loses the majority turns itself read-only. Without keel-cloud, the same three nodes set up by hand elect and fail over alike; the public name is then moved by hand.</desc>
-            <defs>
-              <marker id="s2n-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M0 0L10 5L0 10z" fill="currentColor"/>
-              </marker>
-            </defs>
-
-            <rect class="badge-planned-shape" x="1" y="1" width="262" height="28" rx="14"/>
-            <text class="t-cap f-accent" x="132" y="20" text-anchor="middle">PLANNED · DECISION 0020</text>
-
-            <rect class="box dashed" x="0" y="50" width="360" height="166" rx="8"/>
-            <text class="t-b" x="16" y="78">keel-cloud</text>
-            <rect class="tag" x="114" y="62" width="76" height="22" rx="11"/>
-            <text class="t-xs f-accent" x="152" y="77" text-anchor="middle">optional</text>
-            <text class="t-s" x="16" y="104">DNS with a health check,</text>
-            <text class="t-s" x="16" y="123">the name points at the primary</text>
-            <text class="t-s f-muted" x="16" y="143">node discovery · WireGuard keys</text>
-            <text class="t-s f-muted" x="16" y="170">Without it, the same three nodes set</text>
-            <text class="t-s f-muted" x="16" y="187">up by hand elect and fail over alike;</text>
-            <text class="t-s f-muted" x="16" y="204">the public name is then moved by hand.</text>
-
-            <line class="flow" x1="180" y1="218" x2="180" y2="242" marker-end="url(#s2n-arrow)"/>
-            <text class="t-s f-muted" x="192" y="236">DNS answer: node A</text>
-
-            <rect class="overlay" x="0" y="246" width="360" height="494" rx="12"/>
-            <text class="t-s f-accent" x="16" y="268">WireGuard private network</text>
-
-            <rect class="box box-key" x="32" y="282" width="312" height="124" rx="8"/>
-            <text class="t-b" x="46" y="306">Node A · primary</text>
-            <text class="t-m" x="46" y="327">2001:db8:4b1::11</text>
-            <text class="t-s" x="46" y="350">app · database · files</text>
-            <text class="t-s" x="46" y="370">etcd · keel-quorum, a voter</text>
-            <text class="t-s f-muted" x="46" y="390">takes the writes</text>
-
-            <line class="flow" x1="110" y1="408" x2="110" y2="460" marker-end="url(#s2n-arrow)"/>
-            <text class="t-xs" x="122" y="428">database replication</text>
-            <text class="t-xs" x="122" y="446">files, pulled by B with rsync</text>
-
-            <rect class="box" x="32" y="464" width="312" height="110" rx="8"/>
-            <text class="t-b" x="46" y="488">Node B · replica</text>
-            <text class="t-m" x="46" y="509">2001:db8:4b1::12</text>
-            <text class="t-s" x="46" y="532">app · database · files</text>
-            <text class="t-s" x="46" y="552">etcd · keel-quorum, a voter</text>
-
-            <rect class="box" x="32" y="596" width="312" height="130" rx="8"/>
-            <text class="t-b" x="46" y="620">Node C · replica</text>
-            <text class="t-m" x="46" y="641">2001:db8:4b1::13</text>
-            <text class="t-s" x="46" y="664">app · database · files</text>
-            <text class="t-s" x="46" y="684">etcd · keel-quorum, a voter</text>
-            <text class="t-s f-muted" x="46" y="708">or only a voter: no data, not an appliance</text>
-
-            <path class="flow" d="M32 344H16V660H28" marker-end="url(#s2n-arrow)"/>
-
-            <rect class="box" x="0" y="760" width="360" height="184" rx="8"/>
-            <text class="t-b" x="16" y="786">Election on the nodes</text>
-            <text class="t-s" x="16" y="808">keel-quorum on etcd. A majority of</text>
-            <text class="t-s" x="16" y="827">the three voters elects the primary.</text>
-            <text class="t-s" x="16" y="851">A primary that loses the majority</text>
-            <text class="t-s" x="16" y="870">turns itself read-only (fencing).</text>
-            <text class="t-s f-muted" x="16" y="898">Automatic failover needs three voters.</text>
-            <text class="t-s f-muted" x="16" y="917">With fewer, a replica is promoted</text>
-            <text class="t-s f-muted" x="16" y="936">by hand.</text>
-          </svg>
-          <figcaption>One writer at a time. The replicas pull, the primary never pushes, and the election runs on the nodes themselves, so no outside service is required for a failover; without Keel Cloud, the public name is then moved by hand.</figcaption>
-        </figure>
-
-        <ul class="facts">
-          <li><strong>Keel Cloud is optional.</strong> <code>keel-cloud</code> adds DNS with a health check, node discovery and WireGuard key exchange. It is in the spirit of TurnKey's HubDNS, which updates a name but checks no health. An API key for it is offered at installation and never required.</li>
-          <li><strong>The election is its own project, <code>keel-quorum</code>.</strong> One etcd election for the whole appliance: database, files and web tier are promoted together. Every data node is a voter; the third node may be a voter that holds no data, which is not an appliance and runs only etcd and keel-quorum.</li>
-          <li><strong>Private network.</strong> The nodes talk over WireGuard. Its configuration is converged under the same 120 second confirmation window as any network change.</li>
-          <li><strong>Status panel.</strong> A read-only screen in confconsole shows one line per node: role, replication lag, last file pull, health, and the elected leader. It changes nothing on the other nodes.</li>
-          <li><strong>What it does not promise.</strong> Replication and the file pull are asynchronous, so the last seconds before a failure can be lost. DNS takes one to five minutes to follow a failover, and some resolvers ignore low TTLs. In an LXC container there is no watchdog, so fencing relies on the process demoting itself in time; a VM can have one.</li>
-        </ul>
-
-        <h3 class="arch-sub">Chosen by the operator when the set is formed</h3>
-        <p class="hint">Made once and stored in etcd, so every node reads the same answer. The same choices exist with or without Keel Cloud.</p>
-        <div class="table-scroll">
-          <table class="choices">
-            <thead>
-              <tr><th scope="col">Choice</th><th scope="col">Options</th><th scope="col">Default</th></tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">Failover: a replica takes over when the primary is lost</th><td>automatic, manual</td><td>automatic, active only once three voters are present</td></tr>
-              <tr><th scope="row">Rejoin: the old primary comes back as a replica</th><td>automatic, manual</td><td>manual. Automatic first keeps a copy of what the node held</td></tr>
-              <tr><th scope="row">Failback: the primary role returns to the original node</th><td>automatic, manual, never</td><td>manual</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="hint">When: after the orchestrated upgrade of milestone M3. Keel Cloud comes last and starts with a decision note of its own, so its design beyond the three services above is not written yet.</p>
-      </div>
-    </section>
-
-    <!-- 3. Separated tiers -->
-    <section class="arch" id="tiers" aria-labelledby="tiers-title">
-      <div class="wrap">
-        <span class="eyebrow">Scenario 3</span>
-        <div class="arch-head">
-          <h2 id="tiers-title">Separated tiers</h2>
-          <span class="badge badge-future">Future</span>
-        </div>
-        <p class="lead">The application and the database move to machines of their own. Not designed yet: only the remote database (0013 phase 1) and Galera (0013 phase 4) are planned pieces.</p>
-
-        <figure class="diagram-arch">
-          <svg class="wide" viewBox="-2 -2 884 604" role="img" aria-labelledby="s3w-title s3w-desc">
-            <title id="s3w-title">Separated tiers, future, not designed yet</title>
-            <desc id="s3w-desc">An application tier of three VMs, app 1 to app 3 at 2001:db8:4b1::21 to ::23; how they coordinate is to be designed. The application points at the remote database, decision 0013 phase 1. A database tier of three VMs, db 1 to db 3 at 2001:db8:4b1::31 to ::33, with primary and replicas, or Galera members for MariaDB. Sharding is possible: MariaDB through Spider; for PostgreSQL Keel configures the node's role and the shard design belongs to whoever designs the system.</desc>
-            <defs>
-              <marker id="s3w-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M0 0L10 5L0 10z" fill="currentColor"/>
-              </marker>
-            </defs>
-
-            <rect class="badge-future-shape" x="1" y="1" width="98" height="28" rx="14"/>
-            <text class="t-cap" x="50" y="20" text-anchor="middle">FUTURE</text>
-
-            <text class="t-b" x="0" y="70">Application tier</text>
-            <text class="t-s f-muted" x="0" y="90">three VMs; how they coordinate is to be designed</text>
-            <rect class="tier" x="0" y="102" width="880" height="126" rx="12"/>
-            <rect class="box" x="16" y="116" width="264" height="98" rx="8"/>
-            <text class="t-b" x="32" y="142">app 1</text>
-            <text class="t-m" x="32" y="164">2001:db8:4b1::21</text>
-            <text class="t-s f-muted" x="32" y="192">application</text>
-            <rect class="box" x="308" y="116" width="264" height="98" rx="8"/>
-            <text class="t-b" x="324" y="142">app 2</text>
-            <text class="t-m" x="324" y="164">2001:db8:4b1::22</text>
-            <text class="t-s f-muted" x="324" y="192">application</text>
-            <rect class="box" x="600" y="116" width="264" height="98" rx="8"/>
-            <text class="t-b" x="616" y="142">app 3</text>
-            <text class="t-m" x="616" y="164">2001:db8:4b1::23</text>
-            <text class="t-s f-muted" x="616" y="192">application</text>
-
-            <line class="flow" x1="440" y1="232" x2="440" y2="292" marker-end="url(#s3w-arrow)"/>
-            <text class="t-s" x="456" y="258">the application points at the remote database</text>
-            <text class="t-s f-muted" x="456" y="277">decision 0013, phase 1</text>
-
-            <text class="t-b" x="0" y="318">Database tier</text>
-            <text class="t-s f-muted" x="0" y="338">three VMs: primary and replicas, or Galera for MariaDB</text>
-            <rect class="tier" x="0" y="350" width="880" height="126" rx="12"/>
-            <rect class="box box-key" x="16" y="364" width="264" height="98" rx="8"/>
-            <text class="t-b" x="32" y="390">db 1</text>
-            <text class="t-m" x="32" y="412">2001:db8:4b1::31</text>
-            <text class="t-s f-muted" x="32" y="440">primary, or a Galera member</text>
-            <rect class="box" x="308" y="364" width="264" height="98" rx="8"/>
-            <text class="t-b" x="324" y="390">db 2</text>
-            <text class="t-m" x="324" y="412">2001:db8:4b1::32</text>
-            <text class="t-s f-muted" x="324" y="440">replica, or a Galera member</text>
-            <rect class="box" x="600" y="364" width="264" height="98" rx="8"/>
-            <text class="t-b" x="616" y="390">db 3</text>
-            <text class="t-m" x="616" y="412">2001:db8:4b1::33</text>
-            <text class="t-s f-muted" x="616" y="440">replica, or a Galera member</text>
-
-            <rect class="box dashed" x="0" y="496" width="880" height="100" rx="8"/>
-            <text class="t-b" x="16" y="522">Sharding, possible</text>
-            <text class="t-s" x="16" y="546">MariaDB: the Spider engine, a head node and data nodes.</text>
-            <text class="t-s" x="16" y="568">PostgreSQL: Keel configures the node's role; the shard design belongs to whoever designs the system.</text>
-          </svg>
-
-          <svg class="narrow" viewBox="-2 -2 364 704" role="img" aria-labelledby="s3n-title s3n-desc">
-            <title id="s3n-title">Separated tiers, future, not designed yet</title>
-            <desc id="s3n-desc">An application tier of three VMs, app 1 to app 3 at 2001:db8:4b1::21 to ::23; how they coordinate is to be designed. The application points at the remote database, decision 0013 phase 1. A database tier of three VMs, db 1 to db 3 at 2001:db8:4b1::31 to ::33, with primary and replicas, or Galera members for MariaDB. Sharding is possible: MariaDB through Spider; for PostgreSQL Keel configures the node's role and the shard design belongs to whoever designs the system.</desc>
-            <defs>
-              <marker id="s3n-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M0 0L10 5L0 10z" fill="currentColor"/>
-              </marker>
-            </defs>
-
-            <rect class="badge-future-shape" x="1" y="1" width="98" height="28" rx="14"/>
-            <text class="t-cap" x="50" y="20" text-anchor="middle">FUTURE</text>
-
-            <text class="t-b" x="0" y="68">Application tier</text>
-            <text class="t-s f-muted" x="0" y="88">three VMs, coordination to be designed</text>
-            <rect class="tier" x="0" y="100" width="360" height="104" rx="12"/>
-            <rect class="box" x="10" y="112" width="104" height="80" rx="8"/>
-            <text class="t-b" x="22" y="136">app 1</text>
-            <text class="t-m" x="22" y="158">::21</text>
-            <text class="t-xs f-muted" x="22" y="180">application</text>
-            <rect class="box" x="128" y="112" width="104" height="80" rx="8"/>
-            <text class="t-b" x="140" y="136">app 2</text>
-            <text class="t-m" x="140" y="158">::22</text>
-            <text class="t-xs f-muted" x="140" y="180">application</text>
-            <rect class="box" x="246" y="112" width="104" height="80" rx="8"/>
-            <text class="t-b" x="258" y="136">app 3</text>
-            <text class="t-m" x="258" y="158">::23</text>
-            <text class="t-xs f-muted" x="258" y="180">application</text>
-            <text class="t-m f-muted" x="0" y="226">in 2001:db8:4b1::/64</text>
-
-            <line class="flow" x1="40" y1="240" x2="40" y2="300" marker-end="url(#s3n-arrow)"/>
-            <text class="t-s" x="56" y="264">points at the remote database</text>
-            <text class="t-s f-muted" x="56" y="283">decision 0013, phase 1</text>
-
-            <text class="t-b" x="0" y="328">Database tier</text>
-            <text class="t-s f-muted" x="0" y="348">three VMs</text>
-            <rect class="tier" x="0" y="360" width="360" height="104" rx="12"/>
-            <rect class="box box-key" x="10" y="372" width="104" height="80" rx="8"/>
-            <text class="t-b" x="22" y="396">db 1</text>
-            <text class="t-m" x="22" y="418">::31</text>
-            <text class="t-xs f-muted" x="22" y="440">primary</text>
-            <rect class="box" x="128" y="372" width="104" height="80" rx="8"/>
-            <text class="t-b" x="140" y="396">db 2</text>
-            <text class="t-m" x="140" y="418">::32</text>
-            <text class="t-xs f-muted" x="140" y="440">replica</text>
-            <rect class="box" x="246" y="372" width="104" height="80" rx="8"/>
-            <text class="t-b" x="258" y="396">db 3</text>
-            <text class="t-m" x="258" y="418">::33</text>
-            <text class="t-xs f-muted" x="258" y="440">replica</text>
-            <text class="t-s f-muted" x="0" y="486">or three Galera members, for MariaDB</text>
-
-            <rect class="box dashed" x="0" y="508" width="360" height="186" rx="8"/>
-            <text class="t-b" x="16" y="534">Sharding, possible</text>
-            <text class="t-s" x="16" y="558">MariaDB: the Spider engine,</text>
-            <text class="t-s" x="16" y="577">a head node and data nodes.</text>
-            <text class="t-s" x="16" y="605">PostgreSQL: Keel configures the</text>
-            <text class="t-s" x="16" y="624">node's role; the shard design</text>
-            <text class="t-s" x="16" y="643">belongs to whoever designs</text>
-            <text class="t-s" x="16" y="662">the system.</text>
-          </svg>
-          <figcaption>Each tier on machines of its own. Keel configures the role of each machine; it does not design the database layout.</figcaption>
-        </figure>
-
-        <ul class="facts">
-          <li><strong>A remote database first.</strong> An application pointing at a database on another machine is the first piece (decision 0013, phase 1). It is deferred today.</li>
-          <li><strong>Replication, or Galera.</strong> Primary and replicas on both engines; Galera gives MariaDB several writers, with a minimum of three nodes.</li>
-          <li><strong>Sharding is possible, not promised.</strong> MariaDB has Spider packaged in Debian 13. PostgreSQL has the pieces but no product: Keel configures the role of the node, and the partition scheme stays with whoever designs the system.</li>
-        </ul>
-      </div>
-    </section>
+    </div>
   </main>
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
-      <p><a href="index.html">Home</a> · <a href="architecture.html">Architecture</a> · <a href="guidelines.html">Guidelines</a> · <a href="https://github.com/keel-linux">github.com/keel-linux</a></p>
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="assets/keel-mark.svg" alt="" width="32" height="32"><span>Keel Linux</span></a>
+          <p>Composable, mesh-native appliances on Debian 13. IPv6-first and declarative. An independent fork of TurnKey Linux 19.</p>
+        </div>
+        <nav aria-label="Site">
+          <h2>Site</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="architecture.html">Architecture</a></li>
+            <li><a href="security.html">Security</a></li>
+            <li><a href="cloud.html">Cloud &amp; replication</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="guidelines.html">Guidelines</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Source">
+          <h2>Source</h2>
+          <ul>
+            <li><a href="https://github.com/keel-linux">github.com/keel-linux</a></li>
+            <li><a href="https://github.com/Keel-Linux/keel">keel, the spec and the command</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker">The tracker</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker/issues/46">Roadmap, tracker#46</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="legal">Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
     </div>
   </footer>
-
-  <script>
-    (function () {
-      var root = document.documentElement;
-      var button = document.getElementById("theme-toggle");
-      if (!button || !window.matchMedia) { return; }
-      var query = window.matchMedia("(prefers-color-scheme: dark)");
-
-      function currentTheme() {
-        var set = root.getAttribute("data-theme");
-        if (set === "light" || set === "dark") { return set; }
-        return query.matches ? "dark" : "light";
-      }
-
-      function describe() {
-        var next = currentTheme() === "dark" ? "light" : "dark";
-        button.setAttribute("aria-label", "Switch to " + next + " theme");
-        button.title = "Switch to " + next + " theme";
-      }
-
-      button.addEventListener("click", function () {
-        var next = currentTheme() === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", next);
-        try { localStorage.setItem("keel-theme", next); } catch (e) {}
-        describe();
-      });
-
-      if (query.addEventListener) { query.addEventListener("change", describe); }
-      describe();
-      button.hidden = false;
-    })();
-  </script>
 </body>
 </html>

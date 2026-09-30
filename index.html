@@ -3,195 +3,364 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Keel Linux</title>
-  <meta name="description" content="Keel Linux: declarative, layered, IPv6-first system-container appliances, compatible with TurnKey Linux appliances.">
+  <title>Keel Linux: composable, mesh-native appliances on Debian</title>
+  <meta name="description" content="Keel Linux: composable, mesh-native, IPv6-first and declarative appliances on Debian 13. A fork of TurnKey Linux 19 whose appliances run alone or join a private cloud over a WireGuard mesh.">
+  <link rel="canonical" href="https://keellinux.org/">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F4F7FA">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B1F3A">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07182B">
   <link rel="icon" type="image/svg+xml" href="assets/keel-mark.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
   <link rel="apple-touch-icon" href="assets/keel-mark-512.png">
-  <meta property="og:image" content="assets/keel-social.png">
-  <meta property="og:title" content="Keel Linux">
-  <meta property="og:description" content="Declarative, layered, IPv6-first system-container appliances.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Keel Linux">
+  <meta property="og:url" content="https://keellinux.org/">
+  <meta property="og:title" content="Keel Linux: composable, mesh-native appliances on Debian">
+  <meta property="og:description" content="IPv6-first, declarative appliances that run alone or join a private cloud over a WireGuard mesh. A fork of TurnKey Linux 19 on Debian 13.">
+  <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
+  <meta property="og:image:alt" content="The Keel Linux mark">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Keel Linux: composable, mesh-native appliances on Debian">
+  <meta name="twitter:description" content="IPv6-first, declarative appliances that run alone or join a private cloud over a WireGuard mesh.">
+  <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
   <link rel="stylesheet" href="style.css">
   <script>
-    try {
-      var savedTheme = localStorage.getItem("keel-theme");
-      if (savedTheme === "light" || savedTheme === "dark") {
-        document.documentElement.setAttribute("data-theme", savedTheme);
+    (function () {
+      var root = document.documentElement;
+      root.className += " js";
+      try {
+        var saved = localStorage.getItem("keel-theme");
+        if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+      } catch (e) {}
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        root.className += " js-motion";
+        setTimeout(function () { if (!window.keelReady) { root.className = root.className.replace(" js-motion", ""); } }, 2500);
       }
-    } catch (e) {}
+    })();
   </script>
+  <script defer src="assets/js/site.js"></script>
   <script defer data-domain="keellinux.org" src="https://analytics.pop.coop/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
   <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
-
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="#top">
+      <a class="brand" href="index.html" aria-label="Keel Linux, home">
         <img src="assets/keel-mark.svg" alt="" width="32" height="32">
         <span>Keel Linux</span>
       </a>
-      <nav class="site-nav" aria-label="Sections">
+      <nav class="site-nav" id="site-nav" aria-label="Main">
         <ul>
-          <li><a href="#what-changes">What changes</a></li>
-          <li><a href="#how-it-is-built">How it is built</a></li>
-          <li><a href="#standards">Standards</a></li>
-          <li><a href="#status">Status</a></li>
           <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="cloud.html">Cloud &amp; replication</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
           <li><a href="guidelines.html">Guidelines</a></li>
           <li><a href="https://github.com/keel-linux">GitHub</a></li>
         </ul>
       </nav>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>
-        </svg>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
     </div>
   </header>
 
   <main id="main">
     <section class="hero" id="top" aria-labelledby="hero-title">
-      <div class="wrap">
-        <div class="plate">
-          <img src="assets/keel-mark.svg"
-               width="256" height="256"
-               alt="Keel Linux icon: the cross-section of a hull with three layers stacked on a keel">
-        </div>
+      <div class="wrap hero-grid">
         <div>
-          <h1 id="hero-title">Keel Linux</h1>
-          <p class="tagline">Declarative, layered, IPv6-first system-container appliances, compatible with TurnKey Linux appliances.</p>
-          <p class="sub">A fork of TurnKey Linux 19 (Debian 13) that makes the LXC appliance behave like a cloud instance: described in one file, built from signed layers, reachable on its own address, and upgradable in place.</p>
+          <a class="status-pill" href="#status"><strong>Early</strong> No end-user release yet. Read the status</a>
+          <h1 id="hero-title">Composable, <span class="accent">mesh-native</span> appliances on Debian.</h1>
+          <p class="promise">Every appliance is secure by default and can join a private cloud on day one.</p>
+          <p class="sub">A fork of TurnKey Linux 19 (Debian 13) that turns single-machine appliances into building blocks of a real cloud: small components that run alone or together, replicate across sites, fail over, and are upgraded with apt. IPv6-first, so every node has a routable address of its own, and declarative, so every machine is described by one YAML file that Keel applies and re-applies to the same result.</p>
+          <ul class="chips" aria-label="Core identity">
+            <li class="chip">IPv6-first</li>
+            <li class="chip">Declarative</li>
+            <li class="chip">WireGuard mesh</li>
+            <li class="chip">Upgraded with apt</li>
+          </ul>
           <div class="actions">
-            <a class="btn btn-primary" href="https://github.com/keel-linux">GitHub organization</a>
-            <a class="btn btn-secondary" href="https://github.com/keel-linux/.github/blob/main/profile/README.md">Read the design</a>
+            <a class="btn btn-primary" href="architecture.html">Explore the architecture
+              <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="roadmap.html">See the roadmap</a>
           </div>
         </div>
+        <figure class="mesh-panel" data-module="mesh" data-src="assets/js/mesh.js" style="margin:0">
+          <div class="panel-bar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>wg0 · mesh · IPv6</span>
+            <span data-mesh-count aria-hidden="true">17 tunnels</span>
+          </div>
+          <div class="mesh-stage">
+            <canvas role="img" aria-label="An animated mesh: eight appliances with IPv6 addresses such as 2001:db8:a::10 bring up WireGuard tunnels to each other one by one and exchange packets. A node behind NAT opens its tunnel from the inside."></canvas>
+          </div>
+          <ul class="mesh-legend">
+            <li><i aria-hidden="true"></i>WireGuard tunnel</li>
+            <li><i class="nat" aria-hidden="true"></i>opened from inside a NAT</li>
+            <li><i class="dot" aria-hidden="true"></i>traffic between nodes</li>
+          </ul>
+        </figure>
       </div>
     </section>
 
-    <section id="what-changes" aria-labelledby="what-changes-title">
+    <section class="section section-alt" id="what-changes" aria-labelledby="what-changes-title">
       <div class="wrap">
-        <span class="eyebrow">What changes</span>
-        <h2 id="what-changes-title">Four things an appliance should already do</h2>
-        <p class="lead">TurnKey appliances are excellent on day zero and hard to keep on day two. Keel keeps the appliances and corrects the model around them.</p>
-        <ul class="grid-4">
-          <li class="card">
-            <span class="index">01</span>
-            <h3>Declared in one file</h3>
-            <p>An instance spec describes hostname, IPv6 networking, domain and certificate policy, services, users and secrets by reference. Applying it converges the appliance and is safe to re-run. The interactive console writes the same file.</p>
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">What changes</span>
+          <h2 id="what-changes-title">Six things an appliance should already do</h2>
+          <p class="lead">TurnKey appliances are excellent on day zero and built for one machine. Keel keeps the appliances and changes the model around them. Each point says how far it is built.</p>
+        </div>
+        <ul class="grid grid-3">
+          <li class="card lift" data-reveal>
+            <div class="card-top">
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7l8-4 8 4-8 4-8-4zm0 5l8 4 8-4M4 17l8 4 8-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+              <span class="badge badge-decided">Decided</span>
+            </div>
+            <h3>Composed, not pre-cooked</h3>
+            <p>PostgreSQL, MariaDB, Redis, Nginx and the language runtimes are components of their own, each able to run alone or serve another appliance. An appliance is a manifest that names what it is built on. LAMP and LAPP stop being images and become a recipe.</p>
+            <p class="refs"><a href="https://github.com/Keel-Linux/tracker/issues/28">0023</a><a href="https://github.com/Keel-Linux/tracker/issues/41">0036</a><a href="https://github.com/Keel-Linux/tracker/issues/39">0041, the manifest</a></p>
           </li>
-          <li class="card">
-            <span class="index">02</span>
-            <h3>Built from signed, content-addressed layers</h3>
-            <p>Core, stack and app are separate read-only layers, each with a sha256, listed in a plain-text manifest signed by the project key and tied to a git commit. Same commit and same manifest give the same bytes.</p>
+          <li class="card lift" data-reveal data-reveal-delay="1">
+            <div class="card-top">
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="19" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="18" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7.2 6h9.6M6 8l5 8m7-8-5 8" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+              <span class="badge badge-partial">Partly built</span>
+            </div>
+            <h3>The mesh is built in</h3>
+            <p>WireGuard ships in Keel Core, so every appliance can join a mesh, even alone. Tunnels are opened from the inside out, so a node behind NAT needs only outbound UDP. Native IPv6 goes direct, <code>2001:db8:a::10</code> to <code>2001:db8:b::10</code>; IPv4-only nodes enter through a rendezvous point that translates.</p>
+            <p class="refs"><a href="https://github.com/Keel-Linux/tracker/issues/29">0024</a><a href="cloud.html#mesh">How the mesh works</a></p>
           </li>
-          <li class="card">
-            <span class="index">03</span>
-            <h3>Reachable end to end over IPv6</h3>
-            <p>Every appliance gets a routable address of its own, such as <code>2001:db8:4b1::10</code>, with an ACME certificate and host identity keys. No NAT traversal, no port mapping. IPv4 is optional and never assumed.</p>
+          <li class="card lift" data-reveal data-reveal-delay="2">
+            <div class="card-top">
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="badge badge-partial">Partly built</span>
+            </div>
+            <h3>Secure by default</h3>
+            <p>Layers are exported with no host keys, certificates or machine-id, and each machine makes its own at first boot. CrowdSec ships in Core; Keel Web adds a WAF and Anubis. Every listening port is declared loopback, mesh or public, and the firewall is derived from that.</p>
+            <p class="refs"><a href="https://github.com/Keel-Linux/tracker/issues/34">0029</a><a href="https://github.com/Keel-Linux/tracker/issues/35">0030</a><a href="security.html">Security in detail</a></p>
           </li>
-          <li class="card">
-            <span class="index">04</span>
-            <h3>Maintainable across major versions</h3>
-            <p>Platform upgrades and application schema upgrades are kept apart. The second runs with a return point, the upstream tool, validation and rollback, so an appliance follows Debian releases instead of being reinstalled.</p>
+          <li class="card lift" data-reveal>
+            <div class="card-top">
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="8" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="8" y="14" width="8" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 10v2h10v-2m-5 2v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+              <span class="badge badge-partial">Partly built</span>
+            </div>
+            <h3>A real cloud, not a single box</h3>
+            <p>A primary and a hot standby, the standby seeded from the primary and kept read-only. Failover is the operator's call, and automatic failback after full catch-up is a goal. Directories replicate over the mesh, and an etcd registry records every node and its site.</p>
+            <p class="refs"><a href="https://github.com/Keel-Linux/tracker/issues/36">0031</a><a href="https://github.com/Keel-Linux/tracker/issues/37">0032</a><a href="https://github.com/Keel-Linux/tracker/issues/30">0025</a></p>
+          </li>
+          <li class="card lift" data-reveal data-reveal-delay="1">
+            <div class="card-top">
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v4h4M9 12h6M9 16h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+              <span class="badge badge-live">Working today</span>
+            </div>
+            <h3>One file is the truth</h3>
+            <p>A YAML instance spec declares the machine: its name, IPv6 network, certificates, users, database role and monitoring. <code>keel inspect</code> writes it from a running machine, <code>keel diff</code> shows drift field by field, and <code>keel spec apply</code> converges. Re-applying changes nothing.</p>
+            <p class="refs"><a href="https://github.com/Keel-Linux/keel">keel</a><a href="https://github.com/Keel-Linux/tracker/issues/32">0027</a></p>
+          </li>
+          <li class="card lift" data-reveal data-reveal-delay="2">
+            <div class="card-top">
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v4h16v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+              <span class="badge badge-decided">Decided</span>
+            </div>
+            <h3>Upgraded with apt, backed up off-site</h3>
+            <p>Everything Keel installs becomes a <code>.deb</code> in the Keel repository, on a stable or a testing track declared in the YAML. A database primary hands over before it upgrades. Backups go to a Keel Backup appliance in another site, and restores are tested on a schedule.</p>
+            <p class="refs"><a href="https://github.com/Keel-Linux/tracker/issues/44">0039</a><a href="https://github.com/Keel-Linux/tracker/issues/42">0037</a><a href="https://github.com/Keel-Linux/tracker/issues/43">0038</a></p>
           </li>
         </ul>
       </div>
     </section>
 
-    <section id="how-it-is-built" aria-labelledby="how-title">
+    <section class="section" id="composition" aria-labelledby="composition-title">
       <div class="wrap">
-        <span class="eyebrow">How it is built</span>
-        <h2 id="how-title">Three layers on one spine</h2>
-        <p class="lead">An appliance is a core layer, a stack layer and an app layer, assembled from a manifest. The layers are built by the same tools TurnKey uses today, one deterministic tarball each.</p>
-        <div class="build">
-          <figure class="diagram">
-            <svg viewBox="0 0 520 300" role="img" aria-labelledby="diagram-title diagram-desc">
-              <title id="diagram-title">Layer diagram</title>
-              <desc id="diagram-desc">Three horizontal layers named app, stack and core are stacked on a vertical keel. A manifest to the right lists each layer with its sha256, the git commit and the signature, with a dashed line from each manifest entry to its layer.</desc>
-
-              <!-- keel spine and fin -->
-              <rect x="118" y="30" width="12" height="206" rx="6" fill="currentColor"/>
-              <line x1="20" y1="232" x2="250" y2="232" stroke="currentColor" stroke-width="2" stroke-opacity="0.45"/>
-              <rect x="118" y="238" width="12" height="52" rx="6" fill="var(--accent)"/>
-
-              <!-- connectors -->
-              <g stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.6">
-                <line x1="194" y1="78" x2="290" y2="78"/>
-                <line x1="204" y1="138" x2="290" y2="138"/>
-                <line x1="214" y1="198" x2="290" y2="198"/>
-              </g>
-
-              <!-- layers -->
-              <g stroke="currentColor" stroke-width="2" fill="var(--surface)">
-                <rect x="54" y="58" width="140" height="40" rx="5"/>
-                <rect x="44" y="118" width="160" height="40" rx="5"/>
-                <rect x="34" y="178" width="180" height="40" rx="5"/>
-              </g>
-              <g fill="currentColor">
-                <text class="label" x="68" y="83">app</text>
-                <text class="note" x="182" y="83" text-anchor="end">133 MB</text>
-                <text class="label" x="58" y="143">stack</text>
-                <text class="note" x="192" y="143" text-anchor="end">80 MB</text>
-                <text class="label" x="48" y="203">core</text>
-                <text class="note" x="202" y="203" text-anchor="end">326 MB</text>
-              </g>
-
-              <!-- manifest -->
-              <rect x="290" y="30" width="210" height="260" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
-              <g fill="currentColor">
-                <text class="label" x="306" y="54">manifest</text>
-                <text class="mono" x="306" y="83">app    sha256:9c1e...</text>
-                <text class="mono" x="306" y="143">stack  sha256:4d7b...</text>
-                <text class="mono" x="306" y="203">core   sha256:e3a0...</text>
-                <text class="mono" x="306" y="243">commit 1a2b3c4d</text>
-                <text class="mono" x="306" y="268" fill="var(--accent-text)">signed by project key</text>
-              </g>
-            </svg>
-            <figcaption>Each layer is a deterministic tarball with a sha256 and a plain-text manifest. An update downloads only what changed: a new WordPress release means the app layer, not the base.</figcaption>
-          </figure>
-          <div class="measured">
-            <h3>Measured on the build host</h3>
-            <p class="hint">Unmodified TurnKey 19.0 recipes, built as layers.</p>
-            <dl>
-              <div class="row">
-                <dt>Core layer</dt>
-                <dd>326 MB</dd>
-              </div>
-              <div class="row">
-                <dt>LAMP stack delta</dt>
-                <dd>80 MB</dd>
-              </div>
-              <div class="row">
-                <dt>WordPress app delta</dt>
-                <dd>133 MB</dd>
-              </div>
-              <div class="row">
-                <dt>WordPress rebuild on cached layers</dt>
-                <dd>69 s <small>instead of 451 s</small></dd>
-              </div>
-            </dl>
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Composition</span>
+          <h2 id="composition-title">Small components, joined by the mesh</h2>
+          <p class="lead">An application sits on a runtime, the runtime on Keel Web, and Keel Web on Keel Core. The data services stand beside the stack as appliances of their own, and the WireGuard mesh joins them.</p>
+        </div>
+        <div class="compose" data-reveal>
+          <div>
+            <p class="stack-title" id="stack-label">An appliance, top to bottom</p>
+            <ul class="stack" aria-labelledby="stack-label">
+              <li class="layer layer-app"><strong>Application</strong><span>WordPress, Odoo, Nextcloud, Mastodon: a manifest and an inithook</span><em>planned</em></li>
+              <li class="layer layer-runtime"><strong>Runtime</strong><span>PHP-FPM, Python, Ruby, Node.js or Go</span><em>planned</em></li>
+              <li class="layer layer-web"><strong>Keel Web</strong><span>Nginx, the Coraza WAF and Anubis</span><em>focus now</em></li>
+              <li class="layer layer-core"><strong>Keel Core</strong><span>Debian 13, WireGuard, etcd, CrowdSec, the installer</span><em>focus now</em></li>
+            </ul>
           </div>
+          <div class="mesh-link" aria-hidden="true"><i class="flow"></i><i class="flow two"></i><span>WireGuard<br>mesh</span></div>
+          <div>
+            <p class="services-title" id="services-label">Data services, beside it</p>
+            <ul class="services" aria-labelledby="services-label">
+              <li class="layer service"><strong>PostgreSQL, MariaDB</strong><span>a primary and a hot standby</span></li>
+              <li class="layer service"><strong>Redis</strong><span>sessions, queues and caches</span></li>
+              <li class="layer service"><strong>Search</strong><span>derived data, rebuilt when a node joins</span></li>
+              <li class="layer service"><strong>Object storage</strong><span>Garage, for media, attachments and backups</span></li>
+            </ul>
+          </div>
+        </div>
+        <p class="compose-note">In a simple installation the data services are embedded on the same machine. In an advanced one they are appliances of their own, found on the mesh. <a href="architecture.html#composition">The composition in detail</a>.</p>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="modes" aria-labelledby="modes-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Installation modes</span>
+          <h2 id="modes-title">One image, three ways to install it</h2>
+          <p class="lead">The image is the same in every mode; the mode chosen at first boot decides what runs. <span class="badge badge-decided">Decided, 0028</span></p>
+        </div>
+        <ul class="grid grid-3">
+          <li class="card mode" data-reveal>
+            <p class="nodes" aria-hidden="true"><span class="node primary">LXC</span></p>
+            <h3>Simple</h3>
+            <ul>
+              <li>Everything in one LXC</li>
+              <li>No mesh and no etcd</li>
+              <li>CrowdSec installed and disabled</li>
+              <li>Keel Web is Nginx only</li>
+            </ul>
+          </li>
+          <li class="card mode" data-reveal data-reveal-delay="1">
+            <p class="nodes" aria-hidden="true"><span class="node primary">primary</span><span class="node">standby</span></p>
+            <h3>Advanced, cloud simple</h3>
+            <ul>
+              <li>The database replicated from a primary to a standby</li>
+              <li>The application's files in a single LXC</li>
+              <li>The primary hands the standby its key, password and WireGuard endpoint</li>
+              <li>Two nodes cannot elect, so failover is by hand</li>
+            </ul>
+          </li>
+          <li class="card mode" data-reveal data-reveal-delay="2">
+            <p class="nodes" aria-hidden="true"><span class="node primary">node</span><span class="node">node</span><span class="node voter">arbiter</span></p>
+            <h3>Advanced, cloud advanced</h3>
+            <ul>
+              <li>Three LXC at least, with an etcd quorum</li>
+              <li>Directory replication over the mesh</li>
+              <li>Three sites, or two plus an external arbiter</li>
+              <li>Later nodes install by discovery, not by typing</li>
+            </ul>
+          </li>
+        </ul>
+        <p class="compose-note"><a href="cloud.html#modes">Installation modes and replication in detail</a>.</p>
+      </div>
+    </section>
+
+    <section class="section" id="security" aria-labelledby="security-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Security</span>
+          <h2 id="security-title">Three gates before the application</h2>
+          <p class="lead">In an advanced installation, a request meets CrowdSec first, then Nginx with the WAF inline, then Anubis, and only then the application. <span class="badge badge-decided">Decided, 0030</span></p>
+        </div>
+        <figure class="pipeline" data-module="pipeline" data-src="assets/js/pipeline.js" style="margin:0" data-reveal>
+          <div class="pipeline-stage"><canvas aria-hidden="true"></canvas></div>
+          <ol class="pipeline-steps">
+            <li><strong>Internet</strong>A request arrives, over IPv6 first.</li>
+            <li><strong>CrowdSec</strong>Bans known bad addresses before anything else runs.</li>
+            <li><strong>Nginx + WAF</strong>Terminates TLS, serves static files and runs Coraza with the OWASP Core Rule Set.</li>
+            <li><strong>Anubis</strong>Proof of work, behind Nginx and never at the edge. Search crawlers are exempt.</li>
+            <li><strong>Application</strong>Only what passed the gates reaches it.</li>
+          </ol>
+          <figcaption class="pipeline-foot">
+            <span><i class="ban" aria-hidden="true"></i>banned by CrowdSec</span>
+            <span><i class="waf" aria-hidden="true"></i>refused by the WAF</span>
+            <span><i class="pow" aria-hidden="true"></i>challenged by Anubis</span>
+            <span><i class="ok" aria-hidden="true"></i>exempt crawler</span>
+            <span>In a simple installation Keel Web is Nginx only and CrowdSec is off.</span>
+          </figcaption>
+        </figure>
+        <p class="compose-note"><a href="security.html">Keys, the pipeline, exposure classes and what each mode enables</a>.</p>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="declarative" aria-labelledby="declarative-title">
+      <div class="wrap split">
+        <div data-reveal>
+          <span class="eyebrow">Declarative</span>
+          <h2 id="declarative-title">Declared in one file, converged by one command</h2>
+          <p class="lead">The instance spec, <code>/etc/keel/instance.yaml</code>, is the machine written down. Keel reads the machine into it, compares the two and converges the machine to it.</p>
+          <ul class="checks">
+            <li><strong>Inspect.</strong> Write a spec from a running machine, every field with its source, secrets never read.</li>
+            <li><strong>Diff.</strong> Report drift field by field: same, drift, unknown or not declared.</li>
+            <li><strong>Apply.</strong> Converge only what differs. A second run changes nothing.</li>
+            <li><strong>Emit.</strong> Every installation will write its complete YAML, defaults included, so one answer file replays many installations. <span class="badge badge-decided">Decided, 0027</span></li>
+          </ul>
+        </div>
+        <div data-reveal data-reveal-delay="1">
+          <div class="terminal" data-module="terminal" data-src="assets/js/terminal.js">
+            <div class="panel-bar">
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span>root@blog: ~</span>
+              <span class="terminal-tools"><button type="button" data-replay hidden>Replay</button></span>
+            </div>
+<pre tabindex="0" aria-label="A keel session: inspect the machine, declare a name, find the drift, apply it, and diff clean"><span data-line="cmd"><span class="prompt">$ </span><span class="cmd">keel inspect --output /etc/keel/instance.yaml</span>
+</span><span data-line="out" class="same">instance.hostname: blog (from /etc/hostname)
+</span><span data-line="out" class="same">instance.fqdn: shop.example.org (from /etc/hosts)
+</span><span data-line="out" class="same">network.interfaces.eth0.ipv6: static 2001:db8:1::10/64 gateway fe80::1
+</span><span data-line="out">inspect: 20 inferred, 1 not inferred (0 required), 2 secrets to provide; spec complete
+</span><span data-line="out" class="note"># declare the name this machine should have
+</span><span data-line="cmd"><span class="prompt">$ </span><span class="cmd">sed -i 's/shop.example.org/blog.example.org/' /etc/keel/instance.yaml</span>
+</span><span data-line="cmd"><span class="prompt">$ </span><span class="cmd">keel diff</span>
+</span><span data-line="out" class="same">instance.hostname: same (blog)
+</span><span data-line="out" class="drift">instance.fqdn: drift (declared blog.example.org, observed shop.example.org)
+</span><span data-line="out" class="same">network.interfaces.eth0.ipv6.address: same (2001:db8:1::10/64)
+</span><span data-line="out" class="drift">diff: 12 same, 1 drift, 0 unknown, 1 not declared, 2 not compared; drift found
+</span><span data-line="cmd"><span class="prompt">$ </span><span class="cmd">keel spec apply --system-only</span>
+</span><span data-line="out">apply --system-only: /etc/inithooks.conf not read or written
+</span><span data-line="out" class="done">instance.fqdn: write /etc/hosts with '127.0.1.1 blog.example.org blog' (mode 0644): done
+</span><span data-line="out">apply --system-only: 1 change(s), 0 failed
+</span><span data-line="cmd"><span class="prompt">$ </span><span class="cmd">keel diff | tail -n 1</span>
+</span><span data-line="out" class="done">diff: 13 same, 0 drift, 0 unknown, 1 not declared, 2 not compared; no drift
+</span></pre>
+          </div>
+          <p class="hint">Commands and output lines as the <a href="https://github.com/Keel-Linux/keel">keel documentation</a> gives them; the session is abridged.</p>
         </div>
       </div>
     </section>
 
-    <section id="standards" aria-labelledby="standards-title">
+    <section class="section" id="how-it-is-built" aria-labelledby="how-title">
+      <div class="wrap split">
+        <div data-reveal>
+          <span class="eyebrow">How it is built</span>
+          <h2 id="how-title">Signed, content-addressed layers</h2>
+          <p class="lead">Every appliance is assembled from read-only layers. Each is a deterministic tarball with a sha256, listed in a plain-text layer manifest that is signed by the project key and tied to a git commit.</p>
+          <ul class="checks">
+            <li><strong>Reproducible.</strong> The same commit and the same manifest give the same bytes.</li>
+            <li><strong>Incremental.</strong> An update downloads only the layer that changed: a new WordPress release is the app layer, not the base.</li>
+            <li><strong>Verified.</strong> <code>keel pull</code> checks every digest, and <code>keel verify</code> checks installed layers against their manifests.</li>
+          </ul>
+        </div>
+        <div class="card" data-reveal data-reveal-delay="1">
+          <h3 style="margin-top:0">Measured on the build host</h3>
+          <p class="hint">Unmodified TurnKey 19.0 recipes built as layers, before the composition redesign. One build host, one measurement each.</p>
+          <ul class="bars" aria-label="Layer sizes">
+            <li><p class="label"><span>Core layer</span><span>326 MB</span></p><span class="track"><span class="fill" style="--w:100%"></span></span></li>
+            <li><p class="label"><span>LAMP stack delta</span><span>80 MB</span></p><span class="track"><span class="fill" style="--w:24.5%"></span></span></li>
+            <li><p class="label"><span>WordPress app delta</span><span>133 MB</span></p><span class="track"><span class="fill" style="--w:40.8%"></span></span></li>
+          </ul>
+          <ul class="bars" aria-label="WordPress build time">
+            <li><p class="label"><span>WordPress, rebuilt on cached layers</span><span>69 s</span></p><span class="track"><span class="fill" style="--w:15.3%"></span></span></li>
+            <li><p class="label"><span>WordPress, built from scratch</span><span>451 s</span></p><span class="track"><span class="fill slow" style="--w:100%"></span></span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="standards" aria-labelledby="standards-title">
       <div class="wrap">
-        <span class="eyebrow">Standards</span>
-        <h2 id="standards-title">Rules every change follows</h2>
-        <ul class="standards">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Standards</span>
+          <h2 id="standards-title">Rules every change follows</h2>
+        </div>
+        <ul class="standards" data-reveal>
           <li>
-            <strong>90 percent test coverage minimum, 95 percent for project code</strong>
-            <p>Every change ships with tests. The forked repositories keep at least 90 percent coverage; code the project writes keeps 95 percent.</p>
+            <strong>90 percent test coverage minimum, 95 for project code</strong>
+            <p>Every change ships with tests. The forked repositories keep at least 90 percent coverage; code the project writes keeps 95 percent. The check is required on every pull request.</p>
           </li>
           <li>
             <strong>IPv6 in every example</strong>
@@ -213,61 +382,76 @@
       </div>
     </section>
 
-    <section class="status" id="status" aria-labelledby="status-title">
-      <div class="wrap">
-        <span class="eyebrow">Status</span>
-        <h2 id="status-title">Early</h2>
-        <div class="text">
-          <p>The build host reproduces unmodified TurnKey 19.0 from the forked repositories. That is the baseline every later change is measured against, and it passed before anything else started.</p>
-          <p>Layers, Proxmox templates and packages are served from mirror.keellinux.org and archive.keellinux.org for testing. There is no release for end users yet, and the test images are not meant for production.</p>
+    <section class="section" id="status" aria-labelledby="status-title">
+      <div class="wrap status-grid">
+        <div data-reveal>
+          <span class="eyebrow">Status</span>
+          <h2 id="status-title">Early, and plain about it</h2>
+          <p>There is no release for end users. Layers, Proxmox templates and packages are served from mirror.keellinux.org and archive.keellinux.org for testing, and the test images are not meant for production.</p>
+          <p>The build host reproduces unmodified TurnKey 19.0 from the forked repositories, which is the baseline every change is measured against. <code>keel inspect</code>, <code>keel diff</code> and <code>keel spec apply</code> run on the test images, and a MariaDB pair, with seeding and a read-only replica, is mostly done in keel 0.11.</p>
+          <p>The composition architecture on this site was decided on 30 September 2026. Where a point says <em>decided</em> or <em>goal</em>, it is on the roadmap and not yet in the code.</p>
+          <div class="actions" style="margin-top:1.5rem">
+            <a class="btn btn-primary" href="roadmap.html">The roadmap, phase by phase</a>
+            <a class="btn btn-ghost" href="https://github.com/Keel-Linux/tracker/issues/46">tracker#46</a>
+          </div>
         </div>
-        <h3>What is next</h3>
-        <ol class="next">
-          <li><strong>Declarative spec.</strong> <code>keel inspect</code>, <code>keel diff</code> and <code>keel spec apply</code> exist and run on the test images. Next: converging the network on a running machine, and the console writing the same file.</li>
-          <li><strong>Layered builds.</strong> Hashed core, stack and app layers with signed manifests are built and served for testing. Next: making them something end users can rely on.</li>
-          <li><strong>Transition from TurnKey 19.0.</strong> A keyring package and a transition package that switch an existing appliance to the project repositories and write its spec from what is installed.</li>
-        </ol>
+        <div data-reveal data-reveal-delay="1">
+          <h3>The focus now</h3>
+          <ol class="focus-list">
+            <li><span class="num">P1</span><div><strong>Keel Core</strong><p>WireGuard is in Core. Next: CrowdSec installed and disabled, etcd present and stopped, the YAML always emitted, overlays shipped as <code>.deb</code>.</p></div></li>
+            <li><span class="num">P3</span><div><strong>Keel Web</strong><p>Nginx, Coraza and Anubis packaged in the Keel repository; plain Nginx in a simple installation, the full pipeline in an advanced one.</p></div></li>
+            <li><span class="num">0041</span><div><strong>The appliance manifest</strong><p>Version 1 is decided. The first step is its reader, <code>keel manifest validate</code> and <code>keel manifest show</code>, with Core and Web as fixtures.</p></div></li>
+          </ol>
+          <p class="hint" style="margin-top:1rem">Decisions: <a href="https://github.com/Keel-Linux/tracker/issues?q=is%3Aissue+ADR">0023 to 0040 on the tracker</a>, and <a href="https://github.com/Keel-Linux/tracker/issues/39">the manifest, tracker#39</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="cta-title" style="padding-top:0">
+      <div class="wrap">
+        <div class="cta" data-reveal>
+          <h2 id="cta-title">Read how it fits together</h2>
+          <p>The architecture, the security model and the cloud are each on a page of their own, with every claim tied to the code or to a decision on the tracker.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="architecture.html">Architecture</a>
+            <a class="btn btn-ghost" href="security.html">Security</a>
+            <a class="btn btn-ghost" href="cloud.html">Cloud &amp; replication</a>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
-      <p><a href="architecture.html">Architecture</a> · <a href="guidelines.html">Guidelines</a> · <a href="https://github.com/keel-linux">github.com/keel-linux</a></p>
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="assets/keel-mark.svg" alt="" width="32" height="32"><span>Keel Linux</span></a>
+          <p>Composable, mesh-native appliances on Debian 13. IPv6-first and declarative. An independent fork of TurnKey Linux 19.</p>
+        </div>
+        <nav aria-label="Site">
+          <h2>Site</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="architecture.html">Architecture</a></li>
+            <li><a href="security.html">Security</a></li>
+            <li><a href="cloud.html">Cloud &amp; replication</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="guidelines.html">Guidelines</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Source">
+          <h2>Source</h2>
+          <ul>
+            <li><a href="https://github.com/keel-linux">github.com/keel-linux</a></li>
+            <li><a href="https://github.com/Keel-Linux/keel">keel, the spec and the command</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker">The tracker</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker/issues/46">Roadmap, tracker#46</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="legal">Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
     </div>
   </footer>
-
-  <script>
-    (function () {
-      var root = document.documentElement;
-      var button = document.getElementById("theme-toggle");
-      if (!button || !window.matchMedia) { return; }
-      var query = window.matchMedia("(prefers-color-scheme: dark)");
-
-      function currentTheme() {
-        var set = root.getAttribute("data-theme");
-        if (set === "light" || set === "dark") { return set; }
-        return query.matches ? "dark" : "light";
-      }
-
-      function describe() {
-        var next = currentTheme() === "dark" ? "light" : "dark";
-        button.setAttribute("aria-label", "Switch to " + next + " theme");
-        button.title = "Switch to " + next + " theme";
-      }
-
-      button.addEventListener("click", function () {
-        var next = currentTheme() === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", next);
-        try { localStorage.setItem("keel-theme", next); } catch (e) {}
-        describe();
-      });
-
-      if (query.addEventListener) { query.addEventListener("change", describe); }
-      describe();
-      button.hidden = false;
-    })();
-  </script>
 </body>
 </html>

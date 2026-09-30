@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roadmap, Keel Linux</title>
+  <meta name="description" content="The Keel Linux roadmap, phase by phase: Keel Core, data appliances, Keel Web, runtimes, the mesh control plane, applications by manifest, object storage and backup. Mirrored from tracker#46.">
+  <link rel="canonical" href="https://keellinux.org/roadmap.html">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07182B">
+  <link rel="icon" type="image/svg+xml" href="assets/keel-mark.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" href="assets/keel-mark-512.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Keel Linux">
+  <meta property="og:url" content="https://keellinux.org/roadmap.html">
+  <meta property="og:title" content="Keel Linux roadmap">
+  <meta property="og:description" content="Eight phases, one layer at a time, each done only when it holds on a built image.">
+  <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
+  <meta property="og:image:alt" content="The Keel Linux mark">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Keel Linux roadmap">
+  <meta name="twitter:description" content="Eight phases, one layer at a time, each done only when it holds on a built image.">
+  <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.className += " js";
+      try {
+        var saved = localStorage.getItem("keel-theme");
+        if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+      } catch (e) {}
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        root.className += " js-motion";
+        setTimeout(function () { if (!window.keelReady) { root.className = root.className.replace(" js-motion", ""); } }, 2500);
+      }
+    })();
+  </script>
+  <script defer src="assets/js/site.js"></script>
+  <script defer data-domain="keellinux.org" src="https://analytics.pop.coop/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+  <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="Keel Linux, home">
+        <img src="assets/keel-mark.svg" alt="" width="32" height="32">
+        <span>Keel Linux</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="cloud.html">Cloud &amp; replication</a></li>
+          <li><a href="roadmap.html" aria-current="page">Roadmap</a></li>
+          <li><a href="guidelines.html">Guidelines</a></li>
+          <li><a href="https://github.com/keel-linux">GitHub</a></li>
+        </ul>
+      </nav>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" aria-labelledby="page-title">
+      <div class="wrap">
+        <p class="crumbs"><a href="index.html">Home</a> / Roadmap</p>
+        <span class="eyebrow">Roadmap</span>
+        <h1 id="page-title">One layer at a time</h1>
+        <p class="lead">Every phase ships something testable, and a phase is done only when its criterion holds on a built image, not on a machine assembled by hand. The focus now is Keel Core and Keel Web.</p>
+        <p class="hint">A copy of <a href="https://github.com/Keel-Linux/tracker/issues/46">tracker#46</a> as of 2026-09-30. The tracker is the source; where the two differ, the tracker is right. Decision numbers link to their issue on the tracker.</p>
+      </div>
+    </section>
+
+    <div class="wrap" style="padding-bottom:96px">
+      <div class="filters" data-filters role="group" aria-label="Show tasks" hidden>
+        <button type="button" data-filter="all" aria-pressed="true">All tasks</button>
+        <button type="button" data-filter="open" aria-pressed="false">Open</button>
+        <button type="button" data-filter="done" aria-pressed="false">Done</button>
+      </div>
+
+      <ol class="phases">
+        <li class="phase" id="phase-0" data-reveal>
+          <span class="phase-dot" aria-hidden="true">0</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Phase 0: sharpen the axe</h2>
+              <p class="progress" style="margin:0"><span class="track" aria-hidden="true"><span class="fill" style="--w:0%"></span></span>0 of 5 done</p>
+            </div>
+            <ul class="tasks">
+              <li>Record the decisions, 0023 to 0040</li>
+              <li>Map them against 0000 to 0022; the maintainer confirms the review notes</li>
+              <li>Specify the manifest format, the pivot of backup, monitoring, upgrade, replication and discovery (<a href="https://github.com/Keel-Linux/tracker/issues/39">tracker#39</a>; version 1 decided in 0041)</li>
+              <li>The maintainer validates the WordPress test image for simple and cloud simple</li>
+              <li>An attended release replaces the published layers that still carry private keys</li>
+            </ul>
+            <p class="done-when"><strong>Done when</strong> the manifest schema is reviewed with WordPress, Odoo and Mastodon examples, the WordPress test image passes the maintainer's test, and no published layer carries a shared key.</p>
+          </div>
+        </li>
+
+        <li class="phase is-current" id="phase-1" data-reveal>
+          <span class="phase-dot" aria-hidden="true">1</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Phase 1: Keel Core</h2>
+              <p class="progress" style="margin:0"><span class="track" aria-hidden="true"><span class="fill" style="--w:14.3%"></span></span>1 of 7 done</p>
+            </div>
+            <ul class="tasks">
+              <li class="done">WireGuard in Core (<a href="https://github.com/Keel-Linux/tracker/issues/29">0024</a>)</li>
+              <li>CrowdSec in Core, installed and disabled (<a href="https://github.com/Keel-Linux/tracker/issues/34">0029</a>)</li>
+              <li>etcd overlay present and stopped (<a href="https://github.com/Keel-Linux/tracker/issues/30">0025</a>, <a href="https://github.com/Keel-Linux/tracker/issues/41">0036</a>)</li>
+              <li>YAML always emitted, complete with defaults (<a href="https://github.com/Keel-Linux/tracker/issues/32">0027</a>)</li>
+              <li>stable and testing tracks declared in the YAML (<a href="https://github.com/Keel-Linux/tracker/issues/44">0039</a>)</li>
+              <li>Overlays shipped as <code>.deb</code> from the Keel repository (<a href="https://github.com/Keel-Linux/tracker/issues/41">0036</a>, <a href="https://github.com/Keel-Linux/tracker/issues/44">0039</a>)</li>
+              <li>Simple and advanced mode screen (<a href="https://github.com/Keel-Linux/tracker/issues/33">0028</a>)</li>
+            </ul>
+            <p class="done-when"><strong>Done when</strong> a Core image boots in simple installation, emits a YAML that re-applies as a no-op, runs no etcd and no active CrowdSec, and upgrades one overlay with <code>apt upgrade</code> on the testing track.</p>
+          </div>
+        </li>
+
+        <li class="phase" id="phase-2" data-reveal>
+          <span class="phase-dot" aria-hidden="true">2</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Phase 2: data appliances, standalone and paired</h2>
+              <p class="progress" style="margin:0"><span class="track" aria-hidden="true"><span class="fill" style="--w:0%"></span></span>0 of 5 done</p>
+            </div>
+            <ul class="tasks">
+              <li>MariaDB standalone and paired; the pair, seeding and read-only replica are mostly done in keel 0.11</li>
+              <li>PostgreSQL standalone and paired</li>
+              <li>Redis standalone and paired</li>
+              <li>The semi-synchronous setup for MariaDB and the timeout policy for both engines (<a href="https://github.com/Keel-Linux/tracker/issues/36">0031</a>)</li>
+              <li>Automatic failback after full catch-up, for the pair; the default stays the operator's, manual (<a href="https://github.com/Keel-Linux/tracker/issues/36">0031</a>)</li>
+            </ul>
+            <p class="done-when"><strong>Done when</strong> each engine passes a two-container gate in cloud simple: write on the primary, read on the standby, commit latency and the synchronous or semi-synchronous fallback measured, promotion by hand.</p>
+          </div>
+        </li>
+
+        <li class="phase is-current" id="phase-3" data-reveal>
+          <span class="phase-dot" aria-hidden="true">3</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Phase 3: Keel Web</h2>
+              <p class="progress" style="margin:0"><span class="track" aria-hidden="true"><span class="fill" style="--w:0%"></span></span>0 of 3 done</p>
+            </div>
+            <ul class="tasks">
+              <li>WAF: the Coraza connector, ModSecurity v3, or Coraza as a proxy (<a href="https://github.com/Keel-Linux/tracker/issues/35">0030</a>)</li>
+              <li>Anubis packaged in the Keel repository</li>
+              <li>nginx overlay and the Keel Web recipe; Coraza and Anubis disabled in simple</li>
+            </ul>
+            <p class="done-when"><strong>Done when</strong> Keel Web in advanced mode blocks a Core Rule Set test payload, challenges a browser through Anubis, lets exempt crawlers through, and in simple mode is plain Nginx.</p>
+          </div>
+        </li>
+
+        <li class="phase" id="phase-4" data-reveal>
+          <span class="phase-dot" aria-hidden="true">4</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Phase 4: runtimes, and WordPress on Keel PHP</h2>
+              <p class="progress" style="margin:0"><span class="track" aria-hidden="true"><span class="fill" style="--w:0%"></span></span>0 of 3 done</p>
+            </div>
+            <ul class="tasks">
+              <li>php-fpm overlay; Keel PHP is Keel Web plus php-fpm (<a href="https://github.com/Keel-Linux/tracker/issues/28">0023</a>)</li>
+              <li>WordPress as the first application built from a manifest, which retires Apache for WordPress (<a href="https://github.com/Keel-Linux/tracker/issues/39">0034</a>)</li>
+              <li>python, ruby, nodejs and go overlays (<a href="https://github.com/Keel-Linux/tracker/issues/41">0036</a>)</li>
+            </ul>
+            <p class="done-when"><strong>Done when</strong> WordPress on Keel PHP passes the appliance gate in simple and cloud simple, built from its manifest, with no Apache in the image.</p>
+          </div>
+        </li>
+
+        <li class="phase" id="phase-5" data-reveal>
+          <span class="phase-dot" aria-hidden="true">5</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Phase 5: mesh control plane</h2>
+              <p class="progress" style="margin:0"><span class="track" aria-hidden="true"><span class="fill" style="--w:0%"></span></span>0 of 7 done</p>
+            </div>
+            <ul class="tasks">
+              <li>etcd registry: key layout and node announcement (<a href="https://github.com/Keel-Linux/tracker/issues/30">0025</a>)</li>
+              <li>Installation by discovery (<a href="https://github.com/Keel-Linux/tracker/issues/31">0026</a>)</li>
+              <li>Cloud advanced on three nodes, election and fencing (<a href="https://github.com/Keel-Linux/tracker/issues/33">0028</a>)</li>
+              <li>Automatic failback after full catch-up on three nodes; the operator still chooses, default manual (<a href="https://github.com/Keel-Linux/tracker/issues/36">0031</a>)</li>
+              <li>Service address controller rewriting <code>AllowedIPs</code> from etcd (<a href="https://github.com/Keel-Linux/tracker/issues/34">0029</a>)</li>
+              <li>Syncthing overlay, send-only and receive-only flipped on promotion (<a href="https://github.com/Keel-Linux/tracker/issues/37">0032</a>)</li>
+              <li>Monit summary to etcd, mesh alerting by watch (<a href="https://github.com/Keel-Linux/tracker/issues/45">0040</a>)</li>
+            </ul>
+            <p class="done-when"><strong>Done when</strong> a three-container gate installs the second and third node by discovery, fails over automatically, moves the service address, flips the Syncthing folders, fails back after catch-up, and reports each node's Monit summary through etcd.</p>
+          </div>
+        </li>
+
+        <li class="phase" id="phase-6" data-reveal>
+          <span class="phase-dot" aria-hidden="true">6</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Phase 6: applications by manifest</h2>
+              <p class="progress" style="margin:0"><span class="track" aria-hidden="true"><span class="fill" style="--w:0%"></span></span>0 of 3 done</p>
+            </div>
+            <ul class="tasks">
+              <li>Odoo by manifest, updated with apt (<a href="https://github.com/Keel-Linux/tracker/issues/44">0039</a>)</li>
+              <li>Nextcloud by manifest</li>
+              <li>Mastodon as the reference proof (<a href="https://github.com/Keel-Linux/tracker/issues/40">0035</a>)</li>
+            </ul>
+            <p class="done-when"><strong>Done when</strong> each passes the gate in simple and cloud advanced from its manifest alone plus its inithook, Mastodon last.</p>
+          </div>
+        </li>
+
+        <li class="phase" id="phase-7" data-reveal>
+          <span class="phase-dot" aria-hidden="true">7</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Phase 7: object storage and backup</h2>
+              <p class="progress" style="margin:0"><span class="track" aria-hidden="true"><span class="fill" style="--w:0%"></span></span>0 of 4 done</p>
+            </div>
+            <ul class="tasks">
+              <li>Garage packaged; <code>s3</code> overlay with zones from the site label (<a href="https://github.com/Keel-Linux/tracker/issues/43">0038</a>)</li>
+              <li>Keel Backup appliance (<a href="https://github.com/Keel-Linux/tracker/issues/42">0037</a>)</li>
+              <li>TKLBAM backend abstraction targeting Keel Backup</li>
+              <li>Periodic restore test into a throwaway container, reported to etcd</li>
+            </ul>
+            <p class="done-when"><strong>Done when</strong> an application is backed up from its standby to Keel Backup in another site, and a scheduled restore test succeeds and is visible in etcd.</p>
+          </div>
+        </li>
+
+        <li class="phase" id="open-items" data-reveal>
+          <span class="phase-dot" aria-hidden="true">?</span>
+          <div class="card">
+            <div class="phase-head">
+              <h2>Open architecture items</h2>
+            </div>
+            <ul class="tasks">
+              <li>DNS successor for nodes behind NAT with changing IPv6 prefixes; PowerDNS fed from etcd is likely, not decided (<a href="https://github.com/Keel-Linux/tracker/issues/29">0024</a>)</li>
+              <li>Elasticsearch or OpenSearch (<a href="https://github.com/Keel-Linux/tracker/issues/38">0033</a>)</li>
+            </ul>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="assets/keel-mark.svg" alt="" width="32" height="32"><span>Keel Linux</span></a>
+          <p>Composable, mesh-native appliances on Debian 13. IPv6-first and declarative. An independent fork of TurnKey Linux 19.</p>
+        </div>
+        <nav aria-label="Site">
+          <h2>Site</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="architecture.html">Architecture</a></li>
+            <li><a href="security.html">Security</a></li>
+            <li><a href="cloud.html">Cloud &amp; replication</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="guidelines.html">Guidelines</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Source">
+          <h2>Source</h2>
+          <ul>
+            <li><a href="https://github.com/keel-linux">github.com/keel-linux</a></li>
+            <li><a href="https://github.com/Keel-Linux/keel">keel, the spec and the command</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker">The tracker</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker/issues/46">Roadmap, tracker#46</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="legal">Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
+    </div>
+  </footer>
+</body>
+</html>
