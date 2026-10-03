@@ -77,7 +77,7 @@
         <span class="eyebrow">Roadmap</span>
         <h1 id="page-title">One layer at a time</h1>
         <p class="lead">Every phase ships something testable, and a phase is done only when its criterion holds on a built image, not on a machine assembled by hand. The focus now is Keel Core and Keel Web.</p>
-        <p class="hint">A copy of <a href="https://github.com/Keel-Linux/tracker/issues/46">tracker#46</a> as of 2026-09-30. The tracker is the source; where the two differ, the tracker is right. Decision numbers link to their issue on the tracker.</p>
+        <p class="hint">A copy of <a href="https://github.com/Keel-Linux/tracker/issues/46">tracker#46</a> as of 2026-09-30, with progress notes from 2026-10-03. The tracker is the source; where the two differ, the tracker is right. Decision numbers link to their issue on the tracker.</p>
       </div>
     </section>
 
@@ -103,6 +103,7 @@
               <li>The maintainer validates the WordPress test image for simple and cloud simple</li>
               <li>An attended release replaces the published layers that still carry private keys</li>
             </ul>
+            <p class="hint"><strong>Progress.</strong> The layers and images that carried shared keys were withdrawn on 2 October, and signed rebuilds replaced them on the testing channel: <a href="https://github.com/Keel-Linux/keel-core/releases/tag/testing-19.0-8-step10-20261003">Keel Core 19.0-8</a> and <a href="https://github.com/Keel-Linux/keel-web/releases/tag/testing-19.0-3-step10-20261003">Keel Web 19.0-3</a>.</p>
             <p class="done-when"><strong>Done when</strong> the manifest schema is reviewed with WordPress, Odoo and Mastodon examples, the WordPress test image passes the maintainer's test, and no published layer carries a shared key.</p>
           </div>
         </li>
@@ -123,6 +124,7 @@
               <li>Overlays shipped as <code>.deb</code> from the Keel repository (<a href="https://github.com/Keel-Linux/tracker/issues/41">0036</a>, <a href="https://github.com/Keel-Linux/tracker/issues/44">0039</a>)</li>
               <li>Simple and advanced mode screen (<a href="https://github.com/Keel-Linux/tracker/issues/33">0028</a>)</li>
             </ul>
+            <p class="hint"><strong>Progress.</strong> Keel Core is in testing as a signed pre-release, built from Debian and the Keel archive only. First boot asks for the FQDN, runs unattended without hanging, and installs security updates without blocking the boot.</p>
             <p class="done-when"><strong>Done when</strong> a Core image boots in simple installation, emits a YAML that re-applies as a no-op, runs no etcd and no active CrowdSec, and upgrades one overlay with <code>apt upgrade</code> on the testing track.</p>
           </div>
         </li>
@@ -157,6 +159,7 @@
               <li>Anubis packaged in the Keel repository</li>
               <li>nginx overlay and the Keel Web recipe; Coraza and Anubis disabled in simple</li>
             </ul>
+            <p class="hint"><strong>Progress.</strong> Keel Web is in testing as a signed pre-release. In simple mode it serves HTTPS with the machine's own certificate; cloud mode adds Coraza and Anubis.</p>
             <p class="done-when"><strong>Done when</strong> Keel Web in advanced mode blocks a Core Rule Set test payload, challenges a browser through Anubis, lets exempt crawlers through, and in simple mode is plain Nginx.</p>
           </div>
         </li>
@@ -177,7 +180,7 @@
           </div>
         </li>
 
-        <li class="phase" id="phase-5" data-reveal>
+        <li class="phase is-current" id="phase-5" data-reveal>
           <span class="phase-dot" aria-hidden="true">5</span>
           <div class="card">
             <div class="phase-head">
@@ -193,6 +196,7 @@
               <li>Syncthing overlay, send-only and receive-only flipped on promotion (<a href="https://github.com/Keel-Linux/tracker/issues/37">0032</a>)</li>
               <li>Monit summary to etcd, mesh alerting by watch (<a href="https://github.com/Keel-Linux/tracker/issues/45">0040</a>)</li>
             </ul>
+            <p class="hint"><strong>Progress.</strong> Under way. Two Keel Web nodes in different locations are joined over a WireGuard overlay, declared in each node's instance spec. Next: a one-command join, <code>keel mesh invite</code> and <code>keel mesh join</code> (decision 0048, in review), and etcd at the third node.</p>
             <p class="done-when"><strong>Done when</strong> a three-container gate installs the second and third node by discovery, fails over automatically, moves the service address, flips the Syncthing folders, fails back after catch-up, and reports each node's Monit summary through etcd.</p>
           </div>
         </li>
@@ -239,6 +243,7 @@
             <ul class="tasks">
               <li>DNS successor for nodes behind NAT with changing IPv6 prefixes; PowerDNS fed from etcd is likely, not decided (<a href="https://github.com/Keel-Linux/tracker/issues/29">0024</a>)</li>
               <li>Elasticsearch or OpenSearch (<a href="https://github.com/Keel-Linux/tracker/issues/38">0033</a>)</li>
+              <li>MongoDB and CouchDB: deferred</li>
             </ul>
           </div>
         </li>

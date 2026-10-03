@@ -125,7 +125,7 @@
 
         <section id="mesh" aria-labelledby="mesh-title">
           <h2 id="mesh-title">The mesh is the base, not an extra</h2>
-          <p><span class="badge badge-partial">WireGuard in Core; the rest decided, 0024</span></p>
+          <p><span class="badge badge-live">Two nodes joined, in testing</span> <span class="badge badge-partial">WireGuard in Core; the rest decided, 0024</span></p>
           <ul class="checks">
             <li><strong>WireGuard ships in Keel Core,</strong> so every appliance can join a mesh, even when it is alone. <code>keel network wireguard key</code> prints this node's public key and never the private one.</li>
             <li><strong>Tunnels are initiated from inside to outside,</strong> so a node behind NAT or a firewall needs only outbound UDP.</li>
@@ -133,6 +133,10 @@
             <li><strong>Rendezvous points</strong> are nodes with a real edge and fixed addressing.</li>
             <li><strong>A service address on the mesh,</strong> for database appliances only for now. WireGuard is layer 3 with no ARP, so the address is a <code>/128</code> route in <code>AllowedIPs</code> that a controller moves to the active node. Replication and node-to-node traffic always use the nodes' real addresses.</li>
           </ul>
+          <div class="callout">
+            <strong>Where it stands, 3 October 2026</strong>
+            <p>Phase 5 has started. Two Keel Web nodes in different locations are joined over a WireGuard overlay, declared in each node's instance spec and confirmed through the network safety window. Next is a one-command join, <code>keel mesh invite</code> on a node of the mesh then <code>keel mesh join</code> on the new one (decision 0048, in review), and etcd forms when the third node joins.</p>
+          </div>
           <p class="hint">Open: the successor to HubDNS for nodes behind NAT whose IPv6 prefix changes. A PowerDNS overlay fed from etcd is the likely shape, not yet decided.</p>
         </section>
 
@@ -185,7 +189,7 @@
           <h2 id="backup-title">Backup and object storage</h2>
           <p><span class="badge badge-decided">Decided, 0037 and 0038; Phase 7</span></p>
           <ul>
-            <li><strong>Keel Backup</strong> is an appliance: a storage backend and a key service, installable as an LXC or a VM. TKLBAM stays as the client, with a backend abstraction so that it targets Keel Backup.</li>
+            <li><strong>Keel Backup</strong> is an appliance: a storage backend and a key service, installable as an LXC or a VM. TKLBAM stays as the client, with a backend abstraction so that it targets Keel Backup. The current testing images ship neither TKLBAM nor the TurnKey Hub agent; Keel Backup and Keel Cloud replace them later.</li>
             <li><strong>Off-site by rule.</strong> A backup destination is never in the same site as its data: it refuses, or in a simple installation warns loudly.</li>
             <li><strong>Taken from the standby,</strong> so the primary does not pay for it.</li>
             <li><strong>Restores are tested</strong> periodically into a throwaway container, and the result is reported to etcd.</li>

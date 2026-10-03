@@ -97,15 +97,16 @@
       <div class="prose">
         <section id="identity" aria-labelledby="identity-title">
           <h2 id="identity-title">Keys and identity: none in the image</h2>
-          <p>An image that carries a private key hands that key to everyone who downloads it. Keel removes them in three places, so that none depends on another being remembered. <span class="badge badge-partial">Built; test layers to be republished</span></p>
+          <p>An image that carries a private key hands that key to everyone who downloads it. Keel removes them in three places, so that none depends on another being remembered. <span class="badge badge-live">In the current testing images</span></p>
           <ul class="checks">
             <li><strong>The build removes them.</strong> SSH host keys, the TLS key and certificate, Webmin's key and the snakeoil pair are removed before a layer is exported, and every layer is exported with an empty machine-id.</li>
             <li><strong>The export refuses them.</strong> The layer export audits the tree and refuses one that still holds a private key.</li>
+            <li><strong>A scan checks every layer and image.</strong> It verifies that none carries SSH host keys, TLS private keys, a Webmin certificate or snakeoil keys, on every build.</li>
             <li><strong>Every boot replaces them.</strong> A unit that runs before SSH, Webmin, the web servers and PostgreSQL generates what is missing and replaces any key on the list of published ones.</li>
           </ul>
-          <div class="callout warn">
-            <strong>Not done yet</strong>
-            <p>The test layers on the mirror were built before the fix, and an attended release replaces them (Phase 0 of the <a href="roadmap.html">roadmap</a>). Until then the boot unit is what protects a machine made from one. ISO and VM images still ship the build's machine-id (<a href="https://github.com/Keel-Linux/tracker/issues/24">tracker#24</a>).</p>
+          <div class="callout">
+            <strong>Fixed</strong>
+            <p>The test images and layers published before the fix carried keys made at build time. They were withdrawn on 2 October 2026 and replaced by signed rebuilds that pass the scan; the <a href="https://mirror.keellinux.org/WITHDRAWN.txt">notice on the mirror</a> says how to give a machine made from an old one its own keys. The ISO build now leaves the machine-id empty too (<a href="https://github.com/Keel-Linux/tracker/issues/24">tracker#24</a>).</p>
           </div>
         </section>
 
@@ -155,6 +156,7 @@
             </table>
           </div>
           <p>An operator can depart from a default on one machine, in the spec. A disabled overlay is still installed, so turning it on is a change to the spec, not a new image.</p>
+          <p>In the current testing image, Keel Web in simple mode serves HTTPS out of the box with the machine's own certificate, a Keel placeholder page and Keel error pages. Let's Encrypt is set up from the console, prefilled from the instance spec. <span class="badge badge-live">In testing</span></p>
         </section>
 
         <section id="exposure" aria-labelledby="exposure-title">
@@ -202,6 +204,8 @@
         <section id="supply" aria-labelledby="supply-title">
           <h2 id="supply-title">Where packages come from</h2>
           <p>Every image rebuilds from the project's own archive: a dated, pinned pool, verified by the build before it is read. What Debian 13 does not carry, Keel builds from source and signs in the same repository: Coraza's Nginx connector, Anubis and Garage. Anubis and Garage have packaging in progress in Debian, and Keel coordinates with those efforts rather than packaging in parallel. <span class="badge badge-decided">Decided, 0039</span></p>
+          <p>The testing images are built from Debian and the Keel archive only, with no TurnKey archive. The TurnKey tools Keel still uses, turnkey-ssl, netinfo, conffile, sysinfo, version, tkl-installer and the dhcpcd glue, are Keel forks published there, and turnkey-ssl no longer ships a key. <span class="badge badge-live">In testing</span></p>
+          <p>The archive, <a href="https://archive.keellinux.org/">archive.keellinux.org</a>, has two tracks: <code>trixie-testing</code>, where everything lands first, and <code>trixie</code>, the stable track. Promotion to stable is a maintainer's act. Images and the archive are signed, and the keyring is at <a href="https://archive.keellinux.org/keel-archive-keyring.asc">archive.keellinux.org/keel-archive-keyring.asc</a>.</p>
         </section>
       </div>
     </div>

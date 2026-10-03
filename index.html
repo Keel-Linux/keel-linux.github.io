@@ -74,7 +74,7 @@
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="wrap hero-grid">
         <div>
-          <a class="status-pill" href="#status"><strong>Early</strong> No end-user release yet. Read the status</a>
+          <a class="status-pill" href="#status"><strong>Testing</strong> Pre-release images, not for production. Read the status</a>
           <h1 id="hero-title">Composable, <span class="accent">mesh-native</span> appliances on Debian.</h1>
           <p class="promise">Every appliance is secure by default and can join a private cloud on day one.</p>
           <p class="sub">A fork of TurnKey Linux 19 (Debian 13) that turns single-machine appliances into building blocks of a real cloud: small components that run alone or together, replicate across sites, fail over, and are upgraded with apt. IPv6-first, so every node has a routable address of its own, and declarative, so every machine is described by one YAML file that Keel applies and re-applies to the same result.</p>
@@ -382,12 +382,52 @@
       </div>
     </section>
 
-    <section class="section" id="status" aria-labelledby="status-title">
+    <section class="section" id="progress" aria-labelledby="progress-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Progress, 2 and 3 October 2026</span>
+          <h2 id="progress-title">Signed testing images, and the first two mesh nodes</h2>
+          <p class="lead">What landed in two days of work. Everything here is on the testing channel and not meant for production.</p>
+        </div>
+        <ul class="grid grid-3">
+          <li class="card" data-reveal>
+            <h3>Shared default keys, withdrawn and fixed</h3>
+            <p>The earlier test images and layers carried keys made at build time, so every machine made from one shared them. They were withdrawn and rebuilt. A scan on every layer and image now checks that none carries SSH host keys, TLS private keys, a Webmin certificate or snakeoil keys, and every machine generates its own at first boot.</p>
+            <p class="refs"><a href="security.html#identity">Keys and identity</a><a href="https://mirror.keellinux.org/WITHDRAWN.txt">The withdrawal notice</a></p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="1">
+            <h3>A signed archive with two tracks</h3>
+            <p><a href="https://archive.keellinux.org/">archive.keellinux.org</a> is signed and has two tracks: <code>trixie-testing</code>, where everything lands first, and <code>trixie</code>, the stable track. Promotion to stable is a maintainer's act.</p>
+            <p class="refs"><a href="https://archive.keellinux.org/keel-archive-keyring.asc">The archive keyring</a><a href="security.html#supply">Where packages come from</a></p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="2">
+            <h3>Debian and the Keel archive, nothing else</h3>
+            <p>Images are built from Debian and the Keel archive only, with no TurnKey archive. The TurnKey tools Keel still uses, turnkey-ssl, netinfo, conffile, sysinfo, version, tkl-installer and the dhcpcd glue, are now Keel forks, and turnkey-ssl no longer ships a key. TKLBAM and the TurnKey Hub agent are gone; Keel Backup and Keel Cloud replace them later.</p>
+          </li>
+          <li class="card" data-reveal>
+            <h3>Keel Web serves HTTPS from the start</h3>
+            <p>In simple mode Keel Web serves HTTPS out of the box with the machine's own certificate, a Keel placeholder page and Keel error pages. Let's Encrypt is set up from the console, prefilled from the instance spec. Cloud mode adds the Coraza WAF and the Anubis bot challenge.</p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="1">
+            <h3>A first boot that finishes</h3>
+            <p>First boot asks for the FQDN and offers to keep a root password the hypervisor already set. Unattended, it runs to the end without hanging, and it installs security updates from Debian Security without ever blocking the boot. <code>systemctl --failed</code> is clean in containers.</p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="2">
+            <h3>The mesh: two nodes so far</h3>
+            <p>Phase 5 has started. Two Keel Web nodes in different locations are joined over a WireGuard overlay, declared in each node's instance spec and confirmed through the network safety window. Next is a one-command join, <code>keel mesh invite</code> then <code>keel mesh join</code> (decision 0048, in review), and etcd forms at the third node.</p>
+            <p class="refs"><a href="cloud.html#mesh">How the mesh works</a></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="status" aria-labelledby="status-title">
       <div class="wrap status-grid">
         <div data-reveal>
           <span class="eyebrow">Status</span>
-          <h2 id="status-title">Early, and plain about it</h2>
-          <p>There is no release for end users. Layers, Proxmox templates and packages are served from mirror.keellinux.org and archive.keellinux.org for testing, and the test images are not meant for production.</p>
+          <h2 id="status-title">In testing, and plain about it</h2>
+          <p>There is no release for end users. The current images are signed testing pre-releases, not meant for production: <a href="https://github.com/Keel-Linux/keel-core/releases/tag/testing-19.0-8-step10-20261003">Keel Core 19.0-8</a> and <a href="https://github.com/Keel-Linux/keel-web/releases/tag/testing-19.0-3-step10-20261003">Keel Web 19.0-3</a>, built on 3 October 2026. Each is a <code>.tar.zst</code> for LXC, on its GitHub release and on <a href="https://mirror.keellinux.org/images/">mirror.keellinux.org</a>, and listed in the <a href="https://releases.keellinux.org/pve/aplinfo.dat">Proxmox template index</a>. Decision 0043 makes the ISO the second release format.</p>
+          <p>Packages come from <a href="https://archive.keellinux.org/">archive.keellinux.org</a>, signed, on a testing track that everything reaches first and a stable track the maintainer promotes to.</p>
           <p>The build host reproduces unmodified TurnKey 19.0 from the forked repositories, which is the baseline every change is measured against. <code>keel inspect</code>, <code>keel diff</code> and <code>keel spec apply</code> run on the test images, and a MariaDB pair, with seeding and a read-only replica, is mostly done in keel 0.11.</p>
           <p>The composition architecture on this site was decided on 30 September 2026. Where a point says <em>decided</em> or <em>goal</em>, it is on the roadmap and not yet in the code.</p>
           <div class="actions" style="margin-top:1.5rem">
@@ -398,16 +438,16 @@
         <div data-reveal data-reveal-delay="1">
           <h3>The focus now</h3>
           <ol class="focus-list">
-            <li><span class="num">P1</span><div><strong>Keel Core</strong><p>WireGuard is in Core. Next: CrowdSec installed and disabled, etcd present and stopped, the YAML always emitted, overlays shipped as <code>.deb</code>.</p></div></li>
-            <li><span class="num">P3</span><div><strong>Keel Web</strong><p>Nginx, Coraza and Anubis packaged in the Keel repository; plain Nginx in a simple installation, the full pipeline in an advanced one.</p></div></li>
-            <li><span class="num">0041</span><div><strong>The appliance manifest</strong><p>Version 1 is decided. The first step is its reader, <code>keel manifest validate</code> and <code>keel manifest show</code>, with Core and Web as fixtures.</p></div></li>
+            <li><span class="num">P5</span><div><strong>The mesh</strong><p>Two Keel Web nodes are joined over WireGuard, declared in each node's spec. Next: a one-command join, and etcd at the third node.</p></div></li>
+            <li><span class="num">P1</span><div><strong>Keel Core and Keel Web</strong><p>In testing as signed pre-releases, with the appliance manifest. Keel Web serves HTTPS in simple mode; Coraza and Anubis come with cloud mode.</p></div></li>
+            <li><span class="num">P4</span><div><strong>WordPress on Keel PHP</strong><p>The first application built from a manifest, with no Apache in the image.</p></div></li>
           </ol>
           <p class="hint" style="margin-top:1rem">Decisions: <a href="https://github.com/Keel-Linux/tracker/issues?q=is%3Aissue+ADR">0023 to 0040 on the tracker</a>, and <a href="https://github.com/Keel-Linux/tracker/issues/39">the manifest, tracker#39</a>.</p>
         </div>
       </div>
     </section>
 
-    <section class="section" aria-labelledby="cta-title" style="padding-top:0">
+    <section class="section" aria-labelledby="cta-title">
       <div class="wrap">
         <div class="cta" data-reveal>
           <h2 id="cta-title">Read how it fits together</h2>
