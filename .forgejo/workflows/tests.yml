@@ -1,0 +1,24 @@
+# Forgejo copy of .github/workflows/tests.yml (decision 0056): the same
+# jobs, with a runs-on line on each call of a reusable workflow,
+# because Forgejo runs a called workflow on the runner of the caller.
+# The gate of the site (docs/ci-cd.md):
+#   python / coverage   tools/sitecheck.py under coverage.py, 95 percent, the
+#                       bar for project-authored code. The suite ends by
+#                       running the checker over this repository, so a broken
+#                       link, a missing asset, a plain HTTP link or an asset
+#                       no page references fails the check before the page is
+#                       served.
+# Required on main. Thresholds are only ever raised.
+name: tests
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  python:
+    runs-on: keel-host
+    uses: keel-linux/.github/.github/workflows/test-python.yml@main
+    with:
+      threshold: 95
+      package: tools
+      tests: tests
