@@ -1,19 +1,17 @@
-# The gate of the site (docs/ci-cd.md):
-#   python / coverage   tools/sitecheck.py under coverage.py, 95 percent, the
-#                       bar for project-authored code. The suite ends by
-#                       running the checker over this repository, so a broken
-#                       link, a missing asset, a plain HTTP link or an asset
-#                       no page references fails the check before the page is
-#                       served.
-# Required on main. Thresholds are only ever raised.
+# Light CI on GitHub-hosted runners, for pull requests on the GitHub mirror
+# (decision 0056). The full CI is .forgejo/workflows on git.pop.coop, and
+# .forgejo/workflows/tests.yml has the notes on each job.
 name: tests
+
 on:
   pull_request:
-  push:
-    branches: [main]
+
+permissions:
+  contents: read
+
 jobs:
   python:
-    uses: keel-linux/.github/.github/workflows/test-python.yml@main
+    uses: keel-linux/.github/.github/workflows/github-test-python.yml@main
     with:
       threshold: 95
       package: tools
