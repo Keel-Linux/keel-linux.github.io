@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Appliances, Keel Linux</title>
+  <meta name="description" content="The Keel Linux appliances for Proxmox VE: nine testing pre-releases, what each one is, how it was tested across two sites, and how to download and check it.">
+  <link rel="canonical" href="https://keellinux.org/appliances.html">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07182B">
+  <link rel="icon" type="image/svg+xml" href="assets/keel-mark.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" href="assets/keel-mark-512.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Keel Linux">
+  <meta property="og:url" content="https://keellinux.org/appliances.html">
+  <meta property="og:title" content="Keel Linux: appliances for Proxmox VE">
+  <meta property="og:description" content="Nine testing pre-releases for Proxmox VE, and the evidence for each one.">
+  <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
+  <meta property="og:image:alt" content="The Keel Linux mark">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Keel Linux: appliances for Proxmox VE">
+  <meta name="twitter:description" content="Nine testing pre-releases for Proxmox VE, and the evidence for each one.">
+  <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
+  <link rel="stylesheet" href="style.css?v=2026093001">
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.className += " js";
+      try {
+        var saved = localStorage.getItem("keel-theme");
+        if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+      } catch (e) {}
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        root.className += " js-motion";
+        setTimeout(function () { if (!window.keelReady) { root.className = root.className.replace(" js-motion", ""); } }, 2500);
+      }
+    })();
+  </script>
+  <script defer src="assets/js/site.js?v=2026093001"></script>
+  <script defer data-domain="keellinux.org" src="https://analytics.pop.coop/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+  <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="Keel Linux, home">
+        <img src="assets/keel-mark.svg" alt="" width="32" height="32">
+        <span>Keel Linux</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="appliances.html" aria-current="page">Appliances</a></li>
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="cloud.html">Cloud &amp; replication</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="guidelines.html">Guidelines</a></li>
+          <li><a href="https://github.com/keel-linux">GitHub</a></li>
+        </ul>
+      </nav>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero" aria-labelledby="page-title">
+      <div class="wrap">
+        <p class="crumbs"><a href="index.html">Home</a> / Appliances</p>
+        <span class="eyebrow">Appliances</span>
+        <h1 id="page-title">Nine appliances, in testing</h1>
+        <p class="lead">Every image here is a testing pre-release for Proxmox VE containers. None is a stable release, and none is for production. This page says what each one is, how it was tested, and what the tests do not show.</p>
+      </div>
+    </section>
+
+    <section class="section" id="how-tested" aria-labelledby="how-tested-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Test method</span>
+          <h2 id="how-tested-title">How the images were tested</h2>
+          <p class="lead">The full test uses 3 containers on real Proxmox nodes: 2 in one site and 1 in another. The database pair sits across the 2 sites.</p>
+        </div>
+        <div class="grid grid-2">
+          <div class="card" data-reveal>
+            <h3 style="margin-top:0">What the test does</h3>
+            <ul>
+              <li>It forms a mesh and an etcd of 3 members.</li>
+              <li>It writes to the VIP while a fault happens: a network cut of the primary, or a stop of the holder.</li>
+              <li>It runs once at base and once with netem: 250 ms delay, 25 ms jitter and 1.5 % loss.</li>
+              <li>It counts every acknowledged write and looks for each one on the new primary.</li>
+              <li>It checks that the old primary comes back read-only and does not take writes.</li>
+            </ul>
+          </div>
+          <div class="card" data-reveal data-reveal-delay="1">
+            <h3 style="margin-top:0">What the numbers say</h3>
+            <ul>
+              <li>The VIP moved to the other node 17 to 22 s after the fault.</li>
+              <li>The first write was acknowledged 0.3 to 2.7 s after the VIP moved.</li>
+              <li>No acknowledged write was lost in any run listed on this page.</li>
+              <li>These runs are not a proof. They are evidence from a small number of runs.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout" data-reveal>
+          <strong>What the tests do not show</strong>
+          <p>No test cut a whole site. Two of the 3 etcd members sat in the first site, because the third site was offline. The tests cut or stopped one database node. Redis has no failover test. The base images, Core, Web, MariaDB, PostgreSQL and Redis, have no netem run on their current build.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="list" aria-labelledby="list-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">The images</span>
+          <h2 id="list-title">One card for each appliance</h2>
+          <p class="lead">Each version and link is the newest pre-release on git.pop.coop on 19 October 2026. The badge says if the image has a signature file.</p>
+        </div>
+        <ul class="grid grid-3">
+          <li class="card" id="core" data-reveal>
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
+              <span class="hint" style="margin:0">19.0-10</span>
+            </div>
+            <h3>Keel Core</h3>
+            <p>The base of every Keel appliance.</p>
+            <p><strong>Stack.</strong> Debian 13, WireGuard, etcd, CrowdSec and the first-boot tools. CrowdSec is installed and off.</p>
+            <p><strong>High availability.</strong> Carries the mesh and the etcd member. A Core CT served as the etcd witness of a PostgreSQL pair.</p>
+            <p><strong>Status.</strong> Boots and joins a mesh. No test on this build covers a database failover.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-core/releases/tag/testing-19.0-10-step12-20261012">Pre-release 19.0-10</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-15-br3-thin-etcd-witness.md">Evidence: etcd witness on Core 19.0-10</a></p>
+          </li>
+          <li class="card" id="web" data-reveal data-reveal-delay="1">
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
+              <span class="hint" style="margin:0">19.0-5</span>
+            </div>
+            <h3>Keel Web</h3>
+            <p>The web layer under the web appliances.</p>
+            <p><strong>Stack.</strong> nginx, the Coraza WAF and Anubis, on Core.</p>
+            <p><strong>High availability.</strong> None of its own. The VIP and the pair come from the layers above it.</p>
+            <p><strong>Status.</strong> Boots. The tests of LNMP, LNPP, WordPress and Odoo run on later Web builds.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-web/releases/tag/testing-19.0-5-step12-20261012">Pre-release 19.0-5</a></p>
+          </li>
+          <li class="card" id="lnmp" data-reveal data-reveal-delay="2">
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
+              <span class="hint" style="margin:0">19.0-4</span>
+            </div>
+            <h3>Keel LNMP</h3>
+            <p>The base stack for PHP applications.</p>
+            <p><strong>Stack.</strong> nginx, MariaDB 11.8 and PHP-FPM 8.4, on Web.</p>
+            <p><strong>High availability.</strong> A MariaDB pair with semi-synchronous replication, a VIP, and an etcd of 3 members. The pair can sit in 2 sites.</p>
+            <p><strong>Status.</strong> Passed the full 2-site test, with and without netem. 0 of 14583 acknowledged writes lost.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-lnmp/releases/tag/testing-19.0-4-20261016">Pre-release 19.0-4</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-17-lnmp-19.0-4-cross-site.md">Evidence: LNMP 19.0-4 and LNPP 19.0-5</a></p>
+          </li>
+          <li class="card" id="lnpp" data-reveal>
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
+              <span class="hint" style="margin:0">19.0-5</span>
+            </div>
+            <h3>Keel LNPP</h3>
+            <p>The base stack for Python applications.</p>
+            <p><strong>Stack.</strong> nginx, PostgreSQL 17 and Python 3 with gunicorn, on Web.</p>
+            <p><strong>High availability.</strong> A PostgreSQL pair with a read-only standby, a VIP, and an etcd of 3 members. The pair can sit in 2 sites.</p>
+            <p><strong>Status.</strong> Passed a shorter 2-site test: one cut and one stop, at base, with no netem. 0 of 1469 and 0 of 997 acknowledged writes lost.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-lnpp/releases/tag/testing-19.0-5-20261016">Pre-release 19.0-5</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-17-lnmp-19.0-4-cross-site.md">Evidence: LNMP 19.0-4 and LNPP 19.0-5</a></p>
+          </li>
+          <li class="card" id="mariadb" data-reveal data-reveal-delay="1">
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
+              <span class="hint" style="margin:0">19.0-9</span>
+            </div>
+            <h3>Keel MariaDB</h3>
+            <p>MariaDB as an appliance of its own.</p>
+            <p><strong>Stack.</strong> MariaDB on Core.</p>
+            <p><strong>High availability.</strong> A primary and a read-only replica, semi-synchronous, with a VIP.</p>
+            <p><strong>Status.</strong> The pair test is on an earlier build and has no netem run.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-mariadb/releases/tag/testing-19.0-9-step12-20261012">Pre-release 19.0-9</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-08-mariadb-pair-real.md">Evidence: MariaDB pair</a></p>
+          </li>
+          <li class="card" id="postgresql" data-reveal data-reveal-delay="2">
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
+              <span class="hint" style="margin:0">19.0-6</span>
+            </div>
+            <h3>Keel PostgreSQL</h3>
+            <p>PostgreSQL as an appliance of its own.</p>
+            <p><strong>Stack.</strong> PostgreSQL on Core.</p>
+            <p><strong>High availability.</strong> A primary and a read-only standby, synchronous commit, a VIP, and an etcd witness.</p>
+            <p><strong>Status.</strong> Passed a pair test on real nodes. That test has 250 ms in the CI run and 4 ms on the real nodes.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-postgresql/releases/tag/testing-19.0-6-step12-20261012">Pre-release 19.0-6</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-14-postgresql-pair-real.md">Evidence: PostgreSQL pair</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-15-br3-thin-etcd-witness.md">Evidence: etcd witness on Core 19.0-10</a></p>
+          </li>
+          <li class="card" id="redis" data-reveal>
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
+              <span class="hint" style="margin:0">19.0-9</span>
+            </div>
+            <h3>Keel Redis</h3>
+            <p>Redis for sessions, queues and caches.</p>
+            <p><strong>Stack.</strong> Redis on Core.</p>
+            <p><strong>High availability.</strong> None tested. No Redis failover claim is made.</p>
+            <p><strong>Status.</strong> Boots. It has no cross-site test.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-redis/releases/tag/testing-19.0-9-step12-20261012">Pre-release 19.0-9</a></p>
+          </li>
+          <li class="card" id="wordpress" data-reveal data-reveal-delay="1">
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
+              <span class="hint" style="margin:0">19.0-9</span>
+            </div>
+            <h3>Keel WordPress</h3>
+            <p>A WordPress site that stays up when one database node fails.</p>
+            <p><strong>Stack.</strong> WordPress 7.1 on nginx, PHP-FPM 8.4 and MariaDB 11.8, on LNMP, behind Coraza and Anubis. Uploads up to 64 MB.</p>
+            <p><strong>High availability.</strong> The MariaDB pair, the VIP and the etcd of LNMP.</p>
+            <p><strong>Status.</strong> Passed the 2-site test under netem with one cut. 0 of 2631 acknowledged writes lost. Uploads of 3 MiB and 32 MiB worked after the failover.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-wordpress/releases/tag/testing-19.0-9-20261018">Pre-release 19.0-9</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-18-coraza-body-and-wordpress-uploads.md">Evidence: WordPress 19.0-9</a></p>
+          </li>
+          <li class="card" id="odoo" data-reveal data-reveal-delay="2">
+            <div class="card-top">
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
+              <span class="hint" style="margin:0">19.0-11</span>
+            </div>
+            <h3>Keel Odoo</h3>
+            <p>Odoo with a database that fails over between sites.</p>
+            <p><strong>Stack.</strong> Odoo 18.0 Community on nginx, PostgreSQL 17 and Python 3.13, on LNPP. The websocket works behind Anubis.</p>
+            <p><strong>High availability.</strong> The PostgreSQL pair, the VIP and the etcd of LNPP.</p>
+            <p><strong>Status.</strong> 19.0-11 passed one cut at base: 0 of 1384 database writes and 0 of 524 Odoo writes lost. The netem run is on 19.0-10: 0 of 1016 and 0 of 417 lost.</p>
+            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-odoo/releases/tag/testing-19.0-11-20261019">Pre-release 19.0-11</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-19-odoo-19.0-11-keel-0.23.49.md">Evidence: Odoo 19.0-11</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-19-odoo-19.0-10-keel-0.23.48.md">Evidence: Odoo 19.0-10, with netem</a></p>
+          </li>
+
+        </ul>
+        <p class="compose-note">The images of LNMP, LNPP, WordPress and Odoo are signed. The newest Core, Web, MariaDB, PostgreSQL and Redis images are not. The release page of each one says so.</p>
+      </div>
+    </section>
+
+    <section class="section" id="get" aria-labelledby="get-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Get an image</span>
+          <h2 id="get-title">Download, check, create the container</h2>
+          <p class="lead">The Proxmox template list does not show Keel images yet. Download the file from the release page and copy it to the template storage of the node.</p>
+        </div>
+        <div class="prose">
+          <ol>
+            <li>Open the pre-release page of the appliance, from the card above.</li>
+            <li>Download the <code>.tar.zst</code>, the <code>.sha512</code> and the <code>.sha512.asc</code>. Signed images have all three.</li>
+            <li>Check the signature, then the digest.</li>
+            <li>Copy the <code>.tar.zst</code> to <code>/var/lib/vz/template/cache/</code> on the Proxmox node.</li>
+            <li>Create the container.</li>
+          </ol>
+          <pre class="code" tabindex="0" aria-label="Commands that download and check an LNMP image, then create a container"><span class="c"># example: LNMP 19.0-4. Change the names for another image.</span>
+BASE=https://git.pop.coop/Keel-Linux/keel-lnmp/releases/download/testing-19.0-4-20261016
+F=debian-13-keel-lnmp_19.0-4_amd64.tar.zst
+curl -fLO $BASE/$F -O $BASE/$F.sha512 -O $BASE/$F.sha512.asc
+curl -fLO https://archive.keellinux.org/keel-images-keyring.asc
+
+sqv --keyring keel-images-keyring.asc $F.sha512.asc $F.sha512
+sha512sum -c $F.sha512
+
+cp $F /var/lib/vz/template/cache/
+pct create 200 local:vztmpl/$F --hostname web1 \
+  --unprivileged 1 --features nesting=1 \
+  --net0 name=eth0,bridge=vmbr0,ip6=2001:db8:1::10/64,gw6=2001:db8:1::1</pre>
+          <p>The signature file holds two signatures: one by the main key and one by the images key. The command uses the images keyring, so <code>sqv</code> prints "Missing key" for the main key. This is expected. If <code>sqv</code> exits 0 and prints the fingerprint <code>E71DB9C3CA6AC18075395CC3ED3A709C4F3E2F3C</code>, the check passed.</p>
+          <p>An image with no <code>.sha512</code> file has no signature. Do not use it for anything that matters. Its release page says "NOT SIGNED".</p>
+          <p>A pair across sites needs 2 nodes of the same appliance and a third etcd member. The <a href="cloud.html#failover">cloud page</a> describes the modes. The evidence files list the commands that the tests used.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" aria-labelledby="help-title">
+      <div class="wrap">
+        <div class="cta" data-reveal>
+          <h2 id="help-title">Test an image and tell us</h2>
+          <p>Open an issue or a pull request on <a href="https://git.pop.coop/Keel-Linux">git.pop.coop</a>, or on <a href="https://github.com/Keel-Linux">GitHub</a>. A bridge copies issues, comments and pull requests between the two. You can also write in the <a href="https://forum.proxmox.com/threads/186841/">Proxmox forum thread</a>.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="https://forum.proxmox.com/threads/186841/">Proxmox forum thread</a>
+            <a class="btn btn-ghost" href="index.html#news">News</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="assets/keel-mark.svg" alt="" width="32" height="32"><span>Keel Linux</span></a>
+          <p>Composable, mesh-native appliances on Debian 13. IPv6-first and declarative. An independent fork of TurnKey Linux 19.</p>
+        </div>
+        <nav aria-label="Site">
+          <h2>Site</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="appliances.html">Appliances</a></li>
+            <li><a href="architecture.html">Architecture</a></li>
+            <li><a href="security.html">Security</a></li>
+            <li><a href="cloud.html">Cloud &amp; replication</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="guidelines.html">Guidelines</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Source">
+          <h2>Source</h2>
+          <ul>
+            <li><a href="https://git.pop.coop/Keel-Linux">git.pop.coop, the source</a></li>
+            <li><a href="https://github.com/keel-linux">github.com/keel-linux, the mirror</a></li>
+            <li><a href="https://forum.proxmox.com/threads/186841/">Proxmox forum thread</a></li>
+            <li><a href="https://github.com/Keel-Linux/keel">keel, the spec and the command</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker">The tracker</a></li>
+            <li><a href="https://github.com/Keel-Linux/tracker/issues/46">Roadmap, tracker#46</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="legal">Keel Linux is compatible with TurnKey Linux appliances. TurnKey Linux is a trademark of its owners; Keel Linux is an independent project.</p>
+    </div>
+  </footer>
+</body>
+</html>
