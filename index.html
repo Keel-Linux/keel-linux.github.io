@@ -53,6 +53,7 @@
       </a>
       <nav class="site-nav" id="site-nav" aria-label="Main">
         <ul>
+          <li><a href="appliances.html">Appliances</a></li>
           <li><a href="architecture.html">Architecture</a></li>
           <li><a href="security.html">Security</a></li>
           <li><a href="cloud.html">Cloud &amp; replication</a></li>
@@ -85,9 +86,10 @@
             <li class="chip">Upgraded with apt</li>
           </ul>
           <div class="actions">
-            <a class="btn btn-primary" href="architecture.html">Explore the architecture
+            <a class="btn btn-primary" href="appliances.html">See the appliances
               <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
+            <a class="btn btn-ghost" href="architecture.html">Explore the architecture</a>
             <a class="btn btn-ghost" href="roadmap.html">See the roadmap</a>
           </div>
         </div>
@@ -109,6 +111,58 @@
       </div>
     </section>
 
+    <section class="section section-alt" id="now" aria-labelledby="now-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Now</span>
+          <h2 id="now-title">Appliances that keep a database up across two sites</h2>
+          <p class="lead">Keel has nine testing images for Proxmox VE. Two of them, WordPress and Odoo, are applications. They run on the LNMP and LNPP stacks.</p>
+        </div>
+        <ul class="grid grid-3">
+          <li class="card" data-reveal>
+            <h3 style="margin-top:0">nginx only</h3>
+            <p>Apache is retired. nginx is the only web server. LNMP is nginx, MariaDB and PHP. LNPP is nginx, PostgreSQL and Python.</p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="1">
+            <h3 style="margin-top:0">High availability on poor networks</h3>
+            <p>A database pair, a VIP and an etcd work across 2 sites, with no Kubernetes. The tests used 250 ms delay and 1.5 % loss, and lost 0 acknowledged writes.</p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="2">
+            <h3 style="margin-top:0">Signed images</h3>
+            <p>The newest LNMP, LNPP, WordPress and Odoo images carry two signatures. The other five do not, and their release pages say so.</p>
+          </li>
+        </ul>
+        <div class="actions" style="margin-top:1.5rem">
+          <a class="btn btn-primary" href="appliances.html">Appliances, tests and downloads</a>
+          <a class="btn btn-ghost" href="https://forum.proxmox.com/threads/186841/">Proxmox forum thread</a>
+        </div>
+        <p class="compose-note">The source is on <a href="https://git.pop.coop/Keel-Linux">git.pop.coop</a>. You can also open an issue or a pull request on <a href="https://github.com/Keel-Linux">GitHub</a>. A bridge copies both ways.</p>
+      </div>
+    </section>
+
+    <section class="section" id="news" aria-labelledby="news-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">News</span>
+          <h2 id="news-title">Latest</h2>
+        </div>
+        <ul class="grid grid-2">
+          <li class="card" data-reveal>
+            <p class="hint" style="margin:0"><time datetime="2026-10-19">19 October 2026</time></p>
+            <h3>WordPress 19.0-9 and Odoo 19.0-11 for testing</h3>
+            <p>Both images run on nginx and use a database pair across 2 sites. WordPress is on LNMP. Odoo 18.0 Community is on LNPP. In the tests, 0 acknowledged writes were lost. Both are testing pre-releases and are not for production.</p>
+            <p class="refs"><a href="appliances.html#wordpress">WordPress</a><a href="appliances.html#odoo">Odoo</a></p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="1">
+            <p class="hint" style="margin:0"><time datetime="2026-10-16">16 October 2026</time></p>
+            <h3>LNMP and LNPP replace Apache</h3>
+            <p>nginx is the only web server in Keel. LNMP 19.0-4 and LNPP 19.0-5 passed the 2-site test, including a fix for a MariaDB primary that returned from a cut as diverged.</p>
+            <p class="refs"><a href="appliances.html#lnmp">LNMP</a><a href="appliances.html#lnpp">LNPP</a></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
     <section class="section section-alt" id="what-changes" aria-labelledby="what-changes-title">
       <div class="wrap">
         <div class="section-head" data-reveal>
@@ -123,7 +177,7 @@
               <span class="badge badge-decided">Decided</span>
             </div>
             <h3>Composed, not pre-cooked</h3>
-            <p>PostgreSQL, MariaDB, Redis, Nginx and the language runtimes are components of their own, each able to run alone or serve another appliance. An appliance is a manifest that names what it is built on. LAMP and LAPP stop being images and become a recipe.</p>
+            <p>PostgreSQL, MariaDB, Redis, Nginx and the language runtimes are components of their own, each able to run alone or serve another appliance. An appliance is a manifest that names what it is built on. Apache is retired. nginx is the only web server, and LNMP and LNPP are the two base stacks.</p>
             <p class="refs"><a href="https://github.com/Keel-Linux/tracker/issues/28">0023</a><a href="https://github.com/Keel-Linux/tracker/issues/41">0036</a><a href="https://github.com/Keel-Linux/tracker/issues/39">0041, the manifest</a></p>
           </li>
           <li class="card lift" data-reveal data-reveal-delay="1">
@@ -186,8 +240,8 @@
           <div>
             <p class="stack-title" id="stack-label">An appliance, top to bottom</p>
             <ul class="stack" aria-labelledby="stack-label">
-              <li class="layer layer-app"><strong>Application</strong><span>WordPress, Odoo, Nextcloud, Mastodon: a manifest and an inithook</span><em>planned</em></li>
-              <li class="layer layer-runtime"><strong>Runtime</strong><span>PHP-FPM, Python, Ruby, Node.js or Go</span><em>planned</em></li>
+              <li class="layer layer-app"><strong>Application</strong><span>WordPress and Odoo in testing; Nextcloud and Mastodon planned</span><em>in testing</em></li>
+              <li class="layer layer-runtime"><strong>Runtime</strong><span>LNMP (PHP-FPM) and LNPP (Python) in testing; Ruby, Node.js and Go planned</span><em>in testing</em></li>
               <li class="layer layer-web"><strong>Keel Web</strong><span>Nginx, the Coraza WAF and Anubis</span><em>focus now</em></li>
               <li class="layer layer-core"><strong>Keel Core</strong><span>Debian 13, WireGuard, etcd, CrowdSec, the installer</span><em>focus now</em></li>
             </ul>
@@ -426,9 +480,10 @@
         <div data-reveal>
           <span class="eyebrow">Status</span>
           <h2 id="status-title">In testing, and plain about it</h2>
-          <p>There is no release for end users. The current images are signed testing pre-releases, not meant for production: <a href="https://github.com/Keel-Linux/keel-core/releases/tag/testing-19.0-8-step10-20261003">Keel Core 19.0-8</a> and <a href="https://github.com/Keel-Linux/keel-web/releases/tag/testing-19.0-3-step10-20261003">Keel Web 19.0-3</a>, built on 3 October 2026. Each is a <code>.tar.zst</code> for LXC, on its GitHub release and on <a href="https://mirror.keellinux.org/images/">mirror.keellinux.org</a>, and listed in the <a href="https://releases.keellinux.org/pve/aplinfo.dat">Proxmox template index</a>. Decision 0043 makes the ISO the second release format.</p>
+          <p>There is no release for end users. Every image is a testing pre-release and is not for production. The <a href="appliances.html">appliances page</a> lists the nine images, the version of each, and the tests behind them.</p>
+          <p>Four images are signed: LNMP 19.0-4, LNPP 19.0-5, WordPress 19.0-9 and Odoo 19.0-11. The newest Core, Web, MariaDB, PostgreSQL and Redis images are not signed.</p>
           <p>Packages come from <a href="https://archive.keellinux.org/">archive.keellinux.org</a>, signed, on a testing track that everything reaches first and a stable track the maintainer promotes to.</p>
-          <p>The build host reproduces unmodified TurnKey 19.0 from the forked repositories, which is the baseline every change is measured against. <code>keel inspect</code>, <code>keel diff</code> and <code>keel spec apply</code> run on the test images, and a MariaDB pair, with seeding and a read-only replica, is mostly done in keel 0.11.</p>
+          <p>No test has cut a whole site. The tests cut or stopped one database node of a pair across 2 sites, and lost no acknowledged write.</p>
           <p>The composition architecture on this site was decided on 30 September 2026. Where a point says <em>decided</em> or <em>goal</em>, it is on the roadmap and not yet in the code.</p>
           <div class="actions" style="margin-top:1.5rem">
             <a class="btn btn-primary" href="roadmap.html">The roadmap, phase by phase</a>
@@ -438,9 +493,9 @@
         <div data-reveal data-reveal-delay="1">
           <h3>The focus now</h3>
           <ol class="focus-list">
-            <li><span class="num">P5</span><div><strong>The mesh</strong><p>Two Keel Web nodes are joined over WireGuard, declared in each node's spec. Next: a one-command join, and etcd at the third node.</p></div></li>
-            <li><span class="num">P1</span><div><strong>Keel Core and Keel Web</strong><p>In testing as signed pre-releases, with the appliance manifest. Keel Web serves HTTPS in simple mode; Coraza and Anubis come with cloud mode.</p></div></li>
-            <li><span class="num">P4</span><div><strong>WordPress on Keel PHP</strong><p>The first application built from a manifest, with no Apache in the image.</p></div></li>
+            <li><span class="num">P4</span><div><strong>WordPress and Odoo on nginx</strong><p>Both are in testing, each on a database pair across 2 sites. Next: Moodle and ejabberd move to nginx.</p></div></li>
+            <li><span class="num">P5</span><div><strong>The mesh and the pair</strong><p>A mesh, an etcd of 3 members and a VIP work in the tests. Next: a test with a whole site cut, when the third site is back.</p></div></li>
+            <li><span class="num">P1</span><div><strong>Promotion to stable</strong><p>Core, Web and the data services wait for a test on three real sites before the maintainer promotes them.</p></div></li>
           </ol>
           <p class="hint" style="margin-top:1rem">Decisions: <a href="https://github.com/Keel-Linux/tracker/issues?q=is%3Aissue+ADR">0023 to 0040 on the tracker</a>, and <a href="https://github.com/Keel-Linux/tracker/issues/39">the manifest, tracker#39</a>.</p>
         </div>
@@ -473,6 +528,7 @@
           <h2>Site</h2>
           <ul>
             <li><a href="index.html">Home</a></li>
+            <li><a href="appliances.html">Appliances</a></li>
             <li><a href="architecture.html">Architecture</a></li>
             <li><a href="security.html">Security</a></li>
             <li><a href="cloud.html">Cloud &amp; replication</a></li>
@@ -483,7 +539,9 @@
         <nav aria-label="Source">
           <h2>Source</h2>
           <ul>
-            <li><a href="https://github.com/keel-linux">github.com/keel-linux</a></li>
+            <li><a href="https://git.pop.coop/Keel-Linux">git.pop.coop, the source</a></li>
+            <li><a href="https://github.com/keel-linux">github.com/keel-linux, the mirror</a></li>
+            <li><a href="https://forum.proxmox.com/threads/186841/">Proxmox forum thread</a></li>
             <li><a href="https://github.com/Keel-Linux/keel">keel, the spec and the command</a></li>
             <li><a href="https://github.com/Keel-Linux/tracker">The tracker</a></li>
             <li><a href="https://github.com/Keel-Linux/tracker/issues/46">Roadmap, tracker#46</a></li>

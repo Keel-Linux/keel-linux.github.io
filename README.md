@@ -1,12 +1,13 @@
 # keellinux.org
 
-The project site, served by GitHub Pages from `main`: six static pages, one
+The project site, served by GitHub Pages from `main`: seven static pages, one
 stylesheet, four small scripts and the brand assets. Nothing builds it, so
 what is in the repository is what the browser gets.
 
 | Path | What it is |
 |------|------------|
 | `index.html` | the home page, also served at `www` |
+| `appliances.html` | the nine testing pre-releases, how they were tested, and how to download and check one |
 | `architecture.html` | composition, overlays, appliances, the manifest, the spec, IPv6-first, layers and upgrades |
 | `security.html` | keys and identity, the request pipeline, what each installation mode enables, exposure classes |
 | `cloud.html` | installation modes, the mesh, the registry, failover, replication, backup and monitoring |
