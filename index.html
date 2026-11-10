@@ -75,7 +75,7 @@
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="wrap hero-grid">
         <div>
-          <a class="status-pill" href="#status"><strong>Testing</strong> Pre-release images, not for production. Read the status</a>
+          <a class="status-pill" href="#status"><strong>Stable</strong> Release 2026-11-10: 8 applications, signed. Read the status</a>
           <h1 id="hero-title">Composable, <span class="accent">mesh-native</span> appliances on Debian.</h1>
           <p class="promise">Every appliance is secure by default and can join a private cloud on day one.</p>
           <p class="sub">A fork of TurnKey Linux 19 (Debian 13) that turns single-machine appliances into building blocks of a real cloud: small components that run alone or together, replicate across sites, fail over, and are upgraded with apt. IPv6-first, so every node has a routable address of its own, and declarative, so every machine is described by one YAML file that Keel applies and re-applies to the same result.</p>
@@ -116,7 +116,7 @@
         <div class="section-head" data-reveal>
           <span class="eyebrow">Now</span>
           <h2 id="now-title">Appliances that keep a database up across two sites</h2>
-          <p class="lead">Keel has nine testing images for Proxmox VE. Two of them, WordPress and Odoo, are applications. They run on the LNMP and LNPP stacks.</p>
+          <p class="lead">Release 2026-11-10 holds 8 applications for Proxmox VE: Core, Web, LNMP, LNPP, PostgreSQL, Laravel, WordPress and Odoo. Laravel, WordPress and Odoo run on the LNMP and LNPP stacks.</p>
         </div>
         <ul class="grid grid-3">
           <li class="card" data-reveal>
@@ -129,7 +129,7 @@
           </li>
           <li class="card" data-reveal data-reveal-delay="2">
             <h3 style="margin-top:0">Signed images</h3>
-            <p>The newest LNMP, LNPP, WordPress and Odoo images carry two signatures. The other five do not, and their release pages say so.</p>
+            <p>The 16 images of release 2026-11-10, a template and an ISO of each application, carry two signatures: one by the archive key and one by the images key.</p>
           </li>
         </ul>
         <div class="actions" style="margin-top:1.5rem">
@@ -148,16 +148,16 @@
         </div>
         <ul class="grid grid-2">
           <li class="card" data-reveal>
+            <p class="hint" style="margin:0"><time datetime="2026-11-10">10 November 2026</time></p>
+            <h3>Release 2026-11-10: 8 applications, stable and signed</h3>
+            <p>Release 2026-11-10 of the stable channel holds Core, Web, LNMP, LNPP, PostgreSQL, Laravel, WordPress and Odoo. Each application is an LXC template for Proxmox VE and an ISO, and each of the 16 images is signed. Before the release, each image passed the commissioning test on 2 sites, BR1 and BR2.</p>
+            <p class="refs"><a href="appliances.html#list">The images</a><a href="appliances.html#how-tested">How the images were tested</a><a href="appliances.html#get">Download</a></p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="1">
             <p class="hint" style="margin:0"><time datetime="2026-11-04">4 November 2026</time></p>
             <h3>keel 0.23.82 promoted to stable</h3>
             <p>The core package reached the stable track after a real-node MariaDB pair test across BR1 and BR2 under 250&thinsp;ms netem. Six scenarios passed: write replication, primary crash (the replica stays read-only), full node failover with VIP takeover, primary return by GTID, semi-synchronous replication under delay, and manual failback. 0 acknowledged writes lost.</p>
             <p class="refs"><a href="https://archive.keellinux.org/">Archive</a></p>
-          </li>
-          <li class="card" data-reveal data-reveal-delay="1">
-            <p class="hint" style="margin:0"><time datetime="2026-10-19">19 October 2026</time></p>
-            <h3>WordPress 19.0-9 and Odoo 19.0-11 for testing</h3>
-            <p>Both images run on nginx and use a database pair across 2 sites. WordPress is on LNMP. Odoo 18.0 Community is on LNPP. In the tests, 0 acknowledged writes were lost. Both are testing pre-releases and are not for production.</p>
-            <p class="refs"><a href="appliances.html#wordpress">WordPress</a><a href="appliances.html#odoo">Odoo</a></p>
           </li>
         </ul>
       </div>
@@ -240,8 +240,8 @@
           <div>
             <p class="stack-title" id="stack-label">An appliance, top to bottom</p>
             <ul class="stack" aria-labelledby="stack-label">
-              <li class="layer layer-app"><strong>Application</strong><span>WordPress and Odoo in testing; Nextcloud and Mastodon planned</span><em>in testing</em></li>
-              <li class="layer layer-runtime"><strong>Runtime</strong><span>LNMP (PHP-FPM) and LNPP (Python) in testing; Ruby, Node.js and Go planned</span><em>in testing</em></li>
+              <li class="layer layer-app"><strong>Application</strong><span>Laravel, WordPress and Odoo in release 2026-11-10; Nextcloud and Mastodon planned</span><em>stable</em></li>
+              <li class="layer layer-runtime"><strong>Runtime</strong><span>LNMP (PHP-FPM) and LNPP (Python) in release 2026-11-10; Ruby, Node.js and Go planned</span><em>stable</em></li>
               <li class="layer layer-web"><strong>Keel Web</strong><span>Nginx, the Coraza WAF and Anubis</span><em>focus now</em></li>
               <li class="layer layer-core"><strong>Keel Core</strong><span>Debian 13, WireGuard, etcd, CrowdSec, the installer</span><em>focus now</em></li>
             </ul>
@@ -479,11 +479,11 @@
       <div class="wrap status-grid">
         <div data-reveal>
           <span class="eyebrow">Status</span>
-          <h2 id="status-title">In testing, and plain about it</h2>
-          <p>The core package, keel 0.23.82, is on the stable track. It passed a real-node MariaDB pair test with full node failover, VIP takeover, primary return by GTID and semi-synchronous replication, across 2 sites under 250&thinsp;ms latency. 0 acknowledged writes lost. Application images are testing pre-releases. The <a href="appliances.html">appliances page</a> lists every image and the tests behind it.</p>
-          <p>Four images are signed: LNMP 19.0-4, LNPP 19.0-5, WordPress 19.0-9 and Odoo 19.0-11. The newest Core, Web, MariaDB, PostgreSQL and Redis images are not signed.</p>
+          <h2 id="status-title">Published, and plain about it</h2>
+          <p>Release 2026-11-10 of the stable channel holds 8 applications: Core, Web, LNMP, LNPP, PostgreSQL, Laravel, WordPress and Odoo. Each application is an LXC template for Proxmox VE and an ISO. All 16 images are signed. The <a href="appliances.html">appliances page</a> lists every image and the test behind it.</p>
+          <p>Each image passed the commissioning test on 2 sites, BR1 and BR2, in every installation mode of the application. New images of MariaDB, Redis and ntfy are in test. They are not published.</p>
           <p>Packages come from <a href="https://archive.keellinux.org/">archive.keellinux.org</a>, signed, on a testing track that everything reaches first and a stable track the maintainer promotes to.</p>
-          <p>The tests cut or stopped one database node of a pair across 2 sites, including a full container shutdown, and lost no acknowledged write. A disconnected replica stays read-only until the primary returns or the VIP fails over.</p>
+          <p>Earlier failover tests, on earlier builds, cut or stopped one database node of a pair across 2 sites, including a full container shutdown, and lost no acknowledged write. A disconnected replica stays read-only until the primary returns or the VIP fails over.</p>
           <p>The composition architecture on this site was decided on 30 September 2026. Where a point says <em>decided</em> or <em>goal</em>, it is on the roadmap and not yet in the code.</p>
           <div class="actions" style="margin-top:1.5rem">
             <a class="btn btn-primary" href="roadmap.html">The roadmap, phase by phase</a>
@@ -493,9 +493,9 @@
         <div data-reveal data-reveal-delay="1">
           <h3>The focus now</h3>
           <ol class="focus-list">
-            <li><span class="num">P4</span><div><strong>WordPress and Odoo on nginx</strong><p>Both are in testing, each on a database pair across 2 sites. Next: rebuild on keel 0.23.82 and promote to stable.</p></div></li>
-            <li><span class="num">P5</span><div><strong>The mesh and the pair</strong><p>keel 0.23.82 passed a full node failover test with VIP takeover and GTID rejoin across 2 sites under 250&thinsp;ms latency. The core package is on the stable track.</p></div></li>
-            <li><span class="num">P1</span><div><strong>Application releases</strong><p>WordPress and Odoo will be rebuilt on the stable keel and the MariaDB layer, then promoted. Pool refresh for Debian security updates is next.</p></div></li>
+            <li><span class="num">P4</span><div><strong>Laravel, WordPress and Odoo on nginx</strong><p>All 3 are in release 2026-11-10, on LNMP and LNPP. Each one has the modes simple, cloud simple and cloud advanced.</p></div></li>
+            <li><span class="num">P5</span><div><strong>The mesh and the pair</strong><p>In the images of release 2026-11-10, the first boot of a cloud node makes the mesh or joins it. The first node shows an invite line, and the next node joins with that line.</p></div></li>
+            <li><span class="num">P1</span><div><strong>Application releases</strong><p>New images of MariaDB, Redis and ntfy are in test. They are not published.</p></div></li>
           </ol>
           <p class="hint" style="margin-top:1rem">Decisions: <a href="https://github.com/Keel-Linux/tracker/issues?q=is%3Aissue+ADR">0023 to 0040 on the tracker</a>, and <a href="https://github.com/Keel-Linux/tracker/issues/39">the manifest, tracker#39</a>.</p>
         </div>
