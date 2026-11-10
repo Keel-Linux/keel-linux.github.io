@@ -77,7 +77,7 @@
         <p class="crumbs"><a href="index.html">Home</a> / Roadmap</p>
         <span class="eyebrow">Roadmap</span>
         <h1 id="page-title">One layer at a time</h1>
-        <p class="lead">Every phase ships something testable, and a phase is done only when its criterion holds on a built image, not on a machine assembled by hand. Release 2026-11-10 of the stable channel has Keel Core, Keel Web and 6 more images; the <a href="appliances.html">appliances page</a> lists them.</p>
+        <p class="lead">Every phase ships something testable, and a phase is done only when its criterion holds on a built image, not on a machine assembled by hand. Release 2026-11-10 of the stable channel has Keel Core, Keel Web and 6 more images. Release 2026-11-11 added Keel MariaDB, Keel Redis and Keel ntfy. The <a href="appliances.html">appliances page</a> lists them.</p>
         <p class="hint">A copy of <a href="https://github.com/Keel-Linux/tracker/issues/46">tracker#46</a> as of 2026-09-30, with progress notes from 2026-10-03 and from 2026-11-10. The tracker is the source; where the two differ, the tracker is right. Decision numbers link to their issue on the tracker.</p>
       </div>
     </section>
@@ -144,6 +144,7 @@
               <li>The semi-synchronous setup for MariaDB and the timeout policy for both engines (<a href="https://github.com/Keel-Linux/tracker/issues/36">0031</a>)</li>
               <li>Automatic failback after full catch-up, for the pair; the default stays the operator's, manual (<a href="https://github.com/Keel-Linux/tracker/issues/36">0031</a>)</li>
             </ul>
+            <p class="hint"><strong>Progress.</strong> Keel PostgreSQL 19.0-9 is in release 2026-11-10 of the stable channel. Keel MariaDB 19.0-12 and Keel Redis 19.0-13 are in release 2026-11-11. PostgreSQL and MariaDB passed the commissioning test in simple, cloud simple and cloud advanced mode. The Redis image has no pair.</p>
             <p class="done-when"><strong>Done when</strong> each engine passes a two-container gate in cloud simple: write on the primary, read on the standby, commit latency and the synchronous or semi-synchronous fallback measured, promotion by hand.</p>
           </div>
         </li>
