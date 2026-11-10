@@ -148,16 +148,16 @@
         </div>
         <ul class="grid grid-2">
           <li class="card" data-reveal>
+            <p class="hint" style="margin:0"><time datetime="2026-11-04">4 November 2026</time></p>
+            <h3>keel 0.23.82 promoted to stable</h3>
+            <p>The core package reached the stable track after a real-node MariaDB pair test across BR1 and BR2 under 250&thinsp;ms netem. Six scenarios passed: write replication, primary crash (the replica stays read-only), full node failover with VIP takeover, primary return by GTID, semi-synchronous replication under delay, and manual failback. 0 acknowledged writes lost.</p>
+            <p class="refs"><a href="https://archive.keellinux.org/">Archive</a></p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="1">
             <p class="hint" style="margin:0"><time datetime="2026-10-19">19 October 2026</time></p>
             <h3>WordPress 19.0-9 and Odoo 19.0-11 for testing</h3>
             <p>Both images run on nginx and use a database pair across 2 sites. WordPress is on LNMP. Odoo 18.0 Community is on LNPP. In the tests, 0 acknowledged writes were lost. Both are testing pre-releases and are not for production.</p>
             <p class="refs"><a href="appliances.html#wordpress">WordPress</a><a href="appliances.html#odoo">Odoo</a></p>
-          </li>
-          <li class="card" data-reveal data-reveal-delay="1">
-            <p class="hint" style="margin:0"><time datetime="2026-10-16">16 October 2026</time></p>
-            <h3>LNMP and LNPP replace Apache</h3>
-            <p>nginx is the only web server in Keel. LNMP 19.0-4 and LNPP 19.0-5 passed the 2-site test, including a fix for a MariaDB primary that returned from a cut as diverged.</p>
-            <p class="refs"><a href="appliances.html#lnmp">LNMP</a><a href="appliances.html#lnpp">LNPP</a></p>
           </li>
         </ul>
       </div>
@@ -480,10 +480,10 @@
         <div data-reveal>
           <span class="eyebrow">Status</span>
           <h2 id="status-title">In testing, and plain about it</h2>
-          <p>There is no release for end users. Every image is a testing pre-release and is not for production. The <a href="appliances.html">appliances page</a> lists the nine images, the version of each, and the tests behind them.</p>
+          <p>The core package, keel 0.23.82, is on the stable track. It passed a real-node MariaDB pair test with full node failover, VIP takeover, primary return by GTID and semi-synchronous replication, across 2 sites under 250&thinsp;ms latency. 0 acknowledged writes lost. Application images are testing pre-releases. The <a href="appliances.html">appliances page</a> lists every image and the tests behind it.</p>
           <p>Four images are signed: LNMP 19.0-4, LNPP 19.0-5, WordPress 19.0-9 and Odoo 19.0-11. The newest Core, Web, MariaDB, PostgreSQL and Redis images are not signed.</p>
           <p>Packages come from <a href="https://archive.keellinux.org/">archive.keellinux.org</a>, signed, on a testing track that everything reaches first and a stable track the maintainer promotes to.</p>
-          <p>No test has cut a whole site. The tests cut or stopped one database node of a pair across 2 sites, and lost no acknowledged write.</p>
+          <p>The tests cut or stopped one database node of a pair across 2 sites, including a full container shutdown, and lost no acknowledged write. A disconnected replica stays read-only until the primary returns or the VIP fails over.</p>
           <p>The composition architecture on this site was decided on 30 September 2026. Where a point says <em>decided</em> or <em>goal</em>, it is on the roadmap and not yet in the code.</p>
           <div class="actions" style="margin-top:1.5rem">
             <a class="btn btn-primary" href="roadmap.html">The roadmap, phase by phase</a>
@@ -493,9 +493,9 @@
         <div data-reveal data-reveal-delay="1">
           <h3>The focus now</h3>
           <ol class="focus-list">
-            <li><span class="num">P4</span><div><strong>WordPress and Odoo on nginx</strong><p>Both are in testing, each on a database pair across 2 sites. Next: Moodle and ejabberd move to nginx.</p></div></li>
-            <li><span class="num">P5</span><div><strong>The mesh and the pair</strong><p>A mesh, an etcd of 3 members and a VIP work in the tests. Next: a test with a whole site cut, when the third site is back.</p></div></li>
-            <li><span class="num">P1</span><div><strong>Promotion to stable</strong><p>Core, Web and the data services wait for a test on three real sites before the maintainer promotes them.</p></div></li>
+            <li><span class="num">P4</span><div><strong>WordPress and Odoo on nginx</strong><p>Both are in testing, each on a database pair across 2 sites. Next: rebuild on keel 0.23.82 and promote to stable.</p></div></li>
+            <li><span class="num">P5</span><div><strong>The mesh and the pair</strong><p>keel 0.23.82 passed a full node failover test with VIP takeover and GTID rejoin across 2 sites under 250&thinsp;ms latency. The core package is on the stable track.</p></div></li>
+            <li><span class="num">P1</span><div><strong>Application releases</strong><p>WordPress and Odoo will be rebuilt on the stable keel and the MariaDB layer, then promoted. Pool refresh for Debian security updates is next.</p></div></li>
           </ol>
           <p class="hint" style="margin-top:1rem">Decisions: <a href="https://github.com/Keel-Linux/tracker/issues?q=is%3Aissue+ADR">0023 to 0040 on the tracker</a>, and <a href="https://github.com/Keel-Linux/tracker/issues/39">the manifest, tracker#39</a>.</p>
         </div>

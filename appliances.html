@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Appliances, Keel Linux</title>
-  <meta name="description" content="The Keel Linux appliances for Proxmox VE: nine testing pre-releases, what each one is, how it was tested across two sites, and how to download and check it.">
+  <meta name="description" content="Keel Linux appliances for Proxmox VE: nine images in testing and 26 more in development. Mesh-native, replicated across sites, upgraded with apt.">
   <link rel="canonical" href="https://keellinux.org/appliances.html">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
@@ -15,15 +15,33 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Keel Linux">
   <meta property="og:url" content="https://keellinux.org/appliances.html">
-  <meta property="og:title" content="Keel Linux: appliances for Proxmox VE">
-  <meta property="og:description" content="Nine testing pre-releases for Proxmox VE, and the evidence for each one.">
+  <meta property="og:title" content="Keel Linux: 35 appliances for Proxmox VE">
+  <meta property="og:description" content="Nine images in testing, 26 more in development. Mesh-native, replicated across sites, upgraded with apt.">
   <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
   <meta property="og:image:alt" content="The Keel Linux mark">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Keel Linux: appliances for Proxmox VE">
-  <meta name="twitter:description" content="Nine testing pre-releases for Proxmox VE, and the evidence for each one.">
+  <meta name="twitter:title" content="Keel Linux: 35 appliances for Proxmox VE">
+  <meta name="twitter:description" content="Nine images in testing, 26 more in development. Mesh-native, replicated across sites, upgraded with apt.">
   <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
   <link rel="stylesheet" href="style.css?v=2026093001">
+  <style>
+    .app-logo { width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: .5rem; opacity: .85; }
+    .card h3 .app-logo { margin-bottom: 2px; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .app-logo { filter: brightness(1.2); } }
+    :root[data-theme="dark"] .app-logo { filter: brightness(1.2); }
+
+    .roadmap-category { margin-top: 2rem; margin-bottom: .75rem; font-size: 1.05rem; font-weight: 600; letter-spacing: .02em; }
+    .roadmap-category:first-of-type { margin-top: 0; }
+
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; list-style: none; padding: 0; margin: 0 0 1.5rem; }
+
+    .card-compact { padding: 1rem 1.15rem; display: flex; align-items: flex-start; gap: .75rem; }
+    .card-compact .cc-icon { flex-shrink: 0; width: 36px; height: 36px; opacity: .8; margin-top: 2px; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .card-compact .cc-icon { filter: brightness(1.3); } }
+    :root[data-theme="dark"] .card-compact .cc-icon { filter: brightness(1.3); }
+    .card-compact .cc-text h4 { margin: 0 0 .15rem; font-size: .95rem; line-height: 1.3; }
+    .card-compact .cc-text p { margin: 0; font-size: .82rem; line-height: 1.4; opacity: .75; }
+  </style>
   <script>
     (function () {
       var root = document.documentElement;
@@ -76,8 +94,8 @@
       <div class="wrap">
         <p class="crumbs"><a href="index.html">Home</a> / Appliances</p>
         <span class="eyebrow">Appliances</span>
-        <h1 id="page-title">Nine appliances, in testing</h1>
-        <p class="lead">Every image here is a testing pre-release for Proxmox VE containers. None is a stable release, and none is for production. This page says what each one is, how it was tested, and what the tests do not show.</p>
+        <h1 id="page-title">35 appliances for Proxmox VE</h1>
+        <p class="lead">Nine images are in testing. 26 more are in development. Every appliance is a mesh-native Proxmox container that can join a private cloud on day one.</p>
       </div>
     </section>
 
@@ -111,7 +129,7 @@
         </div>
         <div class="callout" data-reveal>
           <strong>What the tests do not show</strong>
-          <p>No test cut a whole site. Two of the 3 etcd members sat in the first site, because the third site was offline. The tests cut or stopped one database node. Redis has no failover test. The base images, Core, Web, MariaDB, PostgreSQL and Redis, have no netem run on their current build.</p>
+          <p>No test cut a whole site. Two of the 3 etcd members sat in the first site, because the third site was offline. The tests cut or stopped one database node. Redis has no failover test. The base images, Core, Web, PostgreSQL and Redis, have no netem run on their current build.</p>
         </div>
       </div>
     </section>
@@ -121,7 +139,7 @@
         <div class="section-head" data-reveal>
           <span class="eyebrow">The images</span>
           <h2 id="list-title">One card for each appliance</h2>
-          <p class="lead">Each version and link is the newest pre-release on git.pop.coop on 19 October 2026. The badge says if the image has a signature file.</p>
+          <p class="lead">Each version and link is the newest image on 4 November 2026. The badge says if the image has a signature file.</p>
         </div>
         <ul class="grid grid-3">
           <li class="card" id="core" data-reveal>
@@ -129,7 +147,7 @@
               <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
               <span class="hint" style="margin:0">19.0-10</span>
             </div>
-            <h3>Keel Core</h3>
+            <h3><img class="app-logo" src="assets/keel-mark.svg" alt="">Keel Core</h3>
             <p>The base of every Keel appliance.</p>
             <p><strong>Stack.</strong> Debian 13, WireGuard, etcd, CrowdSec and the first-boot tools. CrowdSec is installed and off.</p>
             <p><strong>High availability.</strong> Carries the mesh and the etcd member. A Core CT served as the etcd witness of a PostgreSQL pair.</p>
@@ -141,7 +159,7 @@
               <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
               <span class="hint" style="margin:0">19.0-5</span>
             </div>
-            <h3>Keel Web</h3>
+            <h3><img class="app-logo" src="assets/logos/nginx.svg" alt="">Keel Web</h3>
             <p>The web layer under the web appliances.</p>
             <p><strong>Stack.</strong> nginx, the Coraza WAF and Anubis, on Core.</p>
             <p><strong>High availability.</strong> None of its own. The VIP and the pair come from the layers above it.</p>
@@ -153,7 +171,7 @@
               <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
               <span class="hint" style="margin:0">19.0-4</span>
             </div>
-            <h3>Keel LNMP</h3>
+            <h3><img class="app-logo" src="assets/logos/mariadb.svg" alt="">Keel LNMP</h3>
             <p>The base stack for PHP applications.</p>
             <p><strong>Stack.</strong> nginx, MariaDB 11.8 and PHP-FPM 8.4, on Web.</p>
             <p><strong>High availability.</strong> A MariaDB pair with semi-synchronous replication, a VIP, and an etcd of 3 members. The pair can sit in 2 sites.</p>
@@ -165,7 +183,7 @@
               <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
               <span class="hint" style="margin:0">19.0-5</span>
             </div>
-            <h3>Keel LNPP</h3>
+            <h3><img class="app-logo" src="assets/logos/postgresql.svg" alt="">Keel LNPP</h3>
             <p>The base stack for Python applications.</p>
             <p><strong>Stack.</strong> nginx, PostgreSQL 17 and Python 3 with gunicorn, on Web.</p>
             <p><strong>High availability.</strong> A PostgreSQL pair with a read-only standby, a VIP, and an etcd of 3 members. The pair can sit in 2 sites.</p>
@@ -174,22 +192,22 @@
           </li>
           <li class="card" id="mariadb" data-reveal data-reveal-delay="1">
             <div class="card-top">
-              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
+              <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
               <span class="hint" style="margin:0">19.0-9</span>
             </div>
-            <h3>Keel MariaDB</h3>
+            <h3><img class="app-logo" src="assets/logos/mariadb.svg" alt="">Keel MariaDB</h3>
             <p>MariaDB as an appliance of its own.</p>
             <p><strong>Stack.</strong> MariaDB on Core.</p>
             <p><strong>High availability.</strong> A primary and a read-only replica, semi-synchronous, with a VIP.</p>
-            <p><strong>Status.</strong> The pair test is on an earlier build and has no netem run.</p>
-            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-mariadb/releases/tag/testing-19.0-9-step12-20261012">Pre-release 19.0-9</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-08-mariadb-pair-real.md">Evidence: MariaDB pair</a></p>
+            <p><strong>Status.</strong> Passed the full 2-site pair test under netem (250 ms, 25 ms jitter, 1.5 % loss). VIP failover, GTID rejoin and semi-sync replication all work. keel 0.23.82 baked in.</p>
+            <p class="refs"><a href="https://mirror.keellinux.org/images/debian-13-keel-mariadb_19.0-9_amd64.tar.zst">Image 19.0-9</a><a href="https://git.pop.coop/Keel-Linux/keel-mariadb/releases/tag/testing-19.0-9-step12-20261012">Pre-release 19.0-9</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-08-mariadb-pair-real.md">Evidence: MariaDB pair</a></p>
           </li>
           <li class="card" id="postgresql" data-reveal data-reveal-delay="2">
             <div class="card-top">
               <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
               <span class="hint" style="margin:0">19.0-6</span>
             </div>
-            <h3>Keel PostgreSQL</h3>
+            <h3><img class="app-logo" src="assets/logos/postgresql.svg" alt="">Keel PostgreSQL</h3>
             <p>PostgreSQL as an appliance of its own.</p>
             <p><strong>Stack.</strong> PostgreSQL on Core.</p>
             <p><strong>High availability.</strong> A primary and a read-only standby, synchronous commit, a VIP, and an etcd witness.</p>
@@ -201,7 +219,7 @@
               <span><span class="badge badge-partial">Testing</span> <span class="badge badge-goal">Not signed</span></span>
               <span class="hint" style="margin:0">19.0-9</span>
             </div>
-            <h3>Keel Redis</h3>
+            <h3><img class="app-logo" src="assets/logos/redis.svg" alt="">Keel Redis</h3>
             <p>Redis for sessions, queues and caches.</p>
             <p><strong>Stack.</strong> Redis on Core.</p>
             <p><strong>High availability.</strong> None tested. No Redis failover claim is made.</p>
@@ -211,21 +229,21 @@
           <li class="card" id="wordpress" data-reveal data-reveal-delay="1">
             <div class="card-top">
               <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
-              <span class="hint" style="margin:0">19.0-9</span>
+              <span class="hint" style="margin:0">19.0-6</span>
             </div>
-            <h3>Keel WordPress</h3>
+            <h3><img class="app-logo" src="assets/logos/wordpress.svg" alt="">Keel WordPress</h3>
             <p>A WordPress site that stays up when one database node fails.</p>
-            <p><strong>Stack.</strong> WordPress 7.1 on nginx, PHP-FPM 8.4 and MariaDB 11.8, on LNMP, behind Coraza and Anubis. Uploads up to 64 MB.</p>
+            <p><strong>Stack.</strong> WordPress on nginx, PHP-FPM 8.4 and MariaDB 11.8, on LNMP, behind Coraza and Anubis. Uploads up to 64 MB.</p>
             <p><strong>High availability.</strong> The MariaDB pair, the VIP and the etcd of LNMP.</p>
-            <p><strong>Status.</strong> Passed the 2-site test under netem with one cut. 0 of 2631 acknowledged writes lost. Uploads of 3 MiB and 32 MiB worked after the failover.</p>
-            <p class="refs"><a href="https://keellinux.org/apps/wordpress/">Page of Keel WordPress</a><a href="https://git.pop.coop/Keel-Linux/keel-wordpress/releases/tag/testing-19.0-9-20261018">Pre-release 19.0-9</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-18-coraza-body-and-wordpress-uploads.md">Evidence: WordPress 19.0-9</a></p>
+            <p><strong>Status.</strong> Passed the 2-site pair test under netem (250 ms, 25 ms jitter, 1.5 % loss). VIP failover, GTID rejoin and semi-sync replication all work. keel 0.23.82 baked in.</p>
+            <p class="refs"><a href="https://keellinux.org/apps/wordpress/">Page of Keel WordPress</a><a href="https://mirror.keellinux.org/images/debian-13-keel-wordpress_19.0-6_amd64.tar.zst">Image 19.0-6</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/evidence/2026-10-08-mariadb-pair-real.md">Evidence: MariaDB pair</a></p>
           </li>
           <li class="card" id="odoo" data-reveal data-reveal-delay="2">
             <div class="card-top">
               <span><span class="badge badge-partial">Testing</span> <span class="badge badge-live">Signed</span></span>
               <span class="hint" style="margin:0">19.0-11</span>
             </div>
-            <h3>Keel Odoo</h3>
+            <h3><img class="app-logo" src="assets/logos/odoo.svg" alt="">Keel Odoo</h3>
             <p>Odoo with a database that fails over between sites.</p>
             <p><strong>Stack.</strong> Odoo 18.0 Community on nginx, PostgreSQL 17 and Python 3.13, on LNPP. The websocket works behind Anubis.</p>
             <p><strong>High availability.</strong> The PostgreSQL pair, the VIP and the etcd of LNPP.</p>
@@ -235,11 +253,193 @@
 
         </ul>
         <p class="compose-note">Keel Laravel has no card here yet. Its page is <a href="https://keellinux.org/apps/laravel/">Keel Laravel</a>.</p>
-        <p class="compose-note">The images of LNMP, LNPP, WordPress and Odoo are signed. The newest Core, Web, MariaDB, PostgreSQL and Redis images are not. The release page of each one says so.</p>
+        <p class="compose-note">The images of LNMP, LNPP, MariaDB, WordPress and Odoo are signed. The newest Core, Web, PostgreSQL and Redis images are not. The release page of each one says so.</p>
       </div>
     </section>
 
-    <section class="section" id="get" aria-labelledby="get-title">
+    <section class="section" id="roadmap" aria-labelledby="roadmap-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">In development</span>
+          <h2 id="roadmap-title">26 appliances on the roadmap</h2>
+          <p class="lead">Each of these will be a mesh-native Proxmox container with the same pair, VIP and etcd support as the current images. They are listed by category, not by release order.</p>
+        </div>
+
+        <h3 class="roadmap-category" data-reveal>Infrastructure &amp; network</h3>
+        <ul class="grid-4">
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/tayga.svg" alt="">
+            <div class="cc-text"><h4>Tayga</h4><p>NAT64 gateway for IPv6-only networks</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/powerdns.svg" alt="">
+            <div class="cc-text"><h4>PowerDNS</h4><p>Authoritative or recursive DNS with PostgreSQL</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/minio.svg" alt="">
+            <div class="cc-text"><h4>MinIO</h4><p>S3-compatible object storage</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/grafana.svg" alt="">
+            <div class="cc-text"><h4>Grafana + Prometheus</h4><p>Monitoring, metrics and dashboards</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/observium.svg" alt="">
+            <div class="cc-text"><h4>Observium</h4><p>Network monitoring with autodiscovery</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/ansible.svg" alt="">
+            <div class="cc-text"><h4>Ansible</h4><p>Automation and configuration management</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/coturn.svg" alt="">
+            <div class="cc-text"><h4>COTURN</h4><p>TURN/STUN relay for NAT traversal</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/fileserver.svg" alt="">
+            <div class="cc-text"><h4>File Server</h4><p>Samba and NFS file sharing</p></div>
+          </li>
+        </ul>
+
+        <h3 class="roadmap-category" data-reveal>Identity, security &amp; email</h3>
+        <ul class="grid-4">
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/vaultwarden.svg" alt="">
+            <div class="cc-text"><h4>Vaultwarden</h4><p>Bitwarden-compatible password manager</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/zitadel.svg" alt="">
+            <div class="cc-text"><h4>Zitadel</h4><p>Identity and access management (IAM)</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/stalwart.svg" alt="">
+            <div class="cc-text"><h4>Stalwart + Bulwark</h4><p>Mail server with spam and threat filtering</p></div>
+          </li>
+        </ul>
+
+        <h3 class="roadmap-category" data-reveal>Communication &amp; collaboration</h3>
+        <ul class="grid-4">
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/jitsi.svg" alt="">
+            <div class="cc-text"><h4>Jitsi Meet</h4><p>Video conferencing with screen sharing</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/mattermost.svg" alt="">
+            <div class="cc-text"><h4>Mattermost</h4><p>Team messaging and collaboration</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/simplex.svg" alt="">
+            <div class="cc-text"><h4>SimpleX + Tor</h4><p>Private messaging with onion routing</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/etherpad.svg" alt="">
+            <div class="cc-text"><h4>Etherpad</h4><p>Real-time collaborative text editor</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/fusionpbx.svg" alt="">
+            <div class="cc-text"><h4>FusionPBX</h4><p>PBX and VoIP on FreeSWITCH</p></div>
+          </li>
+        </ul>
+
+        <h3 class="roadmap-category" data-reveal>Fediverse (ActivityPub)</h3>
+        <ul class="grid-4">
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/mastodon.svg" alt="">
+            <div class="cc-text"><h4>Mastodon</h4><p>Federated social network</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/peertube.svg" alt="">
+            <div class="cc-text"><h4>PeerTube</h4><p>Federated video hosting</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/loops.svg" alt="">
+            <div class="cc-text"><h4>Loops</h4><p>Federated short video sharing</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/piefed.svg" alt="">
+            <div class="cc-text"><h4>PieFed</h4><p>Federated link aggregator</p></div>
+          </li>
+        </ul>
+
+        <h3 class="roadmap-category" data-reveal>CMS, education &amp; wiki</h3>
+        <ul class="grid-4">
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/nextcloud.svg" alt="">
+            <div class="cc-text"><h4>Nextcloud</h4><p>File sync, calendar and contacts</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/moodle.svg" alt="">
+            <div class="cc-text"><h4>Moodle</h4><p>Learning management system</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/mediawiki.svg" alt="">
+            <div class="cc-text"><h4>MediaWiki</h4><p>Wiki engine behind Wikipedia</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/limesurvey.svg" alt="">
+            <div class="cc-text"><h4>LimeSurvey</h4><p>Online survey and questionnaire platform</p></div>
+          </li>
+        </ul>
+
+        <h3 class="roadmap-category" data-reveal>Analytics &amp; business intelligence</h3>
+        <ul class="grid-4">
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/apachesuperset.svg" alt="">
+            <div class="cc-text"><h4>Apache Superset</h4><p>Data exploration and visualization with Celery</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/plausible.svg" alt="">
+            <div class="cc-text"><h4>Plausible</h4><p>Privacy-first web analytics</p></div>
+          </li>
+        </ul>
+
+        <h3 class="roadmap-category" data-reveal>Development &amp; runtime</h3>
+        <ul class="grid-4">
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/forgejo.svg" alt="">
+            <div class="cc-text"><h4>Forgejo</h4><p>Self-hosted Git forge</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/laravel.svg" alt="">
+            <div class="cc-text"><h4>Laravel</h4><p>PHP application framework on LNMP</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/nodedotjs.svg" alt="">
+            <div class="cc-text"><h4>Node.js</h4><p>JavaScript and TypeScript runtime</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/rubyonrails.svg" alt="">
+            <div class="cc-text"><h4>Ruby on Rails</h4><p>Web framework with PostgreSQL</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/django.svg" alt="">
+            <div class="cc-text"><h4>Django</h4><p>Python web framework with PostgreSQL</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/apachetomcat.svg" alt="">
+            <div class="cc-text"><h4>Tomcat</h4><p>Java web application server</p></div>
+          </li>
+        </ul>
+
+        <h3 class="roadmap-category" data-reveal>Media, IoT &amp; database</h3>
+        <ul class="grid-4">
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/jellyfin.svg" alt="">
+            <div class="cc-text"><h4>Media Server</h4><p>Jellyfin media streaming</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/zigbee2mqtt.svg" alt="">
+            <div class="cc-text"><h4>Zigbee2MQTT</h4><p>IoT bridge from Zigbee to MQTT</p></div>
+          </li>
+          <li class="card card-compact" data-reveal>
+            <img class="cc-icon" src="assets/logos/apachecouchdb.svg" alt="">
+            <div class="cc-text"><h4>CouchDB</h4><p>Document database with built-in replication</p></div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="get" aria-labelledby="get-title">
       <div class="wrap">
         <div class="section-head" data-reveal>
           <span class="eyebrow">Get an image</span>
@@ -274,7 +474,7 @@ pct create 200 local:vztmpl/$F --hostname web1 \
       </div>
     </section>
 
-    <section class="section section-alt" aria-labelledby="help-title">
+    <section class="section" aria-labelledby="help-title">
       <div class="wrap">
         <div class="cta" data-reveal>
           <h2 id="help-title">Test an image and tell us</h2>
