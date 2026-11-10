@@ -38,5 +38,7 @@ exactly one h1, a description or the social tags, a resource loaded from
 another origin than the analytics one (in a page or in a stylesheet), and
 copy that names a commercial offer, a customer or a city, or has an em
 dash. A reference to `https://keellinux.org/` is checked as a path in the
-tree. The gate `python / coverage` runs the same checks on every pull
+tree. A reference to the root of an application page,
+`https://keellinux.org/apps/NAME/`, is not checked: the public VM serves it
+from the `pages` branch of `keel-NAME` (decision 0077), not from this tree. The gate `python / coverage` runs the same checks on every pull
 request and is required on `main`.

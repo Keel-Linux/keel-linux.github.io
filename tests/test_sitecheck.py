@@ -292,6 +292,33 @@ class TestSiteOrigin(unittest.TestCase):
             ],
         )
 
+    def test_an_application_page_is_served_from_its_pages_branch(self):
+        # /apps/NAME/ is the pages branch of keel-NAME (decision 0077),
+        # served by the public VM, so it is not a file of this tree
+        text = page(
+            '<a href="https://keellinux.org/apps/odoo/">x</a>'
+            '<a href="/apps/postgresql/">y</a>'
+        )
+        self.assertEqual(sitecheck.check({"index.html": text}), [])
+
+    def test_only_the_root_of_an_application_page_is_not_checked(self):
+        text = page(
+            '<a href="https://keellinux.org/apps/odoo/x.html">x</a>'
+            '<a href="https://keellinux.org/apps/odoo">y</a>'
+            '<a href="https://keellinux.org/apps/Odoo/">z</a>'
+        )
+        self.assertEqual(
+            sitecheck.check({"index.html": text}, set()),
+            [
+                "index.html: https://keellinux.org/apps/odoo/x.html"
+                " does not resolve to a file",
+                "index.html: https://keellinux.org/apps/odoo"
+                " does not resolve to a file",
+                "index.html: https://keellinux.org/apps/Odoo/"
+                " does not resolve to a file",
+            ],
+        )
+
 
 class TestExternalResources(unittest.TestCase):
     def test_an_external_script_is_reported(self):

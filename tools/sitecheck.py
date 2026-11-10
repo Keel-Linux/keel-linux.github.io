@@ -45,6 +45,10 @@ REFERENCE_ATTRS = ("href", "src", "srcset", "poster", "data-src")
 # The site's own origin: a reference to it is a reference into the tree, and
 # is checked as one, so an absolute og:image or canonical URL cannot rot.
 SITE_ORIGIN = "https://keellinux.org"
+# The page of an application, /apps/NAME/: the "pages" branch of the
+# repository keel-NAME, which the public VM serves (decision 0077). It is not
+# a file of this tree, so only the root of such a page is left unchecked.
+APP_PAGE = re.compile(r"/?apps/[a-z0-9][a-z0-9-]*/")
 # Attributes whose reference the browser loads, whatever the tag
 LOADING_ATTRS = ("src", "srcset", "poster", "data-src")
 # rel values of a link element that make the browser load the target
@@ -246,7 +250,11 @@ def check(
                 continue
             local = reference
             if on_site_origin(reference):
+                if APP_PAGE.fullmatch(reference[len(SITE_ORIGIN):]):
+                    continue
                 local = from_site_origin(reference)
+            elif APP_PAGE.fullmatch(reference):
+                continue
             elif is_external(reference):
                 findings.extend(_check_external(path, reference))
                 continue
