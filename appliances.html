@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Appliances, Keel Linux</title>
-  <meta name="description" content="Keel Linux appliances for Proxmox VE: 8 applications in the signed stable release 2026-11-10, 2 in test and 34 more in development. Mesh-native, replicated across sites, upgraded with apt.">
+  <meta name="description" content="Keel Linux appliances for Proxmox VE: 11 applications in the signed stable channel and 34 more in development. Mesh-native, replicated across sites, upgraded with apt.">
   <link rel="canonical" href="https://keellinux.org/appliances.html">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FC">
@@ -15,13 +15,13 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Keel Linux">
   <meta property="og:url" content="https://keellinux.org/appliances.html">
-  <meta property="og:title" content="Keel Linux: 44 appliances for Proxmox VE">
-  <meta property="og:description" content="8 applications in the signed stable release 2026-11-10, 2 in test, 34 more in development. Mesh-native, replicated across sites, upgraded with apt.">
+  <meta property="og:title" content="Keel Linux: 45 appliances for Proxmox VE">
+  <meta property="og:description" content="11 applications in the signed stable channel, 34 more in development. Mesh-native, replicated across sites, upgraded with apt.">
   <meta property="og:image" content="https://keellinux.org/assets/keel-social.png">
   <meta property="og:image:alt" content="The Keel Linux mark">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Keel Linux: 44 appliances for Proxmox VE">
-  <meta name="twitter:description" content="8 applications in the signed stable release 2026-11-10, 2 in test, 34 more in development. Mesh-native, replicated across sites, upgraded with apt.">
+  <meta name="twitter:title" content="Keel Linux: 45 appliances for Proxmox VE">
+  <meta name="twitter:description" content="11 applications in the signed stable channel, 34 more in development. Mesh-native, replicated across sites, upgraded with apt.">
   <meta name="twitter:image" content="https://keellinux.org/assets/keel-social.png">
   <link rel="stylesheet" href="style.css?v=2026093001">
   <style>
@@ -94,8 +94,8 @@
       <div class="wrap">
         <p class="crumbs"><a href="index.html">Home</a> / Appliances</p>
         <span class="eyebrow">Appliances</span>
-        <h1 id="page-title">44 appliances for Proxmox VE</h1>
-        <p class="lead">Release 2026-11-10 of the stable channel holds 8 applications, each as a signed LXC template and a signed ISO. MariaDB and Redis are in test. 34 more are in development. Every appliance is a mesh-native Proxmox container that can join a private cloud on day one.</p>
+        <h1 id="page-title">45 appliances for Proxmox VE</h1>
+        <p class="lead">The stable channel holds 11 applications, each as a signed LXC template and a signed ISO. Release 2026-11-10 published 8 of them. Release 2026-11-11 added MariaDB, Redis and ntfy. 34 more are in development. Every appliance is a mesh-native Proxmox container that can join a private cloud on day one.</p>
       </div>
     </section>
 
@@ -122,6 +122,7 @@
               <li>A pass is green only if every check of the pass is green.</li>
               <li>No image is published before every pass of the image is green.</li>
               <li>Each application of release 2026-11-10 has 8 passes: 6 for the template and 2 for the ISO. Its card gives the count of checks.</li>
+              <li>In release 2026-11-11, MariaDB has the same 8 passes. Redis and ntfy have no cloud mode, so each has 6 passes: 4 for the template and 2 for the ISO.</li>
               <li>The page of each application has the commissioning table and the screens of each pass.</li>
             </ul>
             <p class="refs"><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/decisions/0075-commissioning-test.md">Decision 0075, the commissioning test</a><a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/decisions/0076-installation-mode-screens.md">Decision 0076, the installation mode screens</a></p>
@@ -140,7 +141,7 @@
         <div class="section-head" data-reveal>
           <span class="eyebrow">The images</span>
           <h2 id="list-title">One card for each appliance</h2>
-          <p class="lead">10 cards: the 8 applications of release 2026-11-10, and MariaDB and Redis, which have no published image now. Each version and link is the image of release 2026-11-10.</p>
+          <p class="lead">11 cards: the 8 applications of release 2026-11-10, and MariaDB, Redis and ntfy of release 2026-11-11. Each version and link is the image that the stable channel holds now.</p>
         </div>
         <ul class="grid grid-3">
           <li class="card" id="core" data-reveal>
@@ -247,28 +248,43 @@
           </li>
           <li class="card" id="mariadb" data-reveal data-reveal-delay="2">
             <div class="card-top">
-              <span><span class="badge badge-partial">In test</span> <span class="badge badge-goal">No image</span></span>
-              <span class="hint" style="margin:0">none</span>
+              <span><span class="badge badge-live">Stable</span> <span class="badge badge-live">Signed</span></span>
+              <span class="hint" style="margin:0">19.0-12</span>
             </div>
             <h3><img class="app-logo" src="assets/logos/mariadb.svg" alt="">Keel MariaDB</h3>
             <p>MariaDB as an appliance of its own.</p>
-            <p><strong>Stack.</strong> MariaDB on Core.</p>
-            <p><strong>Status.</strong> There is no published image of Keel MariaDB now. A new image is in test. It is not in release 2026-11-10.</p>
-            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-mariadb">Source of Keel MariaDB</a></p>
+            <p><strong>Stack.</strong> MariaDB 11.8 on Core.</p>
+            <p><strong>High availability.</strong> A primary and a read-only replica, semi-synchronous replication and a VIP. Cloud advanced adds an etcd of 3 members.</p>
+            <p><strong>Modes.</strong> Simple, cloud simple and cloud advanced. In cloud simple, you promote the replica by hand. In cloud advanced, the replica takes over by itself.</p>
+            <p><strong>Status.</strong> Stable release 2026-11-11, signed. The commissioning test ran 8 passes on BR1 and BR2: 503 checks, all passed.</p>
+            <p class="refs"><a href="https://keellinux.org/apps/mariadb/">Page of Keel MariaDB</a><a href="https://git.pop.coop/Keel-Linux/keel-mariadb/releases/tag/19.0-12">Release 19.0-12</a><a href="https://mirror.keellinux.org/images/debian-13-keel-mariadb_19.0-12_amd64.tar.zst">Template 19.0-12</a><a href="https://mirror.keellinux.org/images/debian-13-keel-mariadb_19.0-12_amd64.iso">ISO 19.0-12</a></p>
           </li>
           <li class="card" id="redis" data-reveal>
             <div class="card-top">
-              <span><span class="badge badge-partial">In test</span> <span class="badge badge-goal">No image</span></span>
-              <span class="hint" style="margin:0">none</span>
+              <span><span class="badge badge-live">Stable</span> <span class="badge badge-live">Signed</span></span>
+              <span class="hint" style="margin:0">19.0-13</span>
             </div>
             <h3><img class="app-logo" src="assets/logos/redis.svg" alt="">Keel Redis</h3>
             <p>Redis for sessions, queues and caches.</p>
-            <p><strong>Stack.</strong> Redis on Core.</p>
-            <p><strong>Status.</strong> There is no published image of Keel Redis now. A new image is in test. It is not in release 2026-11-10.</p>
-            <p class="refs"><a href="https://git.pop.coop/Keel-Linux/keel-redis">Source of Keel Redis</a></p>
+            <p><strong>Stack.</strong> Redis 8.0 on Core.</p>
+            <p><strong>Modes.</strong> Simple. This image has no cloud mode.</p>
+            <p><strong>Status.</strong> Stable release 2026-11-11, signed. The commissioning test ran 6 passes on BR1 and BR2: 182 checks, all passed.</p>
+            <p class="refs"><a href="https://keellinux.org/apps/redis/">Page of Keel Redis</a><a href="https://git.pop.coop/Keel-Linux/keel-redis/releases/tag/19.0-13">Release 19.0-13</a><a href="https://mirror.keellinux.org/images/debian-13-keel-redis_19.0-13_amd64.tar.zst">Template 19.0-13</a><a href="https://mirror.keellinux.org/images/debian-13-keel-redis_19.0-13_amd64.iso">ISO 19.0-13</a></p>
+          </li>
+          <li class="card" id="ntfy" data-reveal data-reveal-delay="1">
+            <div class="card-top">
+              <span><span class="badge badge-live">Stable</span> <span class="badge badge-live">Signed</span></span>
+              <span class="hint" style="margin:0">19.0-6</span>
+            </div>
+            <h3><img class="app-logo" src="assets/keel-mark.svg" alt="">Keel ntfy</h3>
+            <p>The alert server of a site: it sends a message to a phone.</p>
+            <p><strong>Stack.</strong> ntfy 2.11 on Web.</p>
+            <p><strong>Modes.</strong> Simple. This image has no cloud mode.</p>
+            <p><strong>Status.</strong> Stable release 2026-11-11, signed. The commissioning test ran 6 passes on BR1 and BR2: 246 checks, all passed.</p>
+            <p class="refs"><a href="https://keellinux.org/apps/ntfy/">Page of Keel ntfy</a><a href="https://git.pop.coop/Keel-Linux/keel-ntfy/releases/tag/19.0-6">Release 19.0-6</a><a href="https://mirror.keellinux.org/images/debian-13-keel-ntfy_19.0-6_amd64.tar.zst">Template 19.0-6</a><a href="https://mirror.keellinux.org/images/debian-13-keel-ntfy_19.0-6_amd64.iso">ISO 19.0-6</a></p>
           </li>
         </ul>
-        <p class="compose-note">The 16 images of release 2026-11-10 are signed: the template and the ISO of each of the 8 applications. MariaDB and Redis have no published image now.</p>
+        <p class="compose-note">The 22 images of the stable channel are signed: the template and the ISO of each of the 11 applications.</p>
       </div>
     </section>
 

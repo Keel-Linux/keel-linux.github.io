@@ -7,7 +7,7 @@ what is in the repository is what the browser gets.
 | Path | What it is |
 |------|------------|
 | `index.html` | the home page, also served at `www` |
-| `appliances.html` | the images of release 2026-11-10, how they were tested, and how to download and check one |
+| `appliances.html` | the images of the stable channel (releases 2026-11-10 and 2026-11-11), how they were tested, and how to download and check one |
 | `architecture.html` | composition, overlays, appliances, the manifest, the spec, IPv6-first, layers and upgrades |
 | `security.html` | keys and identity, the request pipeline, what each installation mode enables, exposure classes |
 | `cloud.html` | installation modes, the mesh, the registry, failover, replication, backup and monitoring |

@@ -75,7 +75,7 @@
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="wrap hero-grid">
         <div>
-          <a class="status-pill" href="#status"><strong>Stable</strong> Release 2026-11-10: 8 applications, signed. Read the status</a>
+          <a class="status-pill" href="#status"><strong>Stable</strong> The stable channel: 11 applications, signed. Read the status</a>
           <h1 id="hero-title">Composable, <span class="accent">mesh-native</span> appliances on Debian.</h1>
           <p class="promise">Every appliance is secure by default and can join a private cloud on day one.</p>
           <p class="sub">A fork of TurnKey Linux 19 (Debian 13) that turns single-machine appliances into building blocks of a real cloud: small components that run alone or together, replicate across sites, fail over, and are upgraded with apt. IPv6-first, so every node has a routable address of its own, and declarative, so every machine is described by one YAML file that Keel applies and re-applies to the same result.</p>
@@ -116,7 +116,7 @@
         <div class="section-head" data-reveal>
           <span class="eyebrow">Now</span>
           <h2 id="now-title">Appliances that keep a database up across two sites</h2>
-          <p class="lead">Release 2026-11-10 holds 8 applications for Proxmox VE: Core, Web, LNMP, LNPP, PostgreSQL, Laravel, WordPress and Odoo. Laravel, WordPress and Odoo run on the LNMP and LNPP stacks.</p>
+          <p class="lead">The stable channel holds 11 applications for Proxmox VE: Core, Web, LNMP, LNPP, PostgreSQL, MariaDB, Redis, ntfy, Laravel, WordPress and Odoo. Laravel, WordPress and Odoo run on the LNMP and LNPP stacks.</p>
         </div>
         <ul class="grid grid-3">
           <li class="card" data-reveal>
@@ -129,7 +129,7 @@
           </li>
           <li class="card" data-reveal data-reveal-delay="2">
             <h3 style="margin-top:0">Signed images</h3>
-            <p>The 16 images of release 2026-11-10, a template and an ISO of each application, carry two signatures: one by the archive key and one by the images key.</p>
+            <p>The 22 images of the stable channel, a template and an ISO of each application, carry two signatures: one by the archive key and one by the images key.</p>
           </li>
         </ul>
         <div class="actions" style="margin-top:1.5rem">
@@ -148,6 +148,12 @@
         </div>
         <ul class="grid grid-2">
           <li class="card" data-reveal>
+            <p class="hint" style="margin:0"><time datetime="2026-11-10">10 November 2026</time></p>
+            <h3>Release 2026-11-11: MariaDB, Redis and ntfy, stable and signed</h3>
+            <p>Release 2026-11-11 of the stable channel adds Keel MariaDB 19.0-12, Keel Redis 19.0-13 and Keel ntfy 19.0-6. Each one is an LXC template for Proxmox VE and an ISO, and each of the 6 images is signed. The stable channel now holds 11 applications. Before the release, each image passed the commissioning test on 2 sites, BR1 and BR2.</p>
+            <p class="refs"><a href="appliances.html#mariadb">Keel MariaDB</a><a href="appliances.html#redis">Keel Redis</a><a href="appliances.html#ntfy">Keel ntfy</a></p>
+          </li>
+          <li class="card" data-reveal data-reveal-delay="1">
             <p class="hint" style="margin:0"><time datetime="2026-11-10">10 November 2026</time></p>
             <h3>Release 2026-11-10: 8 applications, stable and signed</h3>
             <p>Release 2026-11-10 of the stable channel holds Core, Web, LNMP, LNPP, PostgreSQL, Laravel, WordPress and Odoo. Each application is an LXC template for Proxmox VE and an ISO, and each of the 16 images is signed. Before the release, each image passed the commissioning test on 2 sites, BR1 and BR2.</p>
@@ -480,8 +486,8 @@
         <div data-reveal>
           <span class="eyebrow">Status</span>
           <h2 id="status-title">Published, and plain about it</h2>
-          <p>Release 2026-11-10 of the stable channel holds 8 applications: Core, Web, LNMP, LNPP, PostgreSQL, Laravel, WordPress and Odoo. Each application is an LXC template for Proxmox VE and an ISO. All 16 images are signed. The <a href="appliances.html">appliances page</a> lists every image and the test behind it.</p>
-          <p>Each image passed the commissioning test on 2 sites, BR1 and BR2, in every installation mode of the application. New images of MariaDB, Redis and ntfy are in test. They are not published.</p>
+          <p>The stable channel holds 11 applications. Release 2026-11-10 published Core, Web, LNMP, LNPP, PostgreSQL, Laravel, WordPress and Odoo. Release 2026-11-11 added MariaDB, Redis and ntfy. Each application is an LXC template for Proxmox VE and an ISO. All 22 images are signed. The <a href="appliances.html">appliances page</a> lists every image and the test behind it.</p>
+          <p>Each image passed the commissioning test on 2 sites, BR1 and BR2, in every installation mode of the application.</p>
           <p>Packages come from <a href="https://archive.keellinux.org/">archive.keellinux.org</a>, signed, on a testing track that everything reaches first and a stable track the maintainer promotes to.</p>
           <p>Earlier failover tests, on earlier builds, cut or stopped one database node of a pair across 2 sites, including a full container shutdown, and lost no acknowledged write. A disconnected replica stays read-only until the primary returns or the VIP fails over.</p>
           <p>The composition architecture on this site was decided on 30 September 2026. Where a point says <em>decided</em> or <em>goal</em>, it is on the roadmap and not yet in the code.</p>
@@ -495,7 +501,7 @@
           <ol class="focus-list">
             <li><span class="num">P4</span><div><strong>Laravel, WordPress and Odoo on nginx</strong><p>All 3 are in release 2026-11-10, on LNMP and LNPP. Each one has the modes simple, cloud simple and cloud advanced.</p></div></li>
             <li><span class="num">P5</span><div><strong>The mesh and the pair</strong><p>In the images of release 2026-11-10, the first boot of a cloud node makes the mesh or joins it. The first node shows an invite line, and the next node joins with that line.</p></div></li>
-            <li><span class="num">P1</span><div><strong>Application releases</strong><p>New images of MariaDB, Redis and ntfy are in test. They are not published.</p></div></li>
+            <li><span class="num">P1</span><div><strong>Application releases</strong><p>MariaDB, Redis and ntfy are in release 2026-11-11 of the stable channel. No other new image is published.</p></div></li>
           </ol>
           <p class="hint" style="margin-top:1rem">Decisions: <a href="https://github.com/Keel-Linux/tracker/issues?q=is%3Aissue+ADR">0023 to 0040 on the tracker</a>, and <a href="https://github.com/Keel-Linux/tracker/issues/39">the manifest, tracker#39</a>.</p>
         </div>
