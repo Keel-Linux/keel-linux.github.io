@@ -163,6 +163,10 @@
         <section id="exposure" aria-labelledby="exposure-title">
           <h2 id="exposure-title">Every port has an exposure class</h2>
           <p>Every listening port in a manifest carries one of three classes, and the firewall is derived from them rather than written by hand. A port is reserved across the whole chain of appliances, whatever its state, since an operator can turn a disabled overlay on. <span class="badge badge-decided">Decided, 0041</span></p>
+          <div class="callout warn">
+            <strong>Advisory 2026-11-23: no inbound firewall rule</strong>
+            <p>A node made from a published image loads no inbound packet filter at boot, in each installation mode. A service that listens on a public address is reachable from the network, and in the cloud modes a host on the same link can reach the database port of a pair on its inner address. The <a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/advisories/2026-11-23-no-inbound-firewall.md">advisory</a> lists the affected versions and gives a tested stopgap with the Proxmox VE firewall. The fix in <code>keel</code> is in work, with no date.</p>
+          </div>
           <div class="grid grid-3">
             <div class="card"><span class="state state-off">loopback</span><h3>Loopback</h3><p>Only the machine itself: postfix on 25, Anubis behind Nginx.</p></div>
             <div class="card"><span class="state state-on">mesh</span><h3>Mesh</h3><p>Only other nodes, over WireGuard: etcd on 2379 and 2380.</p></div>
