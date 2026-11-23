@@ -144,6 +144,10 @@
           <h2 id="list-title">One card for each appliance</h2>
           <p class="lead">11 cards, one for each application of the stable channel. Each version and link is the image that the stable channel holds now: Core and PostgreSQL of release 2026-11-10, MariaDB and Redis of release 2026-11-11, and the 7 other images of release 2026-11-12.</p>
         </div>
+        <div class="callout warn">
+            <strong>Advisory 2026-11-23: no inbound firewall rule</strong>
+            <p>A node made from a published image loads no inbound packet filter at boot, in each installation mode. A service that listens on a public address is reachable from the network, and in the cloud modes a host on the same link can reach the database port of a pair on its inner address. The <a href="https://git.pop.coop/Keel-Linux/handbook/src/branch/main/docs/advisories/2026-11-23-no-inbound-firewall.md">advisory</a> lists the affected versions and gives a tested stopgap with the Proxmox VE firewall. The fix in <code>keel</code> is in work, with no date.</p>
+        </div>
         <ul class="grid grid-3">
           <li class="card" id="core" data-reveal>
             <div class="card-top">
